@@ -2,9 +2,20 @@ import sqlalchemy as db
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import enum
 
 # For class to create table
 Base = declarative_base()
+
+
+class Priority(enum.Enum):
+    High = 1
+    Medium = 2
+    Low = 3
+
+class Status(enum.Enum):
+    Open = 1
+    Closed = 2
 
 class User(Base):
     __tablename__ = 'users'
@@ -19,12 +30,12 @@ class User(Base):
 class Tickets(Base):
     __tablename__ = 'tickets'
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Boolean)
-    priority = db.Column(db.Integer)
+    status = db.Column(db.Enum(Status))
+    priority = db.Column(db.Enum(Priority))
     subject = db.Column(db.String(140))
     body = db.Column(db.String(1280))
-    created_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    created_at = db.Column(db.String(19), index=True, default=str(datetime.utcnow())[:19])
+    updated_at = db.Column(db.String(19), index=True, default=str(datetime.utcnow())[:19])
     created_by = db.Column(db.String(140))
     assigned = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -35,7 +46,7 @@ class Comments(Base):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     ticket = db.Column(db.Integer, db.ForeignKey('tickets.id'))
-    created_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    created_at = db.Column(db.String(19), index=True, default=str(datetime.utcnow())[:19])
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
     body = db.Column(db.String(1280))
     
@@ -86,8 +97,8 @@ def delete_user(username):
         return False
 
 #Insert Ticket
-def insert_ticket(subject,body,created_by):
-    insert = Tickets(status=True, subject=f'{subject}', body=f'{body}',created_by=f'{created_by}')
+def insert_ticket(subject,body,priority,created_by):
+    insert = Tickets(status=Status(1), subject=f'{subject}', body=f'{body}', priority= Priority(priority), created_by=f'{created_by}')
     db.session.add(insert)
     try:
         db.session.commit()
@@ -97,12 +108,13 @@ def insert_ticket(subject,body,created_by):
         return False
 
 #Update ticket
-def update_ticket(id, status, subject, body, created_by, assigned):
-    time = datetime.utcnow()
+def update_ticket(id, status, subject, body, priority, created_by, assigned):
+    time = str(datetime.utcnow())[:19]
     update = db.session.query(Tickets).filter(Tickets.id == id).update({
-        'status': status,
+        'status': Status(status),
         'subject':f'{subject}',
         'body': f'{body}',
+        'priority': Priority(priority),
         'created_by': f'{created_by}',
         'updated_at': time,
         'assigned': f'{assigned}'})

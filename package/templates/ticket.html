@@ -1,17 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-<table>
-    <tr><th>ID</th><th>Status</th><th>Subject</th></th><th>Updated At</th><th>Created By</th><th>Assigned</th></tr>
-    <tr><td>{{ ticket.id }}</td><td>{{ ticket.status }}</td><td>{{ ticket.subject }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td></tr>
+<table style='padding: 1%'>
+    <tr><th style='width: 5%'>ID</th><th style='width: 50%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 10%'>Created By</th><th style='width: 10%'>Assigned</th></tr>
+    <tr><td><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></td><td>{{ ticket.subject }}</td><td>{{ ticket.status.name }}</td><td>{{ ticket.priority.name }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td></tr>
+    <tr><td colspan="7">{{ ticket.body }}</td></tr>
+    <tr><td style='padding-top: 20px;'></td></tr>
+    <tr></tr>
 </table>
 <br>
 <table>
     {% for comment in comments %}
-    <tr><td style='width: 100%'>{{ comment.body }}</td></tr>
-    <tr><td style='width: 10%'>{{ comment.created_by }} at {{ comment.created_at }}</td></tr>
+    <tr><td style='width: 100%;'><p>{{ comment.body }}</p><br><p><small>{{ comment.created_by }} at {{ comment.created_at }}</small></p></td></tr>
+    <tr><td style="padding-bottom: 20px; background-color: #E5E4E2"></td></tr>
     <tr></tr>
-    <tr><td style='padding-top: 20px;'></td></tr>
     {% endfor %}
 </table>
+
+<div style='width: 55%; padding: 1%'>
+    <form action="" method="post">
+        <div>
+            {{ form.comment(class_="fresh-frm") }}</div>
+        <div>
+            <input class="fresh-btn" type="submit" value="Submit"></div>
+    </form>
+</div>
+
 
 {% endblock %}

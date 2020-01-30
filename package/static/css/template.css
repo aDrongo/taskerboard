@@ -94,3 +94,48 @@ nav {
     padding: 0 2px 0 0;
   }
 }
+.fresh-btn:hover {
+  background: 
+  #70a54b;
+}
+.fresh-btn {
+  display: inline-block;
+  margin-top: 20px;
+  color: #000;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: Montserrat,sans-serif;
+  font-display: auto;
+  text-align: center;
+  font-weight: 400;
+  letter-spacing: .03em;
+  line-height: 1em;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: #2d2d2d;
+  padding: 10px 20px;
+  background: #78ba4b;
+  box-shadow: 0 4px 4px rgba(0,0,0,.06);
+  box-sizing: border-box;
+  cursor: pointer;
+  -webkit-transition: background .3s ease;
+  transition: background .3s ease;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.fresh-frm{
+    width: 100%;
+    height: 8em;
+    padding: 10px;
+    background: transparent;
+    color: #2d2d2d;
+    font-weight: 500;
+    overflow: visible;
+    font-family: inherit;
+    font-size: 100%;
+    line-height: 1.15;
+    margin: 0;
+    box-sizing: border-box;
+    box-shadow: 0 2px 2px #000;
+}
