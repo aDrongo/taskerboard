@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<table>
+    <tr><th>ID</th><th>Status</th><th>Subject</th></th><th>Updated At</th><th>Created By</th><th>Assigned</th></tr>
+    {% for ticket in tickets %}
+    <tr><td><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></td><td>{{ ticket.status }}</td><td>{{ ticket.subject }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td></tr>
+    <tr><td>{{ ticket.body }}</td></tr>
+    {% endfor %}
+</table>
+
+
+
+{% endblock %}

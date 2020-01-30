@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" http-equiv="refresh" content="300" >
+    <title>LDAP Device Surveyor</title>
+    <link rel="stylesheet" href="{{ url_for('static',    filename='css/template.css') }}">
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><img height="30px" src="https://cdn.nwmsrocks.com/img/3dc41c7.png"/></li>
+        <li><a href="/">Home</a></li>
+      </ul>
+      <ul class='navicon'>
+        <li>Tasker</li>
+      </ul>
+    </nav>
+    {% block content %}{% endblock %}
+  </body>
+</html>

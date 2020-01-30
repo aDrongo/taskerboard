@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<table>
+    <tr><th>ID</th><th>Status</th><th>Subject</th></th><th>Updated At</th><th>Created By</th><th>Assigned</th></tr>
+    <tr><td>{{ ticket.id }}</td><td>{{ ticket.status }}</td><td>{{ ticket.subject }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td></tr>
+</table>
+<br>
+<table>
+    {% for comment in comments %}
+    <tr><td style='width: 100%'>{{ comment.body }}</td></tr>
+    <tr><td style='width: 10%'>{{ comment.created_by }} at {{ comment.created_at }}</td></tr>
+    <tr></tr>
+    <tr><td style='padding-top: 20px;'></td></tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
