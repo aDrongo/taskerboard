@@ -1,11 +1,52 @@
 {% extends "base.html" %}
 {% block content %}
-<table>
-    <tr><th>ID</th><th>Status</th><th>Subject</th></th><th>Updated At</th><th>Created By</th><th>Assigned</th></tr>
+<table style='padding:  1%'>
+    <tr><th style='width: 5%'>ID</th><th style='width: 60%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 10%'>Created By</th><th style='width: 10%'>Assigned</th></tr>
     {% for ticket in tickets %}
-    <tr><td><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></td><td>{{ ticket.status }}</td><td>{{ ticket.subject }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td></tr>
+    <tr><td><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></td><td>{{ ticket.subject }}</td><td>{{ ticket.status.name }}</td><td>{{ ticket.priority.name }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td></tr>
+    <tr></tr>
     {% endfor %}
 </table>
 
 
+<div class='col-5'>
+
+
+
+
+
+
+</div>
+<div class='col-5'>
+
+
+
+
+
+    
+</div>
+<div class='col-5'>
+
+
+
+
+
+    
+</div>
+<div class='col-5'>
+
+
+
+
+
+    
+</div>
+<div class='col-5'>
+
+
+
+
+
+    
+</div>
 {% endblock %}

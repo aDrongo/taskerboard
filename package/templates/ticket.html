@@ -1,22 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-<table style='padding: 1%'>
-    <tr><th style='width: 5%'>ID</th><th style='width: 50%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 10%'>Created By</th><th style='width: 10%'>Assigned</th></tr>
-    <tr><td><a href="/ticket/{{ ticket.id }}">{{ ticket.id }}</a></td><td>{{ ticket.subject }}</td><td>{{ ticket.status.name }}</td><td>{{ ticket.priority.name }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td></tr>
-    <tr><td colspan="7">{{ ticket.body }}</td></tr>
-    <tr><td style='padding-top: 20px;'></td></tr>
-    <tr></tr>
-</table>
+<div style='padding: 1% 20%'>
+    <div style='height: 20%; width: 100%'>
+    <table style='padding:  1%'>
+        <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
+        {% for tick in tickets %}
+        <tr><td><a href="/ticket/{{ option }}/{{ tick.id }}">{{ tick.id }}</a></td><td><a href="/ticket/{{ option }}/{{ tick.id }}">{{ tick.subject }}</a></td><td>{{ tick.status.name }}</td><td>{{ tick.priority.name }}</td><td>{{ tick.updated_at }}</td><td>{{ tick.created_by }}</td><td>{{ tick.assigned }}</td><td>{{ tick.due_by }}</td></tr>
+        {% endfor %}
+    </table>
+    </div>    
 <br>
+<h3>Content</h3>
+<div style='padding: 1%;'>
+<p style='background-color: lightgray; padding: 1%'>{{ ticket.body }}</p>
+</div>
+<br>
+<h3>Comments</h3>
 <table>
     {% for comment in comments %}
-    <tr><td style='width: 100%;'><p>{{ comment.body }}</p><br><p><small>{{ comment.created_by }} at {{ comment.created_at }}</small></p></td></tr>
-    <tr><td style="padding-bottom: 20px; background-color: #E5E4E2"></td></tr>
-    <tr></tr>
+    <tr><td style='width: 100%; padding: 12px 0;'><p>{{ comment.body }}</p><br><p><small>{{ comment.created_by }} at {{ comment.created_at }}</small></p></td></tr>
     {% endfor %}
 </table>
 
-<div style='width: 55%; padding: 1%'>
+<div style='width: 55%'>
     <form action="" method="post">
         <div>
             {{ form.comment(class_="fresh-frm") }}</div>
@@ -24,6 +30,6 @@
             <input class="fresh-btn" type="submit" value="Submit"></div>
     </form>
 </div>
-
+</div>
 
 {% endblock %}

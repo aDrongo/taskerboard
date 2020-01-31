@@ -1,7 +1,7 @@
 import os
 import time
 from flask import Flask, render_template, Response, redirect, url_for, request, flash
-from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
+from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField
 from datetime import datetime
 import modules.database as db
 
@@ -11,21 +11,47 @@ app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 class CommentForm(Form):
     comment = TextAreaField('Comment:')
 
-@app.route("/")
+class TicketForm(Form):
+    subject = TextField('Subject:', [validators.required(), validators.length(max=140)])
+    body = TextField('Body:', [validators.required(), validators.length(max=1280)])
+    priority = SelectField('Priority', choices=['High','Medium','Low'])
+    category = SelectField('Category', choices=['Ticket','Project','WishList'])
+    status = SelectField('Status', choices=['Open','Working','Waiting','Closed'])
+
+def ticket_options(option):
+    if option == 'all':
+        tickets = db.query_tickets_all()
+    elif option == 'open':
+        tickets = db.query_tickets_open()
+    elif option == 'working':
+        tickets = db.query_tickets_working()
+    elif option == 'waiting':
+        tickets = db.query_tickets_waiting()
+    elif option == 'closed':
+        tickets = db.query_tickets_closed()
+    else:
+        tickets = db.query_tickets_all()
+    return tickets
+
+@app.route("/", methods=['GET','POST'])
 def home():
     tickets = db.query_tickets_all()
 
-    return render_template("tickets.html", tickets=tickets)
+    return render_template("index.html", tickets=tickets)
 
-@app.route("/tickets_open")
-def tickets_open():
-    tickets = db.query_tickets_open()
+@app.route("/ticket/<option>", methods=['GET','POST'])
+def tickets(option):
+    tickets = ticket_options(option)
+    
+    if request.method == 'POST':
+        pass
 
-    return render_template("tickets.html", tickets=tickets)
+    return render_template("tickets.html", option=option, tickets=tickets)
 
 
-@app.route("/ticket/<id>", methods=['GET','POST'])
-def ticket(id):
+@app.route("/ticket/<option>/<id>", methods=['GET','POST'])
+def ticket(option, id):
+    tickets = ticket_options(option)
     ticket = db.query_ticket(id)
     comments = db.query_comments(id)
     form = CommentForm(request.form)
@@ -38,9 +64,9 @@ def ticket(id):
     if form.validate(): 
         flash('Comment submitted')
     else:
-        flash("Couldn't submit")
+        flash("Failed")
 
-    return render_template("ticket.html", ticket=ticket, comments=comments, form=form)
+    return render_template("ticket.html", option=option, tickets=tickets, ticket=ticket, comments=comments, form=form)
 
 
 

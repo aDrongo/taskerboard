@@ -15,7 +15,9 @@ class Priority(enum.Enum):
 
 class Status(enum.Enum):
     Open = 1
-    Closed = 2
+    Working = 2
+    Waiting = 3
+    Closed = 4
 
 class User(Base):
     __tablename__ = 'users'
@@ -32,10 +34,12 @@ class Tickets(Base):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Enum(Status))
     priority = db.Column(db.Enum(Priority))
+    category = db.Column(db.String(140))
     subject = db.Column(db.String(140))
     body = db.Column(db.String(1280))
     created_at = db.Column(db.String(19), index=True, default=str(datetime.utcnow())[:19])
     updated_at = db.Column(db.String(19), index=True, default=str(datetime.utcnow())[:19])
+    due_by = db.Column(db.String(19))
     created_by = db.Column(db.String(140))
     assigned = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -47,7 +51,7 @@ class Comments(Base):
     id = db.Column(db.Integer, primary_key=True)
     ticket = db.Column(db.Integer, db.ForeignKey('tickets.id'))
     created_at = db.Column(db.String(19), index=True, default=str(datetime.utcnow())[:19])
-    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_by = db.Column(db.Integer, db.ForeignKey('users.username'))
     body = db.Column(db.String(1280))
     
 
@@ -97,8 +101,8 @@ def delete_user(username):
         return False
 
 #Insert Ticket
-def insert_ticket(subject,body,priority,created_by):
-    insert = Tickets(status=Status(1), subject=f'{subject}', body=f'{body}', priority= Priority(priority), created_by=f'{created_by}')
+def insert_ticket(subject,body,priority, created_by, status=1, category='ticket', due_by=None):
+    insert = Tickets(status=Status(status), subject=f'{subject}', body=f'{body}', priority= Priority(priority), category=f'{category}', created_by=f'{created_by}', due_by=f'{due_by}')
     db.session.add(insert)
     try:
         db.session.commit()
@@ -108,16 +112,18 @@ def insert_ticket(subject,body,priority,created_by):
         return False
 
 #Update ticket
-def update_ticket(id, status, subject, body, priority, created_by, assigned):
+def update_ticket(id, status, subject, body, priority, created_by, assigned=None, category='ticket', due_by=None):
     time = str(datetime.utcnow())[:19]
     update = db.session.query(Tickets).filter(Tickets.id == id).update({
         'status': Status(status),
         'subject':f'{subject}',
         'body': f'{body}',
         'priority': Priority(priority),
+        'category': f'{category}',
         'created_by': f'{created_by}',
         'updated_at': time,
-        'assigned': f'{assigned}'})
+        'assigned': f'{assigned}',
+        'due_by': f'{due_by}'})
     try:
         db.session.commit()
         return True
@@ -127,8 +133,11 @@ def update_ticket(id, status, subject, body, priority, created_by, assigned):
 
 #Insert Comment
 def insert_comment(ticket, created_by, body):
-    insert = Comments(ticket=f'{ticket}', body=f'{body}',created_by=f'{created_by}')
+    time = str(datetime.utcnow())[:19]
+    insert = Comments(ticket=ticket, body=f'{body}',created_by=f'{created_by}')
+    #update = db.session.query(Tickets).filter(Tickets.id == ticket).update({'updated_at':time})
     db.session.add(insert)
+    #db.session.add(update)
     try:
         db.session.commit()
         return True
@@ -158,12 +167,22 @@ def query_tickets_all():
 
 #Query Tickets Open
 def query_tickets_open():
-    result = db.session.query(Tickets).filter(Tickets.status == True).all()
+    result = db.session.query(Tickets).filter(Tickets.status == Status(1)).all()
+    return result
+
+#Query Tickets Working
+def query_tickets_working():
+    result = db.session.query(Tickets).filter(Tickets.status == Status(2)).all()
+    return result
+
+#Query Tickets Waiting
+def query_tickets_waiting():
+    result = db.session.query(Tickets).filter(Tickets.status == Status(3)).all()
     return result
 
 #Query Tickets Closed
 def query_tickets_closed():
-    result = db.session.query(Tickets).filter(Tickets.status == False).all()
+    result = db.session.query(Tickets).filter(Tickets.status == Status(4)).all()
     return result
 
 #Query comments
