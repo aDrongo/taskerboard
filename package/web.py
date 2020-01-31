@@ -12,13 +12,15 @@ app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 
 class CommentForm(Form):
     comment = TextAreaField('Comment:')
+    submitComment = SubmitField('submit')
 
 class TicketForm(Form):
     subject = TextField('Subject:', [validators.required(), validators.length(max=140)])
-    body = TextField('Body:', [validators.required(), validators.length(max=1280)])
-    priority = SelectField('Priority', choices=['High','Medium','Low'])
-    category = SelectField('Category', choices=['Ticket','Project','WishList'])
-    status = SelectField('Status', choices=['Open','Working','Waiting','Closed'])
+    body = TextAreaField('Body:', [validators.required(), validators.length(max=1280)])
+    priority = SelectField('Priority', choices=[('High','High'),('Medium','Medium'),('Low','Low')])
+    category = SelectField('Category', choices=[('Ticket','Ticket'),('Project','Project'),('WishList','WishList')])
+    status = SelectField('Status', choices=[('Open','Open'),('Working','Working'),('Waiting','Waiting'),('Closed','Closed')])
+    submitTicket = SubmitField('submit')
 
 def ticket_options(option):
     if option == 'all':
@@ -38,17 +40,38 @@ def ticket_options(option):
 @app.route("/", methods=['GET','POST'])
 def home():
     tickets = db.query_tickets_all()
+    ticketForm = TicketForm(request.form)
 
-    return render_template("index.html", tickets=tickets)
+    if ticketForm.submitTicket.data and ticketForm.validate():
+        subject = ticketForm.subject.data
+        body = ticketForm.body.data
+        priority = ticketForm.priority.data
+        category = ticketForm.category.data
+        status = ticketForm.status.data
+        db.insert_ticket(subject,body,priority, created_by, status, category)
+        result = db.query_ticket_subject(subject)
+        return redirect(url_for('ticket', option=option, id=result.id))
+
+    return render_template("index.html", tickets=tickets, ticketForm=ticketForm)
 
 @app.route("/ticket/<option>", methods=['GET','POST'])
 def tickets(option):
     tickets = ticket_options(option)
-    
-    if request.method == 'POST':
-        pass
+    ticketForm = TicketForm(request.form)
 
-    return render_template("tickets.html", option=option, tickets=tickets)
+    if ticketForm.submitTicket.data and ticketForm.validate():
+        subject = ticketForm.subject.data
+        body = ticketForm.body.data
+        priority = ticketForm.priority.data
+        category = ticketForm.category.data
+        status = ticketForm.status.data
+        db.insert_ticket(subject,body,priority, created_by, status, category)
+        result = db.query_ticket_subject(subject)
+        return redirect(url_for('ticket', option=option, id=result.id))
+    
+
+
+    return render_template("tickets.html", option=option, tickets=tickets, ticketForm=ticketForm)
 
 
 @app.route("/ticket/<option>/<id>", methods=['GET','POST'])
@@ -56,21 +79,38 @@ def ticket(option, id):
     tickets = ticket_options(option)
     ticket = db.query_ticket(id)
     comments = db.query_comments(id)
-    form = CommentForm(request.form)
+    commentForm = CommentForm(request.form)
+    ticketForm = TicketForm(request.form)
+    ticketUpdateForm = TicketForm(request.form)
 
-    if request.method == 'POST':
-        comment = request.form['comment']
-        db.insert_comment(id, 'test.user', comment)
-        return redirect(url_for('ticket', id=id))
+    if ticketForm.submitTicket.data and ticketForm.validate():
+        subject = ticketForm.subject.data
+        body = ticketForm.body.data
+        priority = ticketForm.priority.data
+        category = ticketForm.category.data
+        status = ticketForm.status.data
+        db.insert_ticket(subject,body,priority, created_by, status, category)
+        result = db.query_ticket_subject(subject)
+        return redirect(url_for('ticket', option=option, id=result.id))
+
+    if ticketUpdateForm.submitTicket.data and ticketUpdateForm.validate():
+        subject = ticketUpdateForm.subject.data
+        body = ticketUpdateForm.body.data
+        priority = ticketUpdateForm.priority.data
+        category = ticketUpdateForm.category.data
+        status = ticketUpdateForm.status.data
+        db.update_ticket(subject,body,priority, created_by, status, category)
+        return redirect(url_for('ticket', option=option, id=id))
     
-    if form.validate(): 
-        flash('Comment submitted')
-    else:
-        flash("Failed")
+    if commentForm.submitComment.data and commentForm.validate():
+        comment = commentForm.comment.data
+        db.insert_comment(id, 'test.user', comment)
+        return redirect(url_for('ticket', option=option, id=id))
+ 
 
-    return render_template("ticket.html", option=option, tickets=tickets, ticket=ticket, comments=comments, form=form)
+    return render_template("ticket.html", option=option, tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketForm=ticketForm)
 
-@app.route("/api/ticket/<id>/<query>")
+@app.route("/api/<query>")
 def api(id, query):
     allowed = ['ticket','status','subject','body','action','priority']
     actions = ['update_ticket','insert_ticket']
@@ -80,7 +120,8 @@ def api(id, query):
     requestList = list(requestData)
     #Process request
     if len(set(requestList).difference(allowed)) > 0:
-        result = {"result": 1, "description": "failure", "message": str(set(requestList).difference(allowed)) + f"\nProvided:{requestList}\nAllowed:{allowed}"}
+        result = {"result": 1, "description": "failure", "message": "failed"}
+        #(str(set(requestList).difference(allowed)) + f'\nProvided:{requestList}\nAllowed:{allowed}')
     else:
         if requestData.get('action') == 'update_ticket':
             query = db.query_ticket(requestData['ticket'])
@@ -100,6 +141,7 @@ def api(id, query):
     result = json.dumps(result)
     return result
 
+#action=update_ticket&ticket=1&subject='API test'&body='This is a test of the API'
 
 # export environment='dev' for no ssl or debugging
 if __name__ == "__main__":

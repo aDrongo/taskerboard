@@ -160,6 +160,11 @@ def query_ticket(id):
     result = db.session.query(Tickets).filter(Tickets.id == id).first()
     return result
 
+#Query Ticket
+def query_ticket_subject(subject):
+    result = db.session.query(Tickets).filter(Tickets.subject == subject).order_by(Tickets.created_at.desc()).first()
+    return result
+
 #Query Tickets
 def query_tickets_all():
     result = db.session.query(Tickets).all()

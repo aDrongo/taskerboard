@@ -18,6 +18,13 @@
             ev.target.appendChild(document.getElementById(data));
             ev.preventDefault();
         }
+        function showDiv() {
+          if (document.getElementById('expand').style.display  === "block") {
+            document.getElementById('expand').style.display  = "none";
+          } else {
+            document.getElementById('expand').style.display  = "block";
+          }
+        }
     </script>
   </head>
   <body>

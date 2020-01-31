@@ -1,21 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
 <div style='padding: 1% 20%'>
-<table>
-    <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
-    {% for ticket in tickets %}
-    <tr><td><a href="/ticket/{{ option }}/{{ ticket.id }}">{{ ticket.id }}</a></td>
-        <td><a href="/ticket/{{ option }}/{{ ticket.id }}">{{ ticket.subject }}</a></td>
-        <td>{{ ticket.status.name }}</td>
-        <td>{{ ticket.priority.name }}</td>
-        <td>{{ ticket.updated_at }}</td>
-        <td>{{ ticket.created_by }}</td>
-        <td>{{ ticket.assigned }}</td>
-        <td>{{ ticket.due_by }}</td></tr>
-    {% endfor %}
-</table>
-
-
+    <small><button onclick="showDiv()" class='expand-btn' style="font-size: 8pt">Create Ticket</button></small>
+    <div id='expand' class='expand-content'>
+        <form action="" method="post">
+            <div>
+                Subject: {{ ticketForm.subject(class_='transparent') }}{{ ticketForm.priorty }} Status:{{ ticketForm.status }} Category:{{ ticketForm.category }}<br>
+                Body: {{ ticketForm.body(class_="fresh-frm") }}
+            </div>
+            <div style='margin: 10px'>
+                {{ ticketForm.submitTicket }}
+            </div>
+        </form>
+    </div>    
+    <table>
+        <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
+        {% for ticket in tickets %}
+        <tr><td><a href="/ticket/{{ option }}/{{ ticket.id }}">{{ ticket.id }}</a></td>
+            <td><a href="/ticket/{{ option }}/{{ ticket.id }}">{{ ticket.subject }}</a></td>
+            <td>{{ ticket.status.name }}</td>
+            <td>{{ ticket.priority.name }}</td>
+            <td>{{ ticket.updated_at }}</td>
+            <td>{{ ticket.created_by }}</td>
+            <td>{{ ticket.assigned }}</td>
+            <td>{{ ticket.due_by }}</td></tr>
+        {% endfor %}
+    </table>
 </div>
 
 {% endblock %}
