@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div style='padding: 1% 20%'>
-<table style='padding:  1%'>
+<table>
     <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
     {% for ticket in tickets %}
     <tr><td><a href="/ticket/{{ option }}/{{ ticket.id }}">{{ ticket.id }}</a></td>

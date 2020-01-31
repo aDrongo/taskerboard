@@ -1,9 +1,11 @@
 import os
 import time
+import json
 from flask import Flask, render_template, Response, redirect, url_for, request, flash
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField
 from datetime import datetime
 import modules.database as db
+from modules.assorted import convertRequest
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
@@ -68,6 +70,35 @@ def ticket(option, id):
 
     return render_template("ticket.html", option=option, tickets=tickets, ticket=ticket, comments=comments, form=form)
 
+@app.route("/api/ticket/<id>/<query>")
+def api(id, query):
+    allowed = ['ticket','status','subject','body','action','priority']
+    actions = ['update_ticket','insert_ticket']
+    #Split data
+    requestData = convertRequest(query)
+    #Get List of Keys
+    requestList = list(requestData)
+    #Process request
+    if len(set(requestList).difference(allowed)) > 0:
+        result = {"result": 1, "description": "failure", "message": str(set(requestList).difference(allowed)) + f"\nProvided:{requestList}\nAllowed:{allowed}"}
+    else:
+        if requestData.get('action') == 'update_ticket':
+            query = db.query_ticket(requestData['ticket'])
+            # TODO make optional
+            result = db.update_ticket(
+                requestData['ticket'],
+                query.status,
+                requestData['subject'],
+                requestData['body'],
+                query.priority,
+                query.created_by,
+                query.assigned,
+                query.category,
+                query.due_by)
+        else: 
+            result = {"result": 1, "description": "failure", "message": 'Messed up'}
+    result = json.dumps(result)
+    return result
 
 
 # export environment='dev' for no ssl or debugging
