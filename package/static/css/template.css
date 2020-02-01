@@ -53,22 +53,6 @@ p {
     font-size: 16px;
     word-spacing: 1px;
   }
-.up {
-  background-color: rgb(50, 150, 50);
-  color: rgb(50, 150, 50);
-}
-.down {
-  background-color: rgb(200, 50, 50);
-  color: rgb(200, 50, 50);
-}
-.dns {
-  background-color: rgb(200, 175, 25);
-  color: rgb(200, 175, 25);
-}
-.tablelink {
-  height: 95%;
-  width: 95%;
-}
 nav {
   font-size: 18px;
   background-color: #565557;
@@ -95,49 +79,27 @@ nav {
 }
 .fresh-btn:hover {
   background: 
-  #70a54b;
+  #585759;
 }
 .fresh-btn {
   display: inline-block;
-  margin-top: 20px;
-  color: #000;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 12px;
-  font-family: Montserrat,sans-serif;
-  font-display: auto;
   text-align: center;
-  font-weight: 400;
-  letter-spacing: .03em;
-  line-height: 1em;
-  letter-spacing: .5px;
   text-transform: uppercase;
-  color: #2d2d2d;
+  color: #D9D8D6;
   padding: 10px 20px;
-  background: #78ba4b;
+  background: #565557;
   box-shadow: 0 4px 4px rgba(0,0,0,.06);
   box-sizing: border-box;
-  cursor: pointer;
-  -webkit-transition: background .3s ease;
-  transition: background .3s ease;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 .fresh-frm{
-    width: 100%;
-    height: 8em;
-    padding: 10px;
-    margin: 20px;
-    background: transparent;
-    color: #2d2d2d;
-    font-weight: 500;
-    overflow: visible;
-    font-family: inherit;
-    font-size: 100%;
-    line-height: 1.15;
-    margin: 0;
-    box-sizing: border-box;
-    box-shadow: 0 2px 2px #000;
+  width: 96%;
+  height: 8em;
+  padding: 10px;
+  margin: 20px 2%;
+  background: transparent;
+  color: #2d2d2d;
+  box-sizing: border-box;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.6);;
 }
 .dropdown-content {
   display: none;
@@ -167,16 +129,12 @@ nav {
   padding: 10px 16px;
   text-decoration: none;
 }
-
-
 li.dropdown {
   display: inline-block;
 }
-
 .expand-content {
   display: none;
 }
-
 .expand-btn {
   text-align: center;
   padding: 2px 4px;
@@ -192,6 +150,12 @@ li.dropdown {
   float: left;
   text-align: center;
 }
+.submit-frm {
+  color: #2d2d2d;
+  box-sizing: border-box;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.6);;
+  background: transparent;
+}
 
 .rcorners {
   border-radius: 10px;
@@ -201,4 +165,8 @@ li.dropdown {
   width: 70%;
   height: 15%; 
   justify-content: center;
+}
+
+.selected {
+  background-color: grey;
 }

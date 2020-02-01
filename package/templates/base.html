@@ -1,31 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8" http-equiv="refresh" content="300" >
+    <meta charset="utf-8">
     <title>LDAP Device Surveyor</title>
     <link rel="stylesheet" href="{{ url_for('static',    filename='css/template.css') }}">
-    <script>
-        function allowDrop(ev) {
-            ev.preventDefault();
-        }
-        
-        function drag(ev) {
-            ev.dataTransfer.setData("Text", ev.target.id);
-        }
-        
-        function drop(ev) {
-            var data = ev.dataTransfer.getData("Text");
-            ev.target.appendChild(document.getElementById(data));
-            ev.preventDefault();
-        }
-        function showDiv() {
-          if (document.getElementById('expand').style.display  === "block") {
-            document.getElementById('expand').style.display  = "none";
-          } else {
-            document.getElementById('expand').style.display  = "block";
-          }
-        }
-    </script>
   </head>
   <body>
     <nav>
@@ -48,5 +26,7 @@
       </ul>
     </nav>
     {% block content %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
 </html>

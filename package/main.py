@@ -16,8 +16,8 @@ db.insert_ticket('test ticket', 'this is a test', 2,'tester')
 db.insert_ticket('test ticket2', 'this is a test', 2,'tester')
 db.insert_ticket('test ticket3', 'this is a test', 2,'tester')
 
-#update_ticket(1, False,'tested','this test is complete','tester','')
-
+#db.update_ticket(1, 1,'tested','this test is complete', 1, 'tester')
+#db.update_ticket(7, 1, "1415151", "15", 2, "test.user", None, "Ticket", None)
 db.insert_comment(1,'ben.gardner','this is the first test comment')
 db.insert_comment(1,'ben.gardner','this is a second test comment')
 db.insert_comment(2,'ben.gardner','this is another test comment')

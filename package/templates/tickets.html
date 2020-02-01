@@ -2,17 +2,6 @@
 {% block content %}
 <div style='padding: 1% 20%'>
     <small><button onclick="showDiv()" class='expand-btn' style="font-size: 8pt">Create Ticket</button></small>
-    <div id='expand' class='expand-content'>
-        <form action="" method="post">
-            <div>
-                Subject: {{ ticketForm.subject(class_='transparent') }}{{ ticketForm.priorty }} Status:{{ ticketForm.status }} Category:{{ ticketForm.category }}<br>
-                Body: {{ ticketForm.body(class_="fresh-frm") }}
-            </div>
-            <div style='margin: 10px'>
-                {{ ticketForm.submitTicket }}
-            </div>
-        </form>
-    </div>    
     <table>
         <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
         {% for ticket in tickets %}
@@ -26,6 +15,17 @@
             <td>{{ ticket.due_by }}</td></tr>
         {% endfor %}
     </table>
+    <div id='expand' class='expand-content'>
+        <form action="" method="post">
+            <div>
+                Subject: {{ ticketForm.subject(class_='submit-frm') }}{{ ticketForm.priorty }} Status:{{ ticketForm.status }} Category:{{ ticketForm.category }}<br>
+                Body: {{ ticketForm.body(class_="fresh-frm") }}
+            </div>
+            <div style='margin: 10px'>
+                {{ ticketForm.submitTicket }}
+            </div>
+        </form>
+    </div>    
 </div>
 
 {% endblock %}
