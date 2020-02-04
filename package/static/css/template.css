@@ -146,9 +146,12 @@ li.dropdown {
   background: transparent;
 }
 .col-4 {
-  width: 25%;
+  height: 50em;
+  width: 15em;
   float: left;
   text-align: center;
+  display: flex;
+  flex-flow: column;
 }
 .submit-frm {
   color: #2d2d2d;

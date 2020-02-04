@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <div style='padding: 1% 20%'>
-    <button onclick="showDiv()" class='expand-btn' style="font-size: 8pt">Create Ticket</button> <button onclick="showDiv1()" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
+    <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button> <button onclick="showDivUpdate()" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
+    {% if ticket %}
     <div style='height: 20%; width: 100%;'>
+    {% else %}
+    <div style='height: 80%; width: 100%;'>
+    {% endif %}
         <table>
             <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
             {% for tick in tickets %}
@@ -14,8 +18,8 @@
             {% endfor %}
         </table>
     </div> 
-    <div id='expand' class='expand-content'>
-        <form id='1' action="" method="post">
+    <div id='expandCreate' class='expand-content'>
+        <form id='exp1' action="" method="post">
             <div>
                 Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Category:{{ ticketInsertForm.category }}<br>
                 Body: {{ ticketInsertForm.body(class_="fresh-frm") }}
@@ -25,8 +29,9 @@
             </div>
         </form>
     </div>
-    <div id='expand1' class='expand-content'>
-        <form id='2' action="" method="post">
+    {% if ticket %}
+    <div id='expandUpdate' class='expand-content'>
+        <form id='exp2' action="" method="post">
             <div>
                 Subject: {{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
                  Priority:{{ ticketUpdateForm.priority(Option='Low') }} 
@@ -39,7 +44,6 @@
             </div>
         </form>
     </div>
-
     <div style='height: 70%; width: 100%; padding: 5% 0;'>
         <h3>Message</h3>
         <div style='padding: 1%;'>
@@ -61,6 +65,7 @@
             </form>
         </div>
     </div>
+    {% endif %}
 </div>
 
 {% endblock %}

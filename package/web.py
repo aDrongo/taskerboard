@@ -48,9 +48,9 @@ def ticket_options(option):
 @app.route("/", methods=['GET','POST'])
 def home():
     tickets = db.query_tickets_all()
-    ticketInsertForm = ticketInsertForm(request.form)
+    ticketInsertForm = TicketInsertForm(request.form)
 
-    if ticketInsertForm.submitTicket.data and ticketInsertForm.validate():
+    if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
         subject = ticketInsertForm.subject.data
         body = ticketInsertForm.body.data
         priority = ticketInsertForm.priority.data
@@ -69,9 +69,9 @@ def test():
 @app.route("/ticket/<option>", methods=['GET','POST'])
 def tickets(option):
     tickets = ticket_options(option)
-    ticketInsertForm = ticketInsertForm(request.form)
+    ticketInsertForm = TicketInsertForm(request.form)
 
-    if ticketInsertForm.submitTicket.data and ticketInsertForm.validate():
+    if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
         subject = ticketInsertForm.subject.data
         body = ticketInsertForm.body.data
         priority = ticketInsertForm.priority.data
@@ -80,10 +80,8 @@ def tickets(option):
         db.insert_ticket(subject,body,priority, created_by, status, category)
         result = db.query_ticket_subject(subject)
         return redirect(url_for('ticket', option=option, id=result.id))
-    
 
-
-    return render_template("tickets.html", option=option, tickets=tickets, ticketInsertForm=ticketInsertForm)
+    return render_template("ticket.html", option=option, tickets=tickets, ticketInsertForm=ticketInsertForm)
 
 
 @app.route("/ticket/<option>/<id>", methods=['GET','POST'])
@@ -95,7 +93,6 @@ def ticket(option, id):
     ticketInsertForm = TicketInsertForm(request.form)
     ticketUpdateForm = TicketUpdateForm(request.form)
     ticketUpdateForm.priority.default = 'Low'
-    print(ticketUpdateForm.priority.default)
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
         print('1')
@@ -130,7 +127,8 @@ def ticket(option, id):
     return render_template("ticket.html", id=int(id), option=option, tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketUpdateForm=ticketUpdateForm, ticketInsertForm=ticketInsertForm)
 
 @app.route("/api/<query>")
-def api(id, query):
+def api(query):
+    print('Query')
     allowed = ['ticket','status','subject','body','action','priority']
     actions = ['update_ticket','insert_ticket']
     #Split data
@@ -143,11 +141,14 @@ def api(id, query):
         #(str(set(requestList).difference(allowed)) + f'\nProvided:{requestList}\nAllowed:{allowed}')
     else:
         if requestData.get('action') == 'update_ticket':
+            print('update_ticket')
+            status = requestData['status']
+            status = db.Status[f'{status}'].value
             query = db.query_ticket(requestData['ticket'])
             # TODO make optional
             result = db.update_ticket(
                 requestData['ticket'],
-                query.status,
+                status,
                 requestData['subject'],
                 requestData['body'],
                 query.priority,
@@ -155,12 +156,20 @@ def api(id, query):
                 query.assigned,
                 query.category,
                 query.due_by)
+        elif requestData.get('action') == 'update_ticket_status':
+            print('update_ticket_status')
+            status = requestData['status']
+            status = db.Status[f'{status}'].value
+            result = db.update_ticket_status(
+                requestData['ticket'],
+                status
+            )
         else: 
             result = {"result": 1, "description": "failure", "message": 'Messed up'}
     result = json.dumps(result)
     return result
 
-#action=update_ticket&ticket=1&subject='API test'&body='This is a test of the API'
+#action=update_ticket&ticket=1&subject='API test'&body='This is a test of the API'&status=Working
 
 # export environment='dev' for no ssl or debugging
 if __name__ == "__main__":

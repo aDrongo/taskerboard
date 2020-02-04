@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 <div style='padding: 1% 5%'>
-    <small><button onclick="showDiv()" class='expand-btn' style="font-size: 8pt">Create Ticket</button></small>
-    <div id='expand' class='expand-content'>
+    <small><button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button></small>
+    <div id='expandCreate' class='expand-content'>
         <form action="" method="post">
             <div>
-                Subject: {{ ticketForm.subject(class_='transparent') }}{{ ticketForm.priorty }} Status:{{ ticketForm.status }} Category:{{ ticketForm.category }}<br>
-                Body: {{ ticketForm.body(class_="fresh-frm") }}
+                Subject: {{ ticketInsertForm.subject(class_='transparent') }}{{ ticketInsertForm.priorty }} Status:{{ ticketInsertForm.status }} Category:{{ ticketInsertForm.category }}<br>
+                Body: {{ ticketInsertForm.body(class_="fresh-frm") }}
             </div>
             <div style='margin: 10px'>
-                {{ ticketForm.submitTicket }}
+                {{ ticketInsertForm.submitTicket }}
             </div>
         </form>
     </div>
@@ -29,35 +29,35 @@
         </table>
     </div>
     <div style='height: 70%'>
-        <div id='drop1' ondrop="drop(event)" ondragover="allowDrop(event)" class='col-4'>
+        <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 1 %}
-                <p id="drag1" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
                 {% endif %}
             {% endfor %}
         </div>
-        <div id='drop2' ondrop="drop(event)" ondragover="allowDrop(event)" class='col-4'>
+        <div id='dropWorking' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Working</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 2 %}
-                <p id="drag2" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
                 {% endif %}
             {% endfor %}
         </div>
-        <div id='drop3' ondrop="drop(event)" ondragover="allowDrop(event)" class='col-4'>
+        <div id='dropWaiting' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Waiting</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 3 %}
-                <p id="drag3" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
                 {% endif %}
             {% endfor %} 
         </div>
-        <div id='drop4' ondrop="drop(event)" ondragover="allowDrop(event)" class='col-4'>
+        <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Closed</h3>
             {% for ticket in tickets %}
                 {% if ticket.status.value == 4 %}
-                <p id="drag4" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
                 {% endif %}
             {% endfor %}
         </div>
