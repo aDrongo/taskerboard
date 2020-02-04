@@ -33,7 +33,7 @@
             <h3>Open</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 1 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/ticket/all/{{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %}
         </div>
@@ -41,7 +41,7 @@
             <h3>Working</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 2 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/ticket/all/{{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %}
         </div>
@@ -49,7 +49,7 @@
             <h3>Waiting</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 3 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/ticket/all/{{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %} 
         </div>
@@ -57,7 +57,7 @@
             <h3>Closed</h3>
             {% for ticket in tickets %}
                 {% if ticket.status.value == 4 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners'>{{ ticket.subject }}</p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/ticket/all/{{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %}
         </div>

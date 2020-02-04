@@ -170,6 +170,16 @@ li.dropdown {
   justify-content: center;
 }
 
+.rcorners.High {
+  box-shadow: 0 4px 4px rgba(255,0,0,0.6);;
+}
+.rcorners.Medium {
+  box-shadow: 0 4px 4px rgba(255,127,0,0.6);;
+}
+.rcorners.Low {
+  box-shadow: 0 4px 4px rgba(255,255,0,0.6);;
+}
+
 .selected {
   background-color: grey;
 }
