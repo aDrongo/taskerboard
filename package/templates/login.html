@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<form id='exp1' action="" method="post">
-    <div>
-        Subject: {{ loginForm.loginemail }}<br>
-        Body: {{ loginForm.loginpassword }}
-    </div>
-    <div style='margin: 10px'>
-        {{ loginForm.submit }}
-    </div>
-</form>
-
+<div style='padding: 2%'>
+    <form id='exp1' action="" method="post">
+        <div>
+            Username: {{ loginForm.username }}<br><br>
+            Password: {{ loginForm.password }}<br><br>
+            Remember: {{ loginForm.remember_me }}
+        </div>
+        <div style='margin: 10px'>
+            {{ loginForm.submitLogin }}
+        </div>
+    </form>
+</div>
 
 {% endblock %}

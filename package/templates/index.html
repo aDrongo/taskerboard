@@ -15,12 +15,12 @@
                 </form>
             </div>
             <table>
-                <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
+                <tr><th style='width: 5%'>ID</th><th style='width: 45%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 7%'>Due By</th><th style='width: 7%'>Category</th></tr>
                 {% for tick in tickets %}
                 {% if tick.id == id %}
-                <tr><td class='selected'><a href="/ticket/all/{{ tick.id }}">{{ tick.id }}</a></td><td class='selected'><a href="/ticket/all/{{ tick.id }}">{{ tick.subject }}</a></td class='selected'><td class='selected'>{{ tick.status.name }}</td><td class='selected'>{{ tick.priority.name }}</td><td class='selected'>{{ tick.updated_at[5:-3] }}</td><td class='selected'>{{ tick.created_by }}</td><td class='selected'>{{ tick.assigned }}</td><td class='selected'>{{ tick.due_by }}</td></tr>
+                <tr><td class='selected'><a href="/ticket/all/{{ tick.id }}">{{ tick.id }}</a></td><td class='selected'><a href="/ticket/all/{{ tick.id }}">{{ tick.subject }}</a></td class='selected'><td class='selected'>{{ tick.status.name }}</td><td class='selected'>{{ tick.priority.name }}</td><td class='selected'>{{ tick.updated_at[5:-3] }}</td><td class='selected'>{{ tick.created_by }}</td><td class='selected'>{{ tick.assigned }}</td><td class='selected'>{{ tick.due_by }}</td><td class='selected'>{{ tick.category }}</td></tr>
                 {% else %}
-                <tr><td><a href="/ticket/all/{{ tick.id }}">{{ tick.id }}</a></td><td><a href="/ticket/all/{{ tick.id }}">{{ tick.subject }}</a></td><td>{{ tick.status.name }}</td><td>{{ tick.priority.name }}</td><td>{{ tick.updated_at[5:-3] }}</td><td>{{ tick.created_by }}</td><td>{{ tick.assigned }}</td><td>{{ tick.due_by }}</td></tr>
+                <tr><td><a href="/ticket/all/{{ tick.id }}">{{ tick.id }}</a></td><td><a href="/ticket/all/{{ tick.id }}">{{ tick.subject }}</a></td><td>{{ tick.status.name }}</td><td>{{ tick.priority.name }}</td><td>{{ tick.updated_at[5:-3] }}</td><td>{{ tick.created_by }}</td><td>{{ tick.assigned }}</td><td>{{ tick.due_by }}</td><td>{{ tick.category }}</td></tr>
                 {% endif %}
                 {% endfor %}
             </table>

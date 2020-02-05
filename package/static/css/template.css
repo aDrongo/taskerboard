@@ -40,6 +40,12 @@ p {
   float: right;
   line-height: 35px;
 }
+.flashes {
+  font-weight: bold;
+  color: black;
+  float: center;
+  line-height: 35px;
+}
 .footer {
     background-color: #565557;
     width: 100%;

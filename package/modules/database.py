@@ -75,9 +75,13 @@ class Database():
 #Connect to DB
 db = Database('app.db')
 
-def insert_user(username, email):
+def insert_user(username, email, password):
     """Insert user"""
-    insert = User(username=f'{username}', email=f'{email}')
+    hash = hashlib.md5()
+    password = password.encode()
+    hash.update(password)
+    hash = hash.hexdigest()
+    insert = User(username=f'{username}', email=f'{email}', password_hash=f'{hash}')
     db.session.add(insert)
     try:
         db.session.commit()
@@ -111,9 +115,15 @@ def get_user(username):
     result = db.session.query(User).filter(User.username == f'{username}').first()
     return result
 
+def get_users():
+    result = db.session.query(User).all()
+    return result
+
 def set_password(username, password):
     hash = hashlib.md5()
-    hash = (hash.update(password.encode())).hexdigest
+    password = password.encode()
+    hash.update(password)
+    hash = hash.hexdigest()
     update = db.session.query(User).filter(User.username == username).update({'password_hash':hash})
     try:
         db.session.commit()
@@ -122,10 +132,21 @@ def set_password(username, password):
         db.session.rollback()
         return False
 
-def check_password(password):
+def check_password(username, password):
     hash = hashlib.md5()
+    password = password.encode()
+    hash.update(password)
+    hash = hash.hexdigest()
     password_hash = db.session.query(User).filter(User.username == f'{username}').first().password_hash
-    return (password_hash == (hash.update(password.encode())).hexdigest)
+    return (password_hash == hash)
+
+def check_password_id(id, password):
+    hash = hashlib.md5()
+    password = password.encode()
+    hash.update(password)
+    hash = hash.hexdigest()
+    password_hash = db.session.query(User).filter(User.id == int(id)).first().password_hash
+    return (password_hash == hash)
 
 def insert_ticket(subject,body,priority, created_by, status=1, category='ticket', due_by=None):
     """Insert Ticket"""

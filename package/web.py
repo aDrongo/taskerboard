@@ -1,12 +1,16 @@
 import os
 import time
 import json
-from flask_login import LoginManager, login_required, login_user
-from flask import Flask, render_template, Response, redirect, url_for, request, flash, abort
+import hashlib
+from datetime import datetime
+
+from flask_login import LoginManager, login_required, login_user, current_user, logout_user, UserMixin
+from flask import Flask, render_template, Response, redirect, url_for, request, flash, abort, session
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField, PasswordField
 from wtforms.fields.html5 import EmailField
-from datetime import datetime
-import modules.database as db
+
+import modules.database as Db
+import modules.forms as Forms
 from modules.assorted import convertRequest
 
 
@@ -16,186 +20,180 @@ app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+class LoginUser(UserMixin):
+    """User for Flask Session"""
+    import modules.database as Db
+    #is_authenticated(boolean)
+    #is_active(boolean)
+    #is_anonymous(boolean)
+    #get_id(unicode)
 
-class LoginForm(Form):
-    loginemail = EmailField('email', validators=[validators.DataRequired(), validators.Email()])
-    loginpassword = PasswordField('password', validators=[validators.DataRequired(message="Password field is required")])
-    submit = SubmitField('submit', [validators.DataRequired()])
+    def __init__(self, username):
+        self.auth = None
+        user = Db.get_user(username)
+        if user is not None:
+            print('1')
+            self.id = user.username
+            self.password = user.password_hash
+        else:
+            self.auth = False
+            return None
+    
+    def check_password(self, password):
+        hash = hashlib.md5()
+        password_enc = password.encode()
+        hash.update(password_enc)
+        hash = hash.hexdigest()
+        if hash == self.password:
+            return True
+        else:
+            return False
 
-class CommentForm(Form):
-    """WTForm for Comments"""
-    comment = TextAreaField('Comment:')
-    submitComment = SubmitField('submit')
+@login_manager.user_loader
+def load_user(id):
+    """Checks user for login_required"""
+    return LoginUser(id)
 
-class TicketInsertForm(Form):
-    """WTForm for Inserting a Ticket"""
-    subject = TextField('Subject:', [validators.required(), validators.length(max=140)])
-    body = TextAreaField('Body:', [validators.required(), validators.length(max=1280)])
-    priority = SelectField('Priority', choices=[('High','High'),('Medium','Medium'),('Low','Low')])
-    category = SelectField('Category', choices=[('ticket','Ticket'),('project','Project'),('wishList','WishList')])
-    status = SelectField('Status', choices=[('Open','Open'),('Working','Working'),('Waiting','Waiting'),('Closed','Closed')])
-    submitInsertTicket = SubmitField('submit')
-
-class TicketUpdateForm(Form):
-    """WTForm for Updating a Ticket"""
-    subject = TextField('Subject:', [validators.required(), validators.length(max=140)])
-    body = TextAreaField('Body:', [validators.required(), validators.length(max=1280)])
-    priority = SelectField('Priority', choices=[('High','High'),('Medium','Medium'),('Low','Low')])
-    category = SelectField('Category', choices=[('ticket','Ticket'),('project','Project'),('wishList','WishList')])
-    status = SelectField('Status', choices=[('Open','Open'),('Working','Working'),('Waiting','Waiting'),('Closed','Closed')])
-    submitUpdateTicket = SubmitField('submit')
-
-def ticket_insert_form(Form, db):
-    """Insert a Ticket from Form results"""
-    subject = Form.subject.data
-    body = Form.body.data
-    priority = db.Priority[f'{Form.priority.data}'].value
-    category = Form.category.data
-    status = db.Status[f'{Form.status.data}'].value
-    created_by = 'test.user'
-    db.insert_ticket(subject,body,priority, created_by, status, category)
-    result = db.query_ticket_subject(subject)
-    return result
-
-def ticket_update_form(Form, db, id):
-    """"Update a Ticket from Form results"""
-    subject = Form.subject.data
-    body = Form.body.data
-    priority = db.Priority[f'{Form.priority.data}'].value
-    category = Form.category.data
-    status = db.Status[f'{Form.status.data}'].value
-    assigned = None
-    due_by = None
-    created_by = 'test.user'
-    result = db.update_ticket(id, status, subject, body, priority, created_by, assigned, category, due_by)
-    return result
-
-def tickets_query(option=None):
-    """Return tickets query based on option"""
-    tickets = db.query_tickets(option,'ticket','updated_at')
-    return tickets
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    loginForm = LoginForm(request.form)
-    if loginForm.submit.data and loginForm.validate():
-        login_user(user)
+    if current_user.is_authenticated:
         flash('Logged in successfully.')
-        next = request.args.get('/board')
-        if not is_safe_url(next):
-            return abort(400)
-        return redirect(flask.url_for('home'))
-    return render_template('login.html', loginForm=loginForm)
+        return redirect(url_for('home'))
+    loginForm = Forms.LoginForm(request.form)
+    if loginForm.submitLogin.data and loginForm.validate():
+        user = LoginUser(loginForm.username.data)
+        print('---')
+        print(dir(user))
+        print('---')
+        if user.auth is False:
+            flash('Failed to Login, bad username')
+            return redirect(url_for('login'))
+        elif user.check_password(loginForm.password.data) is None:
+            flash('Failed to Login, bad password')
+            return redirect(url_for('login'))
+        else:
+            login_user(user, remember=loginForm.remember_me.data)
+            return redirect(url_for('home'))
+    return render_template('login.html', loginForm=loginForm, current_user=current_user)
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
+    flash('Logged Out')
     return redirect(url_for('login'))
 
 @app.route("/", methods=['GET','POST'])
+@login_required
 def home():
-    tickets = tickets_query()
-    projects = db.query_tickets(None,'project')
-    ticketInsertForm = TicketInsertForm(request.form)
+    print(current_user.id)
+    print(dir(current_user))
+    tickets = Db.query_tickets()
+    projects = Db.query_tickets(None,'project')
+    ticketInsertForm = Forms.TicketInsertForm(request.form)
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
         subject = ticketInsertForm.subject.data
         body = ticketInsertForm.body.data
-        priority = db.Priority[f'{ticketInsertForm.priority.data}'].value
+        priority = Db.Priority[f'{ticketInsertForm.priority.data}'].value
         category = ticketInsertForm.category.data
-        status = db.Status[f'{ticketInsertForm.status.data}'].value
+        status = Db.Status[f'{ticketInsertForm.status.data}'].value
         created_by = 'test.user'
-        db.insert_ticket(subject,body,priority, created_by, status, category)
-        result = db.query_ticket_subject(subject)
+        Db.insert_ticket(subject,body,priority, created_by, status, category)
+        result = Db.query_ticket_subject(subject)
         return redirect(url_for('board', id=result.id))
 
     
-    return render_template("index.html", tickets=tickets, ticketInsertForm=ticketInsertForm, projects=projects)
+    return render_template("index.html", tickets=tickets, ticketInsertForm=ticketInsertForm, projects=projects, current_user=current_user)
 
 @app.route("/test", methods=['GET','POST'])
+@login_required
 def test():
     return render_template('test.html')
 
-@login_required
 @app.route("/board", methods=['GET','POST'])
+@login_required
 def boards():
-    tickets = db.query_tickets(None,'project')
-    ticketInsertForm = TicketInsertForm(request.form)
+    tickets = Db.query_tickets(None,'project')
+    ticketInsertForm = Forms.TicketInsertForm(request.form)
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = ticket_insert_form(ticketInsertForm, db)
+        result = Forms.ticket_insert_form(ticketInsertForm, Db)
         return redirect(url_for('board', id=result.id))
 
-    return render_template("project.html", tickets=tickets, ticketInsertForm=ticketInsertForm)
+    return render_template("project.html", tickets=tickets, ticketInsertForm=ticketInsertForm, current_user=current_user)
 
 @app.route("/board/<id>", methods=['GET','POST'])
+@login_required
 def board(id):
-    tickets = db.query_tickets(None,'project')
-    ticket = db.query_ticket(id)
-    comments = db.query_comments(id,'created_at')
-    commentForm = CommentForm(request.form)
-    ticketInsertForm = TicketInsertForm(request.form)
-    ticketUpdateForm = TicketUpdateForm(request.form)
+    tickets = Db.query_tickets(None,'project')
+    ticket = Db.query_ticket(id)
+    comments = Db.query_comments(id,'created_at')
+    commentForm = Forms.CommentForm(request.form)
+    ticketInsertForm = Forms.TicketInsertForm(request.form)
+    ticketUpdateForm = Forms.TicketUpdateForm(request.form)
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = ticket_insert_form(ticketInsertForm, db)
+        result = Forms.ticket_insert_form(ticketInsertForm, Db)
         return redirect(url_for('board', id=result.id))
 
     if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
-        result = ticket_update_form(ticketUpdateForm, db, ticket)
+        result = Forms.ticket_update_form(ticketUpdateForm, Db, ticket)
         return redirect(url_for('board', id=id))
     
     if commentForm.submitComment.data and commentForm.validate():
         comment = commentForm.comment.data
-        db.insert_comment(id, 'test.user', comment)
+        Db.insert_comment(id, 'test.user', comment)
         return redirect(url_for('board', id=id))
 
-    return render_template("project.html", id=int(id), tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketUpdateForm=ticketUpdateForm, ticketInsertForm=ticketInsertForm)
+    return render_template("project.html", id=int(id), tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketUpdateForm=ticketUpdateForm, ticketInsertForm=ticketInsertForm, current_user=current_user)
 
 
 @app.route("/ticket/<option>", methods=['GET','POST'])
+@login_required
 def tickets(option):
     allowed = ['open','working','waiting','closed','all']
     if option not in allowed:
-        tickets = tickets_query()
+        tickets = Forms.tickets_query(Db)
     else:
-        tickets = tickets_query(option)
-    ticketInsertForm = TicketInsertForm(request.form)
+        tickets = Forms.tickets_query(Db, option)
+    ticketInsertForm = Forms.TicketInsertForm(request.form)
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = ticket_insert_form(ticketInsertForm, db)
+        result = Forms.ticket_insert_form(ticketInsertForm, Db)
         return redirect(url_for('ticket', option=option, id=result.id))
 
-    return render_template("ticket.html", option=option, tickets=tickets, ticketInsertForm=ticketInsertForm)
+    return render_template("ticket.html", option=option, tickets=tickets, ticketInsertForm=ticketInsertForm, current_user=current_user)
 
 
 @app.route("/ticket/<option>/<id>", methods=['GET','POST'])
+@login_required
 def ticket(option, id):
     allowed = ['open','working','waiting','closed','all']
     if option not in allowed:
-        tickets = tickets_query()
+        tickets = Forms.tickets_query(Db)
     else:
-        tickets = tickets_query(option)
-    ticket = db.query_ticket(id)
-    comments = db.query_comments(id,'created_at')
-    commentForm = CommentForm(request.form)
-    ticketInsertForm = TicketInsertForm(request.form)
-    ticketUpdateForm = TicketUpdateForm(request.form)
+        tickets = Forms.tickets_query(Db, option)
+    ticket = Db.query_ticket(id)
+    comments = Db.query_comments(id,'created_at')
+    commentForm = Forms.CommentForm(request.form)
+    ticketInsertForm = Forms.TicketInsertForm(request.form)
+    ticketUpdateForm = Forms.TicketUpdateForm(request.form)
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = ticket_insert_form(ticketInsertForm, db)
+        result = Forms.ticket_insert_form(ticketInsertForm, Db)
         return redirect(url_for('ticket', option=option, id=result.id))
 
     if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
-        result = ticket_update_form(ticketUpdateForm, db, id)
+        result = Forms.ticket_update_form(ticketUpdateForm, Db, id)
         return redirect(url_for('ticket', option=option, id=id))
     
     if commentForm.submitComment.data and commentForm.validate():
         comment = commentForm.comment.data
-        db.insert_comment(id, 'test.user', comment)
+        Db.insert_comment(id, 'test.user', comment)
         return redirect(url_for('ticket', option=option, id=id))
 
-    return render_template("ticket.html", id=int(id), option=option, tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketUpdateForm=ticketUpdateForm, ticketInsertForm=ticketInsertForm)
+    return render_template("ticket.html", id=int(id), option=option, tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketUpdateForm=ticketUpdateForm, ticketInsertForm=ticketInsertForm, current_user=current_user)
 
 @app.route("/api/<query>")
 def api(query):
@@ -214,10 +212,10 @@ def api(query):
         if requestData.get('action') == 'update_ticket':
             print('update_ticket')
             status = requestData['status']
-            status = db.Status[f'{status}'].value
-            query = db.query_ticket(requestData['ticket'])
+            status = Db.Status[f'{status}'].value
+            query = Db.query_ticket(requestData['ticket'])
             # TODO make optional
-            result = db.update_ticket(
+            result = Db.update_ticket(
                 requestData['ticket'],
                 status,
                 requestData['subject'],
@@ -230,8 +228,8 @@ def api(query):
         elif requestData.get('action') == 'update_ticket_status':
             print('update_ticket_status')
             status = requestData['status']
-            status = db.Status[f'{status}'].value
-            result = db.update_ticket_status(
+            status = Db.Status[f'{status}'].value
+            result = Db.update_ticket_status(
                 requestData['ticket'],
                 status
             )

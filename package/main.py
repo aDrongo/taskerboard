@@ -5,8 +5,9 @@ import modules.database as db
 
 #print(dir(db.session.query()))
 
-db.insert_user('ben.gardner','ben.gardner@nwmsrocks.com')
-db.insert_user('test.uuser','test@nwmsrocks.com')
+db.insert_user('ben.gardner','ben.gardner@nwmsrocks.com','1234')
+db.insert_user('test.uuser','test@nwmsrocks.com','4444')
+#print(db.check_password('ben.gardner','1244'))
 
 #update_user('ben.gardner', 'test.user', 'test@nwmsrocks.com')
 

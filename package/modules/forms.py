@@ -1,7 +1,12 @@
+from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField, PasswordField, BooleanField
+from wtforms.fields.html5 import EmailField
+
 class LoginForm(Form):
-    loginemail = EmailField('email', validators=[validators.DataRequired(), validators.Email()])
-    loginpassword = PasswordField('password', validators=[validators.DataRequired(message="Password field is required")])
-    submit = SubmitField('submit', [validators.DataRequired()])
+    username = TextField('username:', [validators.required(), validators.length(max=64)])
+    #email = EmailField('email', validators=[validators.DataRequired(), validators.Email()])
+    password = PasswordField('password', validators=[validators.DataRequired(message="Password field is required")])
+    remember_me = BooleanField('remember_me')
+    submitLogin = SubmitField('submit', [validators.DataRequired()])
 
 class CommentForm(Form):
     """WTForm for Comments"""
@@ -26,27 +31,32 @@ class TicketUpdateForm(Form):
     status = SelectField('Status', choices=[('Open','Open'),('Working','Working'),('Waiting','Waiting'),('Closed','Closed')])
     submitUpdateTicket = SubmitField('submit')
 
-def ticket_insert_form(Form, db):
+def ticket_insert_form(Form, Db):
     """Insert a Ticket from Form results"""
     subject = Form.subject.data
     body = Form.body.data
-    priority = db.Priority[f'{Form.priority.data}'].value
+    priority = Db.Priority[f'{Form.priority.data}'].value
     category = Form.category.data
-    status = db.Status[f'{Form.status.data}'].value
+    status = Db.Status[f'{Form.status.data}'].value
     created_by = 'test.user'
-    db.insert_ticket(subject,body,priority, created_by, status, category)
-    result = db.query_ticket_subject(subject)
+    Db.insert_ticket(subject,body,priority, created_by, status, category)
+    result = Db.query_ticket_subject(subject)
     return result
 
-def ticket_update_form(Form, db, id):
+def ticket_update_form(Form, Db, id):
     """"Update a Ticket from Form results"""
     subject = Form.subject.data
     body = Form.body.data
-    priority = db.Priority[f'{Form.priority.data}'].value
+    priority = Db.Priority[f'{Form.priority.data}'].value
     category = Form.category.data
-    status = db.Status[f'{Form.status.data}'].value
+    status = Db.Status[f'{Form.status.data}'].value
     assigned = None
     due_by = None
     created_by = 'test.user'
-    result = db.update_ticket(id, status, subject, body, priority, created_by, assigned, category, due_by)
+    result = Db.update_ticket(id, status, subject, body, priority, created_by, assigned, category, due_by)
     return result
+
+def tickets_query(Db, option=None):
+    """Return tickets query based on option"""
+    tickets = Db.query_tickets(option,'ticket','updated_at')
+    return tickets

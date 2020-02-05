@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div style='padding: 1% 1%; width: 99vw; height: 93vh'>
-    <div style='width: 60%; height: 75%; padding: 1% 1%; float: left'>
+    <div style='width: 60%; height: 100%; padding: 1% 1%; float: left'>
     <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button> <button onclick="showDivUpdate()" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
     <div id='expandCreate' class='expand-content'>
         <form id='exp1' action="" method="post">
@@ -64,7 +64,7 @@
     </div>
     </div>
     {% if ticket %}
-    <div style='height: 75%; width: 40%; padding: 1% 1%; float: left; overflow: auto;'>
+    <div style='height: 100%; width: 40%; padding: 1% 1%; float: left; overflow: auto;'>
         <h3>Content</h3>
         <div style='padding: 1%;'>
         <p style='background-color: lightgray; padding: 1%'>{{ ticket.body }}</p>

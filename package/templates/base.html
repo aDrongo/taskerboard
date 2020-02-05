@@ -14,11 +14,28 @@
         <li><a href="/board">Projects</a></li>
       </ul>
       <ul class='navicon'>
+        {% if current_user.is_authenticated %}
+        <li><a href="/logout">Logout</a></li>
+        {% else %}
+        <li><a href="/login">Login</a></li>
+        {% endif %}
         <li>Tasker</li>
       </ul>
     </nav>
+    <div style = 'display: grid'>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div style='display: block; margin: 5px;'>
+      <ul class=flashes>
+      {% for message in messages %}
+        <li class=flashes>{{ message }}</li>
+      {% endfor %}
+      </ul>
+      </div>
+    {% endif %}
+    {% endwith %}
     {% block content %}{% endblock %}
-
+    </div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
 </html>

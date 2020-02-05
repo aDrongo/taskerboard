@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div style='padding: 1% 1%; width: 100vw; height: 94vh'>
+<div style='padding: 1% 1%; width: 99vw; height: 93vh'>
     <div style='height: 98%; width: 850px; overflow: auto; margin: 1%; float: left;'>
         <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
@@ -35,7 +35,7 @@
             {% endfor %}
         </div>
     </div>
-    <div style='height: 98%; width: calc(96% - 800px); margin: 1% 1%; float: left; overflow: auto;'>
+    <div style='height: 98%; width: calc(96% - 850px); margin: 1% 1%; float: left; overflow: auto;'>
         <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
         {% if id %}
         <button onclick="showDivUpdate()" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
@@ -67,12 +67,10 @@
                 </div>
             </form>
         </div>
-        {% if ticket %}
         <table>
             <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
             <tr><td>{{ ticket.id }}</td><td>{{ ticket.subject }}</td><td>{{ ticket.status.name }}</td><td>{{ ticket.priority.name }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td><td>{{ ticket.due_by }}</td></tr>
         </table>
-        {% endif %}
         <h3>Content</h3>
         <div style='padding: 1%;'>
         <p style='background-color: lightgray; padding: 1%'>{{ ticket.body }}</p>
