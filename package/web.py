@@ -96,8 +96,8 @@ def logout():
 @app.route("/", methods=['GET','POST'])
 def home():
     tickets = tickets_query()
+    projects = db.query_tickets(None,'project')
     ticketInsertForm = TicketInsertForm(request.form)
-
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
         subject = ticketInsertForm.subject.data
         body = ticketInsertForm.body.data
@@ -110,7 +110,7 @@ def home():
         return redirect(url_for('board', id=result.id))
 
     
-    return render_template("index.html", tickets=tickets, ticketInsertForm=ticketInsertForm)
+    return render_template("index.html", tickets=tickets, ticketInsertForm=ticketInsertForm, projects=projects)
 
 @app.route("/test", methods=['GET','POST'])
 def test():

@@ -28,7 +28,7 @@
         <div style='height: 100%; width: 850px; overflow: auto; padding: 0 1%; float: left;'>
         <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
-            {% for ticket in tickets %}
+            {% for ticket in projects %}
             {% if ticket.status.value == 1 %}
                 <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
@@ -36,7 +36,7 @@
         </div>
         <div id='dropWorking' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Working</h3>
-            {% for ticket in tickets %}
+            {% for ticket in projects %}
             {% if ticket.status.value == 2 %}
                 <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
@@ -44,7 +44,7 @@
         </div>
         <div id='dropWaiting' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Waiting</h3>
-            {% for ticket in tickets %}
+            {% for ticket in projects %}
             {% if ticket.status.value == 3 %}
                 <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
@@ -52,7 +52,7 @@
         </div>
         <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Closed</h3>
-            {% for ticket in tickets %}
+            {% for ticket in projects %}
                 {% if ticket.status.value == 4 %}{% if loop.index < 5 %}
                 <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}{% endif %}
