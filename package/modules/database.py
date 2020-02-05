@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import enum
+import hashlib
 
 # For class to create table
 Base = declarative_base()
@@ -74,7 +75,6 @@ class Database():
 #Connect to DB
 db = Database('app.db')
 
-
 def insert_user(username, email):
     """Insert user"""
     insert = User(username=f'{username}', email=f'{email}')
@@ -107,6 +107,26 @@ def delete_user(username):
         db.session.rollback()
         return False
 
+def get_user(username):
+    result = db.session.query(User).filter(User.username == f'{username}').first()
+    return result
+
+def set_password(username, password):
+    hash = hashlib.md5()
+    hash = (hash.update(password.encode())).hexdigest
+    update = db.session.query(User).filter(User.username == username).update({'password_hash':hash})
+    try:
+        db.session.commit()
+        return True
+    except:
+        db.session.rollback()
+        return False
+
+def check_password(password):
+    hash = hashlib.md5()
+    password_hash = db.session.query(User).filter(User.username == f'{username}').first().password_hash
+    return (password_hash == (hash.update(password.encode())).hexdigest)
+
 def insert_ticket(subject,body,priority, created_by, status=1, category='ticket', due_by=None):
     """Insert Ticket"""
     insert = Tickets(status=Status(status), subject=f'{subject}', body=f'{body}', priority= Priority(priority), category=f'{category}', created_by=f'{created_by}', due_by=f'{due_by}')
@@ -118,7 +138,7 @@ def insert_ticket(subject,body,priority, created_by, status=1, category='ticket'
         db.session.rollback()
         return False
 
-def update_ticket(id, status, subject, body, priority, created_by, assigned=None, category='ticket', due_by=None):
+def update_ticket(id, status, subject, body, priority, created_by=None, assigned=None, category='ticket', due_by=None):
     """Update ticket"""
     time = str(datetime.utcnow())[:19]
     update = db.session.query(Tickets).filter(Tickets.id == id).update({
@@ -181,35 +201,44 @@ def query_ticket(id):
 
 def query_ticket_subject(subject):
     """Query tickets with subject, returns last created"""
-    result = db.session.query(Tickets).filter(Tickets.subject == subject).order_by(Tickets.created_at.desc()).first()
+    result = db.session.query(Tickets).filter(Tickets.subject == subject).order_by(Tickets.id.desc()).first()
     return result
 
-def query_tickets_all():
+def query_tickets(status=None,category=None,order=None):
     """Query all tickets"""
-    result = db.session.query(Tickets).all()
+    # get Order
+    if order == 'updated_at':
+        order = Tickets.updated_at.desc()
+    else:
+        order = Tickets.id.desc()
+    # get Status
+    if status == 'open':
+        status = Tickets.status == Status(1)
+    elif status == 'working':
+        status = Tickets.status == Status(2)
+    elif status == 'waiting':
+        status = Tickets.status == Status(3)
+    elif status == 'closed':
+        status = Tickets.status == Status(4)
+    else:
+        status = Tickets.id != 0
+    # get category
+    if category:
+        result = db.session.query(Tickets).filter(status).filter(Tickets.category == category).order_by(order).all()
+    else:
+        result = db.session.query(Tickets).filter(status).order_by(order).all()
     return result
 
-def query_tickets_open():
-    """Query all open tickets"""
-    result = db.session.query(Tickets).filter(Tickets.status == Status(1)).all()
-    return result
-
-def query_tickets_working():
-    """Query all Working tickets"""
-    result = db.session.query(Tickets).filter(Tickets.status == Status(2)).all()
-    return result
-
-def query_tickets_waiting():
-    """Query all Waiting tickets"""
-    result = db.session.query(Tickets).filter(Tickets.status == Status(3)).all()
-    return result
-
-def query_tickets_closed():
-    """Query all Closed tickets"""
-    result = db.session.query(Tickets).filter(Tickets.status == Status(4)).all()
-    return result
-
-def query_comments(ticket):
+def query_comments(ticket,order=None):
     """Query all comments for a ticket"""
-    result = db.session.query(Comments).filter(Comments.ticket == ticket).all()
+    if order == 'created_at':
+        order = Comments.created_at.desc()
+    else:
+        order = Comments.id.desc()
+    result = db.session.query(Comments).filter(Comments.ticket == ticket).order_by(order).all()
     return result
+
+def tickets_query(option=None):
+    """Return tickets query based on option"""
+    tickets = db.query_tickets(option,'ticket','updated_at')
+    return tickets

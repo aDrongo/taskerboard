@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<form id='exp1' action="" method="post">
+    <div>
+        Subject: {{ loginForm.loginemail }}<br>
+        Body: {{ loginForm.loginpassword }}
+    </div>
+    <div style='margin: 10px'>
+        {{ loginForm.submit }}
+    </div>
+</form>
+
+
+{% endblock %}

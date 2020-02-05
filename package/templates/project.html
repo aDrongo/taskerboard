@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<div style='padding: 1% 1%; width: 100vw; height: 94vh'>
+    <div style='height: 98%; width: 850px; overflow: auto; margin: 1%; float: left;'>
+        <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
+            <h3>Open</h3>
+            {% for ticket in tickets %}
+            {% if ticket.status.value == 1 %}
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div id='dropWorking' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
+            <h3>Working</h3>
+            {% for ticket in tickets %}
+            {% if ticket.status.value == 2 %}
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div id='dropWaiting' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
+            <h3>Waiting</h3>
+            {% for ticket in tickets %}
+            {% if ticket.status.value == 3 %}
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
+                {% endif %}
+            {% endfor %} 
+        </div>
+        <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
+            <h3>Closed</h3>
+            {% for ticket in tickets %}
+                {% if ticket.status.value == 4 %}{% if loop.index < 5 %}
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
+                {% endif %}{% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div style='height: 98%; width: calc(96% - 800px); margin: 1% 1%; float: left; overflow: auto;'>
+        <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
+        {% if id %}
+        <button onclick="showDivUpdate()" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
+        {% endif %}
+        <div id='expandCreate' class='expand-content'>
+            <form id='exp1' action="" method="post">
+                <div>
+                    Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Category:{{ ticketInsertForm.category }}<br>
+                    Body: {{ ticketInsertForm.body(class_="fresh-frm") }}
+                </div>
+                <div style='margin: 10px'>
+                    {{ ticketInsertForm.submitInsertTicket }}
+                </div>
+            </form>
+        </div>
+        {% if ticket %}
+        <div id='expandUpdate' class='expand-content'>
+            <form id='exp2' action="" method="post">
+                <div>
+                    Subject: {{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
+                     Priority:<select id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
+                     Status:<select id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
+                     Category:<select id="category" name="category">{% for category in ticketUpdateForm.category %}<option value="{{ category.data }}"{% if category.data == ticket.category %} selected="selected"{% endif %}>{{ category.data }}</option>{% endfor %}</select>
+                     <br>
+                    <textarea id="body" class="fresh-frm" name="body" required="">{{ ticket.body }}</textarea>
+                </div>
+                <div style='margin: 10px'>
+                    {{ ticketUpdateForm.submitUpdateTicket }}
+                </div>
+            </form>
+        </div>
+        {% if ticket %}
+        <table>
+            <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
+            <tr><td>{{ ticket.id }}</td><td>{{ ticket.subject }}</td><td>{{ ticket.status.name }}</td><td>{{ ticket.priority.name }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td><td>{{ ticket.due_by }}</td></tr>
+        </table>
+        {% endif %}
+        <h3>Content</h3>
+        <div style='padding: 1%;'>
+        <p style='background-color: lightgray; padding: 1%'>{{ ticket.body }}</p>
+        </div>
+        <br>
+        <h3>Comments</h3>
+        <table>
+            {% for comment in comments %}
+            <tr><td style='width: 100%; padding: 12px 0;'><p>{{ comment.body }}</p><br><p><small>{{ comment.created_by }} at {{ comment.created_at }}</small></p></td></tr>
+            {% endfor %}
+        </table>
+        <div style='width: 100%'>
+            <form action="" method="post">
+                <div>
+                    {{ commentForm.comment(class_="fresh-frm") }}</div>
+                <div>
+                    {{ commentForm.submitComment(class_="fresh-btn") }}</div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

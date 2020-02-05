@@ -55,16 +55,3 @@
     </script>
   </body>
 </html>
-
-
-xmlHttp.onreadystatechange = function() { 
-  if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-      callback(xmlHttp.responseText);
-}
-var xmlHttp = new XMLHttpRequest();
-xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-xmlHttp.send(null);
-var id = new String(data.replace("drag",""))
-var status = new String(ev.target.id.replace("drop",""))
-var theUrl = new String(`action=update_ticket_status&ticket=${id}&status=${status}`)
-console.log(theUrl)
