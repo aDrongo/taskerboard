@@ -6,8 +6,8 @@
     <div id='expandCreate' class='expand-content'>
         <form id='exp1' action="" method="post">
             <div>
-                Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Category:{{ ticketInsertForm.category }}<br>
-                Body: {{ ticketInsertForm.body(class_="fresh-frm") }}
+                Subject:&nbsp;{{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Category:{{ ticketInsertForm.category }}<br>
+                {{ ticketInsertForm.body(class_="fresh-frm") }}
             </div>
             <div style='margin: 10px'>
                 {{ ticketInsertForm.submitInsertTicket }}
@@ -18,10 +18,11 @@
     <div id='expandUpdate' class='expand-content'>
         <form id='exp2' action="" method="post">
             <div>
-                Subject: {{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
+                Subject:&nbsp;{{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
                 Priority:<select id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
                 Status:<select id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
                 Category:<select id="category" name="category">{% for category in ticketUpdateForm.category %}<option value="{{ category.data }}"{% if category.data == ticket.category.name %} selected="selected"{% endif %}>{{ category.data }}</option>{% endfor %}</select><br>
+                Created&nbsp;By:&nbsp;{{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
                 <textarea id="body" class="fresh-frm" name="body" required="">{{ ticket.body }}</textarea>
             </div>
             <div style='margin: 10px'>

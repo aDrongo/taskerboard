@@ -20,6 +20,7 @@ class TicketInsertForm(Form):
     priority = SelectField('Priority', choices=[('High','High'),('Medium','Medium'),('Low','Low')])
     category = SelectField('Category', choices=[('ticket','Ticket'),('project','Project'),('wishList','WishList')])
     status = SelectField('Status', choices=[('Open','Open'),('Working','Working'),('Waiting','Waiting'),('Closed','Closed')])
+    created_by = TextField('Created By:')
     submitInsertTicket = SubmitField('submit')
 
 class TicketUpdateForm(Form):
@@ -29,16 +30,17 @@ class TicketUpdateForm(Form):
     priority = SelectField('Priority', choices=[('High','High'),('Medium','Medium'),('Low','Low')])
     category = SelectField('Category', choices=[('ticket','Ticket'),('project','Project'),('wishList','WishList')])
     status = SelectField('Status', choices=[('Open','Open'),('Working','Working'),('Waiting','Waiting'),('Closed','Closed')])
+    created_by = TextField('Created By:', [validators.required(), validators.length(max=140)])
     submitUpdateTicket = SubmitField('submit')
 
-def ticket_insert_form(Form, Db):
+def ticket_insert_form(Form, Db, user=None):
     """Insert a Ticket from Form results"""
     subject = Form.subject.data
     body = Form.body.data
     priority = Db.Priority[f'{Form.priority.data}'].value
     category = Form.category.data
     status = Db.Status[f'{Form.status.data}'].value
-    created_by = 'test.user'
+    created_by = user
     Db.insert_ticket(subject,body,priority, created_by, status, category)
     result = Db.query_ticket_subject(subject)
     return result
@@ -52,7 +54,7 @@ def ticket_update_form(Form, Db, id):
     status = Db.Status[f'{Form.status.data}'].value
     assigned = None
     due_by = None
-    created_by = 'test.user'
+    created_by = Form.created_by.data
     result = Db.update_ticket(id, status, subject, body, priority, created_by, assigned, category, due_by)
     return result
 

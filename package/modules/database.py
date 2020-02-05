@@ -46,7 +46,7 @@ class Tickets(Base):
     updated_at = db.Column(db.String(19), index=True, default=str(datetime.utcnow())[:19])
     due_by = db.Column(db.String(19))
     created_by = db.Column(db.String(140))
-    assigned = db.Column(db.Integer, db.ForeignKey('users.id'))
+    assigned = db.Column(db.String(128), db.ForeignKey('users.username'))
 
     def __repr__(self):
         return f'{self.body}'

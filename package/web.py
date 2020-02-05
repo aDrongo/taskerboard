@@ -23,16 +23,17 @@ login_manager.init_app(app)
 class LoginUser(UserMixin):
     """User for Flask Session"""
     import modules.database as Db
+    import hashlib
     #is_authenticated(boolean)
     #is_active(boolean)
     #is_anonymous(boolean)
     #get_id(unicode)
 
     def __init__(self, username):
+        """Retrieve user from Db"""
         self.auth = None
         user = Db.get_user(username)
         if user is not None:
-            print('1')
             self.id = user.username
             self.password = user.password_hash
         else:
@@ -40,6 +41,7 @@ class LoginUser(UserMixin):
             return None
     
     def check_password(self, password):
+        """Compare password hashes"""
         hash = hashlib.md5()
         password_enc = password.encode()
         hash.update(password_enc)
@@ -87,8 +89,6 @@ def logout():
 @app.route("/", methods=['GET','POST'])
 @login_required
 def home():
-    print(current_user.id)
-    print(dir(current_user))
     tickets = Db.query_tickets()
     projects = Db.query_tickets(None,'project')
     ticketInsertForm = Forms.TicketInsertForm(request.form)
@@ -98,11 +98,10 @@ def home():
         priority = Db.Priority[f'{ticketInsertForm.priority.data}'].value
         category = ticketInsertForm.category.data
         status = Db.Status[f'{ticketInsertForm.status.data}'].value
-        created_by = 'test.user'
+        created_by = str(current_user.id)
         Db.insert_ticket(subject,body,priority, created_by, status, category)
         result = Db.query_ticket_subject(subject)
         return redirect(url_for('board', id=result.id))
-
     
     return render_template("index.html", tickets=tickets, ticketInsertForm=ticketInsertForm, projects=projects, current_user=current_user)
 
@@ -116,7 +115,6 @@ def test():
 def boards():
     tickets = Db.query_tickets(None,'project')
     ticketInsertForm = Forms.TicketInsertForm(request.form)
-
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
         result = Forms.ticket_insert_form(ticketInsertForm, Db)
         return redirect(url_for('board', id=result.id))
@@ -134,7 +132,7 @@ def board(id):
     ticketUpdateForm = Forms.TicketUpdateForm(request.form)
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = Forms.ticket_insert_form(ticketInsertForm, Db)
+        result = Forms.ticket_insert_form(ticketInsertForm, Db, current_user.id)
         return redirect(url_for('board', id=result.id))
 
     if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
@@ -160,7 +158,7 @@ def tickets(option):
     ticketInsertForm = Forms.TicketInsertForm(request.form)
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = Forms.ticket_insert_form(ticketInsertForm, Db)
+        result = Forms.ticket_insert_form(ticketInsertForm, Db, current_user.id)
         return redirect(url_for('ticket', option=option, id=result.id))
 
     return render_template("ticket.html", option=option, tickets=tickets, ticketInsertForm=ticketInsertForm, current_user=current_user)
@@ -181,7 +179,7 @@ def ticket(option, id):
     ticketUpdateForm = Forms.TicketUpdateForm(request.form)
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = Forms.ticket_insert_form(ticketInsertForm, Db)
+        result = Forms.ticket_insert_form(ticketInsertForm, Db, current_user.id)
         return redirect(url_for('ticket', option=option, id=result.id))
 
     if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
@@ -190,7 +188,7 @@ def ticket(option, id):
     
     if commentForm.submitComment.data and commentForm.validate():
         comment = commentForm.comment.data
-        Db.insert_comment(id, 'test.user', comment)
+        Db.insert_comment(id, current_user.id, comment)
         return redirect(url_for('ticket', option=option, id=id))
 
     return render_template("ticket.html", id=int(id), option=option, tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketUpdateForm=ticketUpdateForm, ticketInsertForm=ticketInsertForm, current_user=current_user)
