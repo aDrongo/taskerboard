@@ -377,6 +377,8 @@ def query_tickets(id=None, status=None,tags=None,assigned=None,order=None):
     """Query all tickets"""
     # Base Query
     query = db.session.query(Tickets)
+    if id:
+        return query.filter(Tickets.id == id).first()
     # get Order
     if order == 'updated_at':
         order = Tickets.updated_at.desc()
@@ -400,7 +402,7 @@ def query_tickets(id=None, status=None,tags=None,assigned=None,order=None):
             pass
     # Add Assigned filter
     if assigned:
-        user = db.session.query(User).filter(User.username.contains(username)).first()
+        user = db.session.query(User).filter(User.username.contains(assigned)).first()
         if user:
             assigned = Tickets.assigned.contains(user)
             query = query.filter(assigned)

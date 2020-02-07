@@ -14,13 +14,33 @@
                     </div>
                 </form>
             </div>
+            <li class='dropdown'>
+                <button class='dropbtn'>Filter</button>
+                <div class='dropdown-content'>
+                  <a href="/{{ filter }}">All</a>
+                  <a href="/{{ filter + '&status=Open' }}">Open</a>
+                  <a href="/{{ filter + '&status=Working' }}">Working</a>
+                  <a href="/{{ filter + '&status=Waiting' }}">Waiting</a>
+                  <a href="/{{ filter + '&status=Closed' }}">Closed</a>
+                </div>
+            </li>
+            <li class='dropdown'>
+                <button class='dropbtn'>Sort</button>
+                <div class='dropdown-content'>
+                  <a href="/{{ order + '&order=id' }}">ID</a>
+                  <a href="/{{ order + '&order=updated_at' }}">Updated At</a>
+                  <a href="/{{ order + '&order=created_at' }}">Created At</a>
+                  <a href="/{{ order + '&order=assigned' }}">Assigned</a>
+                  <a href="/{{ order + '&order=priority' }}">Priority</a>
+                </div>
+            </li>
             <table>
                 <tr><th style='width: 5%'>ID</th><th style='width: 45%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 7%'>Due By</th><th style='width: 7%'>Tags</th></tr>
                 {% for tick in tickets %}
                 {% if tick.id == id %}
-                <tr><td class='selected'><a href="/ticket/all/{{ tick.id }}">{{ tick.id }}</a></td><td class='selected'><a href="/ticket/all/{{ tick.id }}">{{ tick.subject }}</a></td class='selected'><td class='selected'>{{ tick.status.name }}</td><td class='selected'>{{ tick.priority.name }}</td><td class='selected'>{{ tick.updated_at[5:-3] }}</td><td class='selected'>{{ tick.created_by }}</td><td class='selected'>{{ tick.assigned }}</td><td class='selected'>{{ tick.due_by }}</td><td class='selected'>{{ tick.tags }}</td></tr>
+                <tr><td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td><td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td class='selected'><td class='selected'>{{ tick.status.name }}</td><td class='selected'>{{ tick.priority.name }}</td><td class='selected'>{{ tick.updated_at[5:-3] }}</td><td class='selected'>{{ tick.created_by }}</td><td class='selected'>{{ tick.assigned }}</td><td class='selected'>{{ tick.due_by }}</td><td class='selected'>{{ tick.tags }}</td></tr>
                 {% else %}
-                <tr><td><a href="/ticket/all/{{ tick.id }}">{{ tick.id }}</a></td><td><a href="/ticket/all/{{ tick.id }}">{{ tick.subject }}</a></td><td>{{ tick.status.name }}</td><td>{{ tick.priority.name }}</td><td>{{ tick.updated_at[5:-3] }}</td><td>{{ tick.created_by }}</td><td>{{ tick.assigned }}</td><td>{{ tick.due_by }}</td><td>{{ tick.tags }}</td></tr>
+                <tr><td><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td><td><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td><td>{{ tick.status.name }}</td><td>{{ tick.priority.name }}</td><td>{{ tick.updated_at[5:-3] }}</td><td>{{ tick.created_by }}</td><td>{{ tick.assigned }}</td><td>{{ tick.due_by }}</td><td>{{ tick.tags }}</td></tr>
                 {% endif %}
                 {% endfor %}
             </table>
@@ -28,33 +48,33 @@
         <div style='height: 100%; width: 850px; overflow: auto; padding: 0 1%; float: left;'>
         <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
-            {% for ticket in projects %}
+            {% for ticket in boards %}
             {% if ticket.status.value == 1 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %}
         </div>
         <div id='dropWorking' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Working</h3>
-            {% for ticket in projects %}
+            {% for ticket in boards %}
             {% if ticket.status.value == 2 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %}
         </div>
         <div id='dropWaiting' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Waiting</h3>
-            {% for ticket in projects %}
+            {% for ticket in boards %}
             {% if ticket.status.value == 3 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %} 
         </div>
         <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Closed</h3>
-            {% for ticket in projects %}
+            {% for ticket in boards %}
                 {% if ticket.status.value == 4 %}{% if loop.index < 5 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/board/{{ ticket.id }}">{{ ticket.subject }}</a></p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}{% endif %}
             {% endfor %}
         </div>

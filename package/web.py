@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import json
 import hashlib
@@ -51,6 +52,7 @@ class LoginUser(UserMixin):
         else:
             return False
 
+
 @login_manager.user_loader
 def load_user(id):
     """Checks user for login_required"""
@@ -89,119 +91,84 @@ def logout():
 @app.route("/", methods=['GET','POST'])
 @login_required
 def home():
-    tickets = Db.query_tickets()
-    projects = Db.query_tickets()
-    ticketInsertForm = Forms.TicketInsertForm(request.form)
-    if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        subject = ticketInsertForm.subject.data
-        body = ticketInsertForm.body.data
-        priority = Db.Priority[f'{ticketInsertForm.priority.data}'].value
-        tags = ticketInsertForm.tags.data
-        status = Db.Status[f'{ticketInsertForm.status.data}'].value
-        created_by = str(current_user.id)
-        Db.insert_ticket(subject,body,priority, created_by, status, tags)
-        result = Db.query_ticket_subject(subject)
-        return redirect(url_for('index'))
+
+    return redirect('/display=index')
+
+@app.route("/<query>", methods=['GET','POST'])
+@login_required
+def home_query(query):
+    #Split data
+    requestData = convertRequest(query)
+    #Get List of Keys
+    requestList = list(requestData)
+
+    #Get Tickets based on Query
+    tickets = Db.query_tickets(
+            status=requestData.get('status', None),
+            tags=requestData.get('tags', None),
+            assigned=requestData.get('assigned', None),
+            order=requestData.get('order', None))
     
-    return render_template("index.html", tickets=tickets, ticketInsertForm=ticketInsertForm, projects=projects, current_user=current_user)
+    id = None
+    ticket = None
+    comments = None
+    commentForm = None
+    ticketUpdateForm = None
+    boards = None
 
-@app.route("/test", methods=['GET','POST'])
-@login_required
-def test():
-    return render_template('test.html')
+    if 'ticket' in requestList:
+        id = requestData['ticket']
+        ticket = Db.query_tickets(id=id)
 
-@app.route("/board", methods=['GET','POST'])
-@login_required
-def boards():
-    tickets = Db.query_tickets()
-    ticketInsertForm = Forms.TicketInsertForm(request.form)
-    if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = Forms.ticket_insert_form(ticketInsertForm, Db)
-        return redirect(url_for('board', id=result.id))
-
-    return render_template("project.html", tickets=tickets, ticketInsertForm=ticketInsertForm, current_user=current_user)
-
-@app.route("/board/<id>", methods=['GET','POST'])
-@login_required
-def board(id):
-    tickets = Db.query_tickets()
-    ticket = Db.query_ticket(id)
-    comments = Db.query_comments(id,'created_at')
-    commentForm = Forms.CommentForm(request.form)
-    ticketInsertForm = Forms.TicketInsertForm(request.form)
-    ticketUpdateForm = Forms.TicketUpdateForm(request.form)
-    seperator = ', '
-    tags= seperator.join([string.to_string() for string in ticket.tags])
-
-    if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = Forms.ticket_insert_form(ticketInsertForm, Db, current_user.id)
-        return redirect(url_for('board', id=result.id))
-
-    if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
-        result = Forms.ticket_update_form(ticketUpdateForm, Db, id)
-        return redirect(url_for('board', id=id))
-    
-    if commentForm.submitComment.data and commentForm.validate():
-        comment = commentForm.comment.data
-        Db.insert_comment(id, 'test.user', comment)
-        return redirect(url_for('board', id=id))
-
-    return render_template("project.html", id=int(id), tags=tags, tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketUpdateForm=ticketUpdateForm, ticketInsertForm=ticketInsertForm, current_user=current_user)
-
-
-@app.route("/ticket/<option>", methods=['GET','POST'])
-@login_required
-def tickets(option):
-    allowed = ['open','working','waiting','closed','all']
-    if option not in allowed:
-        tickets = Db.query_tickets()
+    #Get Display based on Query
+    if requestData.get('display') == 'board':
+        display = 'board.html'
+    elif requestData.get('display') == 'list':
+        display = 'list.html'
+    elif requestData.get('display') == 'index':
+        display = 'index.html'
+        boards = Db.query_tickets(assigned=current_user.id)
     else:
-        tickets = Db.query_tickets(status=f'{option}')
+        display = 'list.html'
+    
+    #Get Tags and convert list to a string
+    if 'tags' in requestList:
+        seperator = ', '
+        tags= seperator.join([string.to_string() for string in ticket.tags])
+
+    #Forms
     ticketInsertForm = Forms.TicketInsertForm(request.form)
+    if 'ticket' in requestList:
+        comments = Db.query_comments(requestData['ticket'],'created_at')
+        commentForm = Forms.CommentForm(request.form)
+        ticketUpdateForm = Forms.TicketUpdateForm(request.form)
+
+        if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
+            result = Forms.ticket_update_form(ticketUpdateForm, Db, id)
+            return redirect(url_for('ticket', option=option, id=id))
+    
+        if commentForm.submitComment.data and commentForm.validate():
+            comment = commentForm.comment.data
+            Db.insert_comment(id, current_user.id, comment)
+            return redirect(url_for('ticket', option=option, id=id))
 
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
         result = Forms.ticket_insert_form(ticketInsertForm, Db, current_user.id)
         return redirect(url_for('ticket', option=option, id=result.id))
 
-    return render_template("list.html", option=option, tickets=tickets, ticketInsertForm=ticketInsertForm, current_user=current_user)
 
+    re_query = re.sub('ticket=\d+', '', query)
+    re_filter = re.sub('&?status=\w+', '', query)
+    re_order = re.sub('&?order=\w+', '', query)
 
-@app.route("/ticket/<option>/<id>", methods=['GET','POST'])
-@login_required
-def ticket(option, id):
-    allowed = ['open','working','waiting','closed','all']
-    if option not in allowed:
-        tickets = Db.query_tickets()
-    else:
-        tickets = Db.query_tickets(status=option)
-    ticket = Db.query_ticket(id)
-    comments = Db.query_comments(id,'created_at')
-    commentForm = Forms.CommentForm(request.form)
-    ticketInsertForm = Forms.TicketInsertForm(request.form)
-    ticketUpdateForm = Forms.TicketUpdateForm(request.form)
-    seperator = ', '
-    tags= seperator.join([string.to_string() for string in ticket.tags])
+    return render_template(display, order=re_order, query=re_query, filter=re_filter, id=id, boards=boards, tickets=tickets, ticket=ticket, ticketInsertForm=ticketInsertForm, ticketUpdateForm=ticketUpdateForm, commentForm=commentForm, comments=comments)
 
-    if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = Forms.ticket_insert_form(ticketInsertForm, Db, current_user.id)
-        return redirect(url_for('ticket', option=option, id=result.id))
-
-    if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
-        result = Forms.ticket_update_form(ticketUpdateForm, Db, id)
-        return redirect(url_for('ticket', option=option, id=id))
-    
-    if commentForm.submitComment.data and commentForm.validate():
-        comment = commentForm.comment.data
-        Db.insert_comment(id, current_user.id, comment)
-        return redirect(url_for('ticket', option=option, id=id))
-
-    return render_template("list.html", id=int(id), tags=tags, option=option, tickets=tickets, ticket=ticket, comments=comments, commentForm=commentForm, ticketUpdateForm=ticketUpdateForm, ticketInsertForm=ticketInsertForm, current_user=current_user)
 
 @app.route("/api/<query>")
 def api(query):
     print('Query')
     allowed = ['ticket','status','subject','body','action','priority','assigned','tags']
-    actions = ['update_ticket','insert_ticket','update_ticket_status','query_ticket','query_tickets','query_projects']
+    actions = ['update_ticket','insert_ticket','update_ticket_status','query_ticket','query_tickets']
     #Split data
     requestData = convertRequest(query)
     #Get List of Keys
