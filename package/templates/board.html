@@ -35,7 +35,12 @@
             {% endfor %}
         </div>
     </div>
-    <div style='height: 98%; width: calc(96% - 850px); margin: 1% 1%; float: left; overflow: auto;'>
+    <div style='height: 98%; width: calc(96% - 850px); margin: 1%; float: left; overflow: auto;'>
+        {% if noassigned %}
+            <button class='expand-btn' onclick='location.href="{{ noassigned }}";' style='font-size: 8pt;'>All Tickets</button>
+        {% else %}
+            <button class='expand-btn' onclick='location.href="{{ assigned }}";'style='font-size: 8pt;'>My Tickets</button>
+        {% endif %}
         <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
         {% if id %}
         <button onclick="showDivUpdate()" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
@@ -43,9 +48,7 @@
         <div id='expandCreate' class='expand-content'>
             <form id='exp1' action="" method="post">
                 <div>
-                    Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} tags:{{ ticketInsertForm.tags(class_="fresh-frm") }}<br>
-                    {{ ticketInsertForm.body(class_="fresh-frm") }}
-                </div>
+                    Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketInsertForm.tags(class_="submit-frm") }} Body:{{ ticketInsertForm.body(class_="fresh-frm") }}                </div>
                 <div style='margin: 10px'>
                     {{ ticketInsertForm.submitInsertTicket }}
                 </div>
@@ -55,11 +58,11 @@
         <div id='expandUpdate' class='expand-content'>
             <form id='exp2' action="" method="post">
                 <div>
-                    Subject: {{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
+                    Subject:{{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
                     Priority:<select id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
                     Status:<select id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
-                    Tags:&nbsp;{{ ticketUpdateForm.tags(class_='submit-frm', value=tags) }}
-                    Created&nbsp;By:&nbsp;{{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
+                    Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketUpdateForm.tags(class_='submit-frm', value=tags) }}
+                    Created&nbsp;By:{{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
                      <br>
                     <textarea id="body" class="fresh-frm" name="body" required="">{{ ticket.body }}</textarea>
                 </div>

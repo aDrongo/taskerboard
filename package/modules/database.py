@@ -21,13 +21,15 @@ class Status(enum.Enum):
     Waiting = 3
     Closed = 4
 
+#Many to many table for Users to Tickets
 assigned_table = db.Table('assigned', Base.metadata,
     db.Column('users_username', db.String(140), db.ForeignKey('users.username')),
-    db.Column('tickets_id', db.String(140), db.ForeignKey('tickets.id'))
+    db.Column('assigned_tickets_id', db.String(140), db.ForeignKey('tickets.id'))
 )
 
+#Many to many table for Tags to Tickets
 tag_groups_table = db.Table('tag_groups', Base.metadata,
-    db.Column('tickets_id', db.String(140), db.ForeignKey('tickets.id')),
+    db.Column('tag_tickets_id', db.String(140), db.ForeignKey('tickets.id')),
     db.Column('tags_id', db.String(140), db.ForeignKey('tags.id'))
 )
 
@@ -35,7 +37,7 @@ class User(Base):
     """Class for Users table"""
     __tablename__ = 'users'
     username = db.Column(db.String(64), primary_key=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    email = db.Column(db.String(120), unique=True)
     password_hash = db.Column(db.String(128))
 
     def __repr__(self):
@@ -131,7 +133,7 @@ class Database():
         self.metadata = db.MetaData()
         Base.metadata.create_all(self.engine)
 
-#Connect to DB
+# Connect to DB
 db = Database('app.db')
 
 def insert_user(username, email, password):
@@ -149,10 +151,19 @@ def insert_user(username, email, password):
         db.session.rollback()
         return False
 
-
-def update_user(username, new_username, new_email):
+def update_user(username, email, password):
     """Update User"""
-    update = db.session.query(User).filter(User.username == f'{username}').update({'username': f'{new_username}','email':f'{new_email}'})
+    query = db.session.query(User).filter(User.username == f'{username}')
+    update_dict = {}
+    if email:
+        update_dict['email'] = email
+    if password:
+        hash = hashlib.md5()
+        password = password.encode()
+        hash.update(password)
+        hash = hash.hexdigest()
+        update_dict['password_hash'] = hash
+    update = db.session.query(User).filter(User.username == f'{username}').update(update_dict)
     try:
         db.session.commit()
         return True
@@ -178,19 +189,6 @@ def get_users():
     result = db.session.query(User).all()
     return result
 
-def set_password(username, password):
-    hash = hashlib.md5()
-    password = password.encode()
-    hash.update(password)
-    hash = hash.hexdigest()
-    update = db.session.query(User).filter(User.username == username).update({'password_hash':hash})
-    try:
-        db.session.commit()
-        return True
-    except:
-        db.session.rollback()
-        return False
-
 def check_password(username, password):
     hash = hashlib.md5()
     password = password.encode()
@@ -199,13 +197,6 @@ def check_password(username, password):
     password_hash = db.session.query(User).filter(User.username == f'{username}').first().password_hash
     return (password_hash == hash)
 
-def check_password_id(id, password):
-    hash = hashlib.md5()
-    password = password.encode()
-    hash.update(password)
-    hash = hash.hexdigest()
-    password_hash = db.session.query(User).filter(User.id == int(id)).first().password_hash
-    return (password_hash == hash)
 
 def insert_ticket(subject,body=None,priority=None, created_by=None, status=None, tags=None, assigned=None, due_by=None):
     """Insert Ticket"""
@@ -258,61 +249,54 @@ def insert_ticket(subject,body=None,priority=None, created_by=None, status=None,
         db.session.rollback()
         return False
 
-def update_ticket(id, subject, body=None, status=None, priority=None, created_by=None, assigned=None, tags=None, due_by=None):
+def update_ticket(id, subject=None, body=None, status=None, priority=None, created_by=None, assigned=None, tags=None, due_by=None):
     """Update ticket"""
     time = str(datetime.utcnow())[:19]
     update_dict = {
-        'subject': f'{subject}',
+        'id': id,
         'updated_at': time}
+    if subject:
+        update_dict['subject'] = f'{subject}'
     if body:
         update_dict['body'] = f'{body}'
     if status:
+        #allow converting either integer or string to enumerator
         if (isinstance(status, int)):
             status = Status(status)
         else:
             status = Status[status]
         update_dict['status'] = status
     if priority:
+        #allow converting either integer or string to enumerator
         if (isinstance(priority, int)):
             priority = Priority(priority)
         else:
             priority = Priority[priority]
         update_dict['priority'] = Priority(priority)
+    if created_by:
+        update_dict['created_by'] = f'{created_by}'
+    if due_by:
+        update_dict['due_by'] = f'{due_by}'
+    print('-----')
+    update = db.session.query(Tickets).filter(Tickets.id == id).update(update_dict)
+    if tags or assigned:
+        ticket = db.session.query(Tickets).filter(Tickets.id == id).first()
+    # Add Tags, needs a seperate call because of it's relationship
     if tags:
-        tag_obj = db.session.query(Tags).filter(Tags.body.in_(tags)).all()
+        # retrieve tags object to add, if not found then create them and retireve object.
+        tag_obj = db.session.query(Tags).filter(Tags.body.ilike(tags)).all()
         if tag_obj is None:
-            tags = tags.split(',')
+            tags = tags.split(',') # allows receiving multiple tags
             for tag in tags:
                 tag_tmp = Tag()
                 tag_tmp.body = tag
                 db.session.add(tag_tmp)
-            tag_obj = db.session.query(Tags).filter(Tags.body.in_(tags)).all()
-        insert.tags = [tag for tag in tag_obj]
-    if created_by:
-        update_dict['created_by'] = f'{created_by}'
+            tag_obj = db.session.query(Tags).filter(Tags.body.ilike(tags)).all()
+        ticket.tags = [tag for tag in tag_obj]
+    # Add assigned, needs a seperate call because of it's relationship
     if assigned:
-        users = db.session.query(User).filter(User.username.in_(assigned)).all()
-        users_list = [user for user in users]
-        update_dict['assigned'] = users_list
-    if due_by:
-        update_dict['due_by'] = f'{due_by}'
-
-    update = db.session.query(Tickets).filter(Tickets.id == id).update(update_dict)
-    try:
-        db.session.commit()
-        return True
-    except:
-        db.session.rollback()
-        return False
-
-def update_ticket_status(id, status):
-    """Update ticket status"""
-    time = str(datetime.utcnow())[:19]
-    if (isinstance(status, int)):
-        status = Status(status)
-    else:
-        status = Status[status]
-    update = db.session.query(Tickets).filter(Tickets.id == id).update({'status': status,'updated_at': time})
+        users = db.session.query(User).filter(User.username.ilike(assigned)).all()
+        ticket.assigned = [user for user in users]
     try:
         db.session.commit()
         return True
@@ -334,47 +318,8 @@ def insert_comment(ticket, created_by, body):
         db.session.rollback()
         return False
 
-def query_user_id(username):
-    """Query User"""
-    result = db.session.query(User).filter(User.username == username).first()
-    return result.id
-
-def query_ticket(id):
-    """Query Ticket with ID"""
-    result = db.session.query(Tickets).filter(Tickets.id == id).first()
-    return result
-
-def query_tickets_user(user):
-    """Query Tickets with tags"""
-    result_list = []
-    user.strip()
-    user = db.session.query(User).filter(User.username.contains(username)).first()
-    result = db.session.query(Tickets).filter(Tickets.assigned.contains(user)).all()
-    for item in result:
-        result_list.append(item)
-    return result_list
-
-def query_tickets_tags(tags):
-    """Query Tickets with tags"""
-    result_list = []
-    tags_list = []
-    for tag in tags:
-        tag.strip()
-        tag = db.session.query(Tags).filter(Tags.body.contains(tag)).first()
-        if tag is None:
-            return False
-        result = db.session.query(Tickets).filter(Tickets.tags.contains(tag)).all()
-        for item in result:
-            result_list.append(item)
-    return result_list
-
-def query_ticket_subject(subject):
-    """Query tickets with subject, returns last created"""
-    result = db.session.query(Tickets).filter(Tickets.subject == subject).order_by(Tickets.id.desc()).first()
-    return result
-
-def query_tickets(id=None, status=None,tags=None,assigned=None,order=None):
-    """Query all tickets"""
+def query_tickets(id=None, subject=None, status=None,tags=None,assigned=None,order=None):
+    """Query all tickets with defined filters"""
     # Base Query
     query = db.session.query(Tickets)
     if id:
@@ -389,9 +334,13 @@ def query_tickets(id=None, status=None,tags=None,assigned=None,order=None):
     elif order == 'assigned':
         order = Tickets.assigned.desc()
     elif order == 'priority':
-        order = Tickets.priority.desc()
+        order = Tickets.priority.asc()
     else:
         order = Tickets.id.desc()
+    # Add Subject filter
+    if subject:
+        subject = Tickets.subject.ilike(subject)
+        query = query.filter(subject)
     # Add Status filter
     if status:
         status = status.capitalize()
@@ -412,7 +361,6 @@ def query_tickets(id=None, status=None,tags=None,assigned=None,order=None):
         if tag:
             tags = Tickets.tags.contains(tag)
             query = query.filter(tags)
-
     # Run Query
     result = query.order_by(order).all()
     return result
@@ -426,13 +374,11 @@ def query_comments(ticket,order=None):
     result = db.session.query(Comments).filter(Comments.ticket == ticket).order_by(order).all()
     return result
 
-def tickets_query(option=None):
-    """Return tickets query based on option"""
-    tickets = db.query_tickets(option,'ticket','updated_at')
-    return tickets
-
 def convert_to_dict(items):
     result = []
-    for item in items:
-        result.append(item.to_dict())
+    try:
+        for item in items:
+            result.append(item.to_dict())
+    except:
+        result.append(items.to_dict())
     return result

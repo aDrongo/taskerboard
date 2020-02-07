@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div style='padding: 1% 1%; width: 100vw; height: 93vh'>
-        <div style='height: 100%; float: left; overflow: auto; width: calc(98% - 850px); padding: 0 1%;'>
+<div style='padding: 1% 1%; width: 99vw; height: 93vh'>
+    <div style='height: 98%; width: calc(96% - 850px); margin: 1%; float: left; overflow: auto;'>
             <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
             <div id='expandCreate' class='expand-content'>
                 <form id='exp1' action="" method="post">
                     <div>
-                        Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Tags:{{ ticketInsertForm.tags(class_="fresh-frm") }}<br>
-                        Body: {{ ticketInsertForm.body(class_="fresh-frm") }}
+                        Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketInsertForm.tags(class_="submit-frm") }} Body:{{ ticketInsertForm.body(class_="fresh-frm") }}
                     </div>
                     <div style='margin: 10px'>
                         {{ ticketInsertForm.submitInsertTicket }}
@@ -22,6 +21,11 @@
                   <a href="/{{ filter + '&status=Working' }}">Working</a>
                   <a href="/{{ filter + '&status=Waiting' }}">Waiting</a>
                   <a href="/{{ filter + '&status=Closed' }}">Closed</a>
+                  {% if noassigned %}
+                  <a href="/{{ noassigned }}">All Tickets</a>
+                  {% else %}
+                  <a href="{{ assigned }}">My Tickets</a>
+                  {% endif %}
                 </div>
             </li>
             <li class='dropdown'>
@@ -34,18 +38,47 @@
                   <a href="/{{ order + '&order=priority' }}">Priority</a>
                 </div>
             </li>
-            <table>
-                <tr><th style='width: 5%'>ID</th><th style='width: 45%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 7%'>Due By</th><th style='width: 7%'>Tags</th></tr>
-                {% for tick in tickets %}
-                {% if tick.id == id %}
-                <tr><td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td><td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td class='selected'><td class='selected'>{{ tick.status.name }}</td><td class='selected'>{{ tick.priority.name }}</td><td class='selected'>{{ tick.updated_at[5:-3] }}</td><td class='selected'>{{ tick.created_by }}</td><td class='selected'>{{ tick.assigned }}</td><td class='selected'>{{ tick.due_by }}</td><td class='selected'>{{ tick.tags }}</td></tr>
-                {% else %}
-                <tr><td><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td><td><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td><td>{{ tick.status.name }}</td><td>{{ tick.priority.name }}</td><td>{{ tick.updated_at[5:-3] }}</td><td>{{ tick.created_by }}</td><td>{{ tick.assigned }}</td><td>{{ tick.due_by }}</td><td>{{ tick.tags }}</td></tr>
-                {% endif %}
-                {% endfor %}
-            </table>
+            <div style='height: 80%; overflow: auto;'>
+                <table>
+                    <tr><th style='width: 5%'>ID</th>
+                        <th style='width: 50%'>Subject</th>
+                        <th style='width: 5%'>Status</th>
+                        <th style='width: 5%'>Priority</th>
+                        <th style='width: 5%'>Updated At</th>
+                        <th style='width: 7%'>Created By</th>
+                        <th style='width: 7%'>Assigned</th>
+                        <th style='width: 7%'>Tags</th>
+                        <th style='width: 7%'>Due By</th></tr>
+                    {% for tick in tickets %}
+                    {% if tick.id == ticket.id %}
+                    <tr><td class='selected'><a href="/{{ query + '&ticket=' + tick.id|string }}">{{ tick.id }}</a></td>
+                        <td class='selected'><a href="/{{ query + '&ticket=' + tick.id|string }}">{{ tick.subject }}</a></td>
+                        <td class='selected'>{{ tick.status.name }}</td>
+                        <td class='selected'>{{ tick.priority.name }}</td>
+                        <td class='selected'>{{ tick.updated_at[5:-3] }}</td>
+                        <td class='selected'>{{ tick.created_by }}</td>
+                        <td class='selected'>{{ tick.assigned }}</td>
+                        <td class='selected'>{{ tick.tags }}</td>
+                        <td class='selected'>{{ tick.due_by }}</td></tr>
+                    {% else %}
+                    <tr><td><a href="/{{ query + '&ticket=' + tick.id|string }}">{{ tick.id }}</a></td>
+                        <td><a href="/{{ query + '&ticket=' + tick.id|string }}">{{ tick.subject }}</a></td>
+                        <td>{{ tick.status.name }}</td>
+                        <td>{{ tick.priority.name }}</td>
+                        <td>{{ tick.updated_at[5:-3] }}</td>
+                        <td>{{ tick.created_by }}</td>
+                        <td><div onclick='showDivAssigned({{ tick.id }})'>{{ tick.assigned }}</div><div style='display: none; position: absolute; background-color: white;' id='assigned{{ tick.id }}'><!--
+                        --><ul><!-- 
+                        -->{% for user in users %}<li style='color: black;'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}<!--
+                        --></ul></div></td>
+                        <td>{{ tick.tags }}</td>
+                        <td>{{ tick.due_by }}</td></tr>
+                    {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
         </div>
-        <div style='height: 100%; width: 850px; overflow: auto; padding: 0 1%; float: left;'>
+        <div style='height: 98%; width: 850px; overflow: auto; margin: 1%; float: left;'>
         <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
             {% for ticket in boards %}

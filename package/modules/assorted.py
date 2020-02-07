@@ -5,5 +5,7 @@ def convertRequest(data):
     data = data.split('&')
     for request in data:
         request = request.split('=')
-        dictData[f'{request[0]}'] = f'{request[1]}'
+        if len(request) == 2:
+            dictData[f'{request[0]}'] = f'{request[1]}'
     return dictData
+
