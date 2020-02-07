@@ -1,51 +1,34 @@
+### Complated
+
+1. Database for Tickets, Users and Comments
+2. Display to show tickets as a traditional list
+3. Display to show tickets as a Kanban board
+4. Create and Update tickets
+5. API to retrieve, update and create tickets
+6. Drag and Drop tickets in Kanban to change status
+7. Multiple tags per ticket
+8. Ticket Sorting and Filtering
+9. Manage Users
+
+
 ### TODO
 
-API expand update ticket
-
-API to create tickets and users
-
-API to retreive tickets and users
-
-Drag and Drop status reassignment
-
-Ticket Sorting
-
-Pretty CSS
-
-Projects colour coded to a tag?
-
-Take in emails and send out emails
-
-Wiki?
-
-Tagging? Sort by tagging? Or unnecessary?
-
-Parent/Child Tickets?
-
-User groups?
-
-LDAP integration?
-
-View Permissions?
-
-Notes vs Comments?
-
-Ticket submission portal?
-
-Import/Export database via CSV
-
-Backup database
-
-TimeZones?
-
-Activity Log(+ reversable?)
-
-Chat templating? (Chat assistant?)
-
-Purchase tracking? (implment this via Category next to Project vs Tickets?)
-
-Password management?
-
-Asset tracking?
-
-User time tracking diary?
+* Take in emails and send out emails  
+* PyTests for features
+* Pretty CSS/Reorganize CSS and HTML styling.
+* Wiki?
+* Parent/Child Tickets?
+* User groups/multiple users per ticket?
+* LDAP integration?
+* View Permissions?
+* Notes vs Comments?
+* Ticket submission portal?
+* Import/Export database via CSV
+* Backup database
+* TimeZones?
+* Activity Log(+ reversable?)
+* Chat templating? (Chat assistant?)
+* Purchase tracking? (implment this via Category next to Project vs Tickets?)
+* Password management?
+* Asset tracking?
+* User time tracking diary?
