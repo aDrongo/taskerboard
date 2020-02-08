@@ -29,6 +29,7 @@ def load_user(id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Allows User to login"""
     if current_user.is_authenticated:
         flash('Logged in successfully.')
         return redirect(url_for('home'))
@@ -49,6 +50,7 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
+    """Logs out the User"""
     logout_user()
     flash('Logged Out')
     return redirect(url_for('login'))
@@ -56,6 +58,7 @@ def logout():
 @app.route("/users", methods=['GET','POST'])
 @login_required
 def users():
+    """Manage Users"""
     users=None
     users = [user for user in Db.get_users()]
 
@@ -71,7 +74,6 @@ def users():
         else:
             flash('Failed!')
         return redirect(url_for('users'))
-    
 
     # Update Ticket form
     if userUpdateForm.submitUpdateUser.data and userUpdateForm.validate():
@@ -87,11 +89,13 @@ def users():
 @app.route("/", methods=['GET','POST'])
 @login_required
 def home():
+    """Redirect to home_query"""
     return redirect('/display=index')
 
 @app.route("/<query>", methods=['GET','POST'])
 @login_required
 def home_query(query):
+    """Main webpage, dynamically generate from url string"""
     #Split data
     requestData = convertRequest(query)
     #Get List of Keys
@@ -108,8 +112,9 @@ def home_query(query):
 
     # Format query for replacement text insertion
     re_query = re.sub('&?ticket=\d+', '', query)
-    re_filter = re.sub('&?status=\w+', '', query)
+    re_filter = re.sub('&?status=\w+|&?search=\w+|&?assigned=\w+.?\w+', '', query)
     re_order = re.sub('&?order=\w+', '', query)
+    re_search = re.sub('&?search=\w', '', query)
     re_assigned = re.sub('&?assigned=\w+\.?\w+', '', query) + f'&assigned={current_user.id}'
     if 'assigned' in requestList:
         re_noassigned = re.sub('&?assigned=\w+\.?\w+', '', query)
@@ -119,7 +124,9 @@ def home_query(query):
             status=requestData.get('status', None),
             tags=requestData.get('tags', None),
             assigned=requestData.get('assigned', None),
-            order=requestData.get('order', None))
+            order=requestData.get('order', None),
+            subject=requestData.get('subject', None),
+            search=requestData.get('search', None))
 
     users = [(user.username, user.username) for user in Db.get_users()]
 
@@ -134,11 +141,6 @@ def home_query(query):
         boards = Db.query_tickets(assigned=current_user.id)
     else:
         display = 'list.html'
-    
-    #Get Tags and convert list to a string
-    if 'tags' in requestList:
-        seperator = ', '
-        tags= seperator.join([string.to_string() for string in ticket.tags])
 
     # If specific ticket identified, retrieve it
     if 'ticket' in requestList:
@@ -174,12 +176,22 @@ def home_query(query):
         if requestData.get('display', None):
             re_display = re.sub('&?display=\w+', '', query) + '&display=board'
         return redirect(url_for('home_query', query=(re_display + f'&ticket={result.id}')))
+    
+    # Intialize search form
+    searchForm = Forms.TicketSearchForm(request.form)
 
-    return render_template(display, users=users, assigned=re_assigned, noassigned=re_noassigned, order=re_order, query=re_query, filter=re_filter, id=id, boards=boards, tickets=tickets, ticket=ticket, ticketInsertForm=ticketInsertForm, ticketUpdateForm=ticketUpdateForm, commentForm=commentForm, comments=comments)
+    # Search Form submission
+    print(searchForm.search.data)
+    if searchForm.submitSearch and searchForm.validate():
+        search = searchForm.search.data
+        return redirect(url_for('home_query', query=(re_filter + f"&search={search}")))
+
+    return render_template(display, users=users, assigned=re_assigned, noassigned=re_noassigned, order=re_order, query=re_query, filter=re_filter, id=id, searchForm=searchForm, boards=boards, tickets=tickets, ticket=ticket, ticketInsertForm=ticketInsertForm, ticketUpdateForm=ticketUpdateForm, commentForm=commentForm, comments=comments)
 
 
 @app.route("/api/<query>")
 def api(query):
+    """API interface"""
     allowed = ['ticket','status','subject','body','action','priority','assigned','tags']
     actions = ['update_ticket','insert_ticket','query_ticket','query_tickets']
     #Split data
@@ -231,9 +243,6 @@ def api(query):
         result = Db.convert_to_dict(result)
         result = json.dumps(result)
     return result
-
-#action=query_tickets&tags=tick
-#action=update_ticket&ticket=1&subject='API test'&body='This is a test of the API'&status=Working
 
 # export environment='dev' for no ssl or debugging
 if __name__ == "__main__":

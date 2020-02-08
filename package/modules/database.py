@@ -1,4 +1,4 @@
-import sqlalchemy as db
+import sqlalchemy as Db
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
@@ -22,23 +22,23 @@ class Status(enum.Enum):
     Closed = 4
 
 #Many to many table for Users to Tickets
-assigned_table = db.Table('assigned', Base.metadata,
-    db.Column('users_username', db.String(140), db.ForeignKey('users.username')),
-    db.Column('assigned_tickets_id', db.String(140), db.ForeignKey('tickets.id'))
+assigned_table = Db.Table('assigned', Base.metadata,
+    Db.Column('users_username', Db.String(140), Db.ForeignKey('users.username')),
+    Db.Column('assigned_tickets_id', Db.String(140), Db.ForeignKey('tickets.id'))
 )
 
 #Many to many table for Tags to Tickets
-tag_groups_table = db.Table('tag_groups', Base.metadata,
-    db.Column('tag_tickets_id', db.String(140), db.ForeignKey('tickets.id')),
-    db.Column('tags_id', db.String(140), db.ForeignKey('tags.id'))
+tag_groups_table = Db.Table('tag_groups', Base.metadata,
+    Db.Column('tag_tickets_id', Db.String(140), Db.ForeignKey('tickets.id')),
+    Db.Column('tags_id', Db.String(140), Db.ForeignKey('tags.id'))
 )
 
 class User(Base):
     """Class for Users table"""
     __tablename__ = 'users'
-    username = db.Column(db.String(64), primary_key=True)
-    email = db.Column(db.String(120), unique=True)
-    password_hash = db.Column(db.String(128))
+    username = Db.Column(Db.String(64), primary_key=True)
+    email = Db.Column(Db.String(120), unique=True)
+    password_hash = Db.Column(Db.String(128))
 
     def __repr__(self):
         return f'{self.username}'
@@ -57,8 +57,8 @@ class User(Base):
 class Tags(Base):
     """Class for Tags table"""
     __tablename__ = 'tags'
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(140))
+    id = Db.Column(Db.Integer, primary_key=True)
+    body = Db.Column(Db.String(140))
 
     def __repr__(self):
         return f'{self.body}'
@@ -75,15 +75,15 @@ class Tags(Base):
 class Tickets(Base):
     """Class for Tickets table"""
     __tablename__ = 'tickets'
-    id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Enum(Status))
-    priority = db.Column(db.Enum(Priority))
-    subject = db.Column(db.String(140))
-    body = db.Column(db.String(1280))
-    created_at = db.Column(db.String(19), default=str(datetime.utcnow())[:19])
-    updated_at = db.Column(db.String(19), default=str(datetime.utcnow())[:19])
-    due_by = db.Column(db.String(19))
-    created_by = db.Column(db.String(140))
+    id = Db.Column(Db.Integer, primary_key=True)
+    status = Db.Column(Db.Enum(Status))
+    priority = Db.Column(Db.Enum(Priority))
+    subject = Db.Column(Db.String(140))
+    body = Db.Column(Db.String(1280))
+    created_at = Db.Column(Db.String(19), default=str(datetime.utcnow())[:19])
+    updated_at = Db.Column(Db.String(19), default=str(datetime.utcnow())[:19])
+    due_by = Db.Column(Db.String(19))
+    created_by = Db.Column(Db.String(140))
     assigned = relationship("User", secondary=assigned_table)
     tags = relationship("Tags", secondary=tag_groups_table)
 
@@ -106,11 +106,11 @@ class Tickets(Base):
 class Comments(Base):
     """Class for Comments table"""
     __tablename__ = 'comments'
-    id = db.Column(db.Integer, primary_key=True)
-    ticket = db.Column(db.Integer, db.ForeignKey('tickets.id'))
-    created_at = db.Column(db.String(19), index=True, default=str(datetime.utcnow())[:19])
-    created_by = db.Column(db.Integer, db.ForeignKey('users.username'))
-    body = db.Column(db.String(1280))
+    id = Db.Column(Db.Integer, primary_key=True)
+    ticket = Db.Column(Db.Integer, Db.ForeignKey('tickets.id'))
+    created_at = Db.Column(Db.String(19), index=True, default=str(datetime.utcnow())[:19])
+    created_by = Db.Column(Db.Integer, Db.ForeignKey('users.username'))
+    body = Db.Column(Db.String(1280))
 
     def __repr__(self):
         return f'{self.body}'
@@ -126,11 +126,11 @@ class Comments(Base):
 class Database():
     """Class to connect to Database"""
     def __init__(self, database):
-        self.engine = db.create_engine(f'sqlite:///{database}', connect_args={'check_same_thread': False})
+        self.engine = Db.create_engine(f'sqlite:///{database}', connect_args={'check_same_thread': False})
         self.connection = self.engine.connect()
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
-        self.metadata = db.MetaData()
+        self.metadata = Db.MetaData()
         Base.metadata.create_all(self.engine)
 
 # Connect to DB
@@ -318,10 +318,11 @@ def insert_comment(ticket, created_by, body):
         db.session.rollback()
         return False
 
-def query_tickets(id=None, subject=None, status=None,tags=None,assigned=None,order=None):
+def query_tickets(id=None, subject=None, status=None,tags=None,assigned=None,order=None, search=None):
     """Query all tickets with defined filters"""
     # Base Query
     query = db.session.query(Tickets)
+    # If looking for specific ticket, return that one
     if id:
         return query.filter(Tickets.id == id).first()
     # get Order
@@ -337,9 +338,29 @@ def query_tickets(id=None, subject=None, status=None,tags=None,assigned=None,ord
         order = Tickets.priority.asc()
     else:
         order = Tickets.id.desc()
+    #If we want to return all matches for any attribute
+    if search:
+        not_null_filters = []
+        not_null_filters.append(Tickets.subject.ilike(f'%{search}%'))
+        status = search.capitalize()
+        try:
+            status = Status[status]
+            not_null_filters.append(Tickets.status == status)
+        except:
+            pass
+        tag = db.session.query(Tags).filter(Tags.body.contains(search)).first()
+        if tag:
+            not_null_filters.append(Tickets.tags.contains(tag))
+        user = db.session.query(User).filter(User.username.contains(search)).first()
+        if user:
+            not_null_filters.append(Tickets.assigned.contains(user))
+        if len(not_null_filters) > 0:
+            return query.filter(Db.or_(*not_null_filters)).order_by(order).all()
+        else:
+            return None
     # Add Subject filter
     if subject:
-        subject = Tickets.subject.ilike(subject)
+        subject = Tickets.subject.ilike(f'%{subject}%')
         query = query.filter(subject)
     # Add Status filter
     if status:

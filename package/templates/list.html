@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 <div style='padding: 1% 1%; width: 99vw; height: 93vh'>
-    <div style='width: 850px; height: 98%; margin: 1%; float: left'>
-        <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
-        <button onclick="showDivUpdate()" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
+    <div style='height: auto; width: calc(96% - 820px); margin: 1%; float: left; overflow: auto;'>
+        <div class='buttonline'>
+        <button onclick="showDiv('expandCreate')" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
+        <button onclick="showDiv('expandUpdate')" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
         <div id='expandCreate' class='expand-content'>
             <form id='exp1' action="" method="post">
                 <div>
@@ -55,10 +56,15 @@
             <a href="/{{ order + '&order=priority' }}">Priority</a>
             </div>
         </li>
-        <div style='height: 80%; overflow: auto;'>
+            <div class='search-container'>
+            <form id='search' action="" method="post">
+            {{ searchForm.search(style="font-size: 8pt; margin: 0 5px") }}{{ searchForm.submitSearch(style="font-size: 8pt") }}
+            </form></div>
+        </div>
+        <div style='overflow: auto;'>
             <table>
                 <tr><th style='width: 5%'>ID</th>
-                    <th style='width: 50%'>Subject</th>
+                    <th style='width: 45%'>Subject</th>
                     <th style='width: 5%'>Status</th>
                     <th style='width: 5%'>Priority</th>
                     <th style='width: 5%'>Updated At</th>
@@ -84,7 +90,7 @@
                     <td>{{ tick.priority.name }}</td>
                     <td>{{ tick.updated_at[5:-3] }}</td>
                     <td>{{ tick.created_by }}</td>
-                    <td><div onclick='showDivAssigned({{ tick.id }})'>{{ tick.assigned }}</div><div style='display: none; position: absolute; background-color: white;' id='assigned{{ tick.id }}'><!--
+                    <td><div onclick='showDiv("assigned{{ tick.id }}")'>{{ tick.assigned }}</div><div style='display: none; position: absolute; background-color: white;' id='assigned{{ tick.id }}'><!--
                     --><ul><!-- 
                     -->{% for user in users %}<li style='color: black;'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}<!--
                     --></ul></div></td>
@@ -96,7 +102,7 @@
         </div>
     </div>
     {% if ticket %}
-    <div style='height: 98%; width: calc(96% - 850px); margin: 1%; float: left; overflow: auto;'>
+    <div style='height: 98%; width: 820px; overflow: auto; margin: 1%; float: left;'>
         <h3>Content</h3>
         <div style='padding: 1%;'>
         <p style='background-color: lightgray; padding: 1%'>{{ ticket.body }}</p>

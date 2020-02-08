@@ -16,6 +16,7 @@
       </ul>
       <ul class='navicon'>
         {% if current_user.is_authenticated %}
+        <li>{{ current_user.id }}</li>
         <li><a href="/logout">Logout</a></li>
         {% else %}
         <li><a href="/login">Login</a></li>

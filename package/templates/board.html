@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div style='padding: 1% 1%; width: 99vw; height: 93vh'>
-    <div style='height: 98%; width: 850px; overflow: auto; margin: 1%; float: left;'>
+    <div style='height: 98%; width: 820px; overflow: auto; margin: 1%; float: left;'>
         <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
             {% for ticket in tickets %}
@@ -35,15 +35,15 @@
             {% endfor %}
         </div>
     </div>
-    <div style='height: 98%; width: calc(96% - 850px); margin: 1%; float: left; overflow: auto;'>
+    <div style='height: 98%; width: calc(96% - 820px); margin: 1%; float: left; overflow: auto;'>
         {% if noassigned %}
             <button class='expand-btn' onclick='location.href="{{ noassigned }}";' style='font-size: 8pt;'>All Tickets</button>
         {% else %}
             <button class='expand-btn' onclick='location.href="{{ assigned }}";'style='font-size: 8pt;'>My Tickets</button>
         {% endif %}
-        <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
+        <button onclick="showDiv('expandCreate')" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
         {% if id %}
-        <button onclick="showDivUpdate()" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
+        <button onclick="showDiv('expandUpdate')" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
         {% endif %}
         <div id='expandCreate' class='expand-content'>
             <form id='exp1' action="" method="post">

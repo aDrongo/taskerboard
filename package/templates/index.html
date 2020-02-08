@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 <div style='padding: 1% 1%; width: 99vw; height: 93vh'>
-    <div style='height: 98%; width: calc(96% - 850px); margin: 1%; float: left; overflow: auto;'>
-            <button onclick="showDivCreate()" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
+    <div style='height: auto; width: calc(96% - 820px); margin: 1%; float: left; overflow: auto;'>
+        <div class='buttonline'>
+            <button onclick="showDiv('expandCreate')" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
             <div id='expandCreate' class='expand-content'>
                 <form id='exp1' action="" method="post">
                     <div>
-                        Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketInsertForm.tags(class_="submit-frm") }} Body:{{ ticketInsertForm.body(class_="fresh-frm") }}
+                        Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Assigned:{{ ticketInsertForm.assigned }}<br><br>
+                        Tags: {{ ticketInsertForm.tags(class_="submit-frm") }} Body:{{ ticketInsertForm.body(class_="fresh-frm") }}
                     </div>
                     <div style='margin: 10px'>
                         {{ ticketInsertForm.submitInsertTicket }}
@@ -34,14 +36,18 @@
                   <a href="/{{ order + '&order=id' }}">ID</a>
                   <a href="/{{ order + '&order=updated_at' }}">Updated At</a>
                   <a href="/{{ order + '&order=created_at' }}">Created At</a>
-                  <a href="/{{ order + '&order=assigned' }}">Assigned</a>
                   <a href="/{{ order + '&order=priority' }}">Priority</a>
                 </div>
             </li>
-            <div style='height: 80%; overflow: auto;'>
+            <div class='search-container'>
+            <form id='search' action="" method="post">
+            {{ searchForm.search(style="font-size: 8pt; margin: 0 5px") }}{{ searchForm.submitSearch(style="font-size: 8pt") }}
+            </form></div>
+            </div>
+            <div style='display: flex; overflow: auto;'>
                 <table>
                     <tr><th style='width: 5%'>ID</th>
-                        <th style='width: 50%'>Subject</th>
+                        <th style='width: 45%'>Subject</th>
                         <th style='width: 5%'>Status</th>
                         <th style='width: 5%'>Priority</th>
                         <th style='width: 5%'>Updated At</th>
@@ -51,8 +57,8 @@
                         <th style='width: 7%'>Due By</th></tr>
                     {% for tick in tickets %}
                     {% if tick.id == ticket.id %}
-                    <tr><td class='selected'><a href="/{{ query + '&ticket=' + tick.id|string }}">{{ tick.id }}</a></td>
-                        <td class='selected'><a href="/{{ query + '&ticket=' + tick.id|string }}">{{ tick.subject }}</a></td>
+                    <tr><td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td>
+                        <td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td>
                         <td class='selected'>{{ tick.status.name }}</td>
                         <td class='selected'>{{ tick.priority.name }}</td>
                         <td class='selected'>{{ tick.updated_at[5:-3] }}</td>
@@ -61,13 +67,13 @@
                         <td class='selected'>{{ tick.tags }}</td>
                         <td class='selected'>{{ tick.due_by }}</td></tr>
                     {% else %}
-                    <tr><td><a href="/{{ query + '&ticket=' + tick.id|string }}">{{ tick.id }}</a></td>
-                        <td><a href="/{{ query + '&ticket=' + tick.id|string }}">{{ tick.subject }}</a></td>
+                    <tr><td><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td>
+                        <td><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td>
                         <td>{{ tick.status.name }}</td>
                         <td>{{ tick.priority.name }}</td>
                         <td>{{ tick.updated_at[5:-3] }}</td>
                         <td>{{ tick.created_by }}</td>
-                        <td><div onclick='showDivAssigned({{ tick.id }})'>{{ tick.assigned }}</div><div style='display: none; position: absolute; background-color: white;' id='assigned{{ tick.id }}'><!--
+                        <td><div onclick='showDiv("assigned{{ tick.id }}")'>{{ tick.assigned }}</div><div style='display: none; position: absolute; background-color: white;' id='assigned{{ tick.id }}'><!--
                         --><ul><!-- 
                         -->{% for user in users %}<li style='color: black;'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}<!--
                         --></ul></div></td>
@@ -78,7 +84,7 @@
                 </table>
             </div>
         </div>
-        <div style='height: 98%; width: 850px; overflow: auto; margin: 1%; float: left;'>
+        <div style='height: 98%; width: 820px; overflow: auto; margin: 1%; float: left;'>
         <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
             {% for ticket in boards %}

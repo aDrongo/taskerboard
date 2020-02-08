@@ -13,10 +13,11 @@
 
 ### TODO
 
-* Take in emails and send out emails  
+* Search feature
+* Take in emails and send out emails. Can use flask-mail
 * PyTests for features
 * Pretty CSS/Reorganize CSS and HTML styling.
-* Wiki?
+* Wiki? Could use Flask-FlatPages
 * Parent/Child Tickets?
 * User groups/multiple users per ticket?
 * LDAP integration?

@@ -39,31 +39,6 @@ function showDiv(id) {
   }
 }
 
-function showDivCreate() {
-  if (document.getElementById('expandCreate').style.display  == "block") {
-    document.getElementById('expandCreate').style.display  = "none";
-  } else {
-    document.getElementById('expandCreate').style.display  = "block";
-  }
-}
-
-function showDivUpdate() {
-  if (document.getElementById('expandUpdate').style.display  == "block") {
-    document.getElementById('expandUpdate').style.display  = "none";
-  } else {
-    document.getElementById('expandUpdate').style.display  = "block";
-  }
-}
-
-function showDivAssigned(id) {
-  id_string = new String(id)
-  if (document.getElementById('assigned' + id).style.display  == "block") {
-    document.getElementById('assigned' + id).style.display  = "none";
-  } else {
-    document.getElementById('assigned' + id).style.display  = "block";
-  }
-}
-
 function assign(user, id) {
   var theUrl = new String(`/api/action=update_ticket&ticket=${id}&assigned=${user}`)
   console.log(theUrl)

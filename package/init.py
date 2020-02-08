@@ -39,7 +39,6 @@ Db.insert_comment(2,'ben.gardner','this is 1another test comment')
     #body, created_at, created_by, id, ticket
 #    print(item.body)
 
-
 users = Db.db.session.query(Db.User).filter(Db.User.username.in_(['ben.gardner'])).all()
 ticket = Db.db.session.query(Db.Tickets).filter(Db.Tickets.id == 1).first()
 ticket.assigned = [user for user in users]
@@ -64,3 +63,6 @@ ticket.tags = [tag for tag in tags]
 
 
 Db.db.session.commit()
+
+#action=query_tickets&tags=tick
+#action=update_ticket&ticket=1&subject='API test'&body='This is a test of the API'&status=Working

@@ -70,7 +70,7 @@ class TicketUpdateForm(Form):
 class TicketSearchForm(Form):
     """WTForm for Searching Tickets"""
     search = TextField('Search:', [validators.required(), validators.length(max=140)])
-    submitSearch = SubmitField('submit')
+    submitSearch = SubmitField('search')
 
 class UserInsertForm(Form):
     """WTForm for Inserting a User"""
