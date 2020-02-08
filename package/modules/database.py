@@ -133,10 +133,7 @@ class Database():
         self.metadata = Db.MetaData()
         Base.metadata.create_all(self.engine)
 
-# Connect to DB
-db = Database('app.db')
-
-def insert_user(username, email, password):
+def insert_user(db, username, email, password):
     """Insert user"""
     hash = hashlib.md5()
     password = password.encode()
@@ -151,7 +148,7 @@ def insert_user(username, email, password):
         db.session.rollback()
         return False
 
-def update_user(username, email, password):
+def update_user(db, username, email, password):
     """Update User"""
     query = db.session.query(User).filter(User.username == f'{username}')
     update_dict = {}
@@ -171,7 +168,7 @@ def update_user(username, email, password):
         db.session.rollback()
         return False
 
-def delete_user(username):
+def delete_user(db, username):
     """Delete User"""
     delete = db.session.query(User).filter(User.username == f'{username}').delete()
     try:
@@ -181,15 +178,15 @@ def delete_user(username):
         db.session.rollback()
         return False
 
-def get_user(username):
+def get_user(db, username):
     result = db.session.query(User).filter(User.username == f'{username}').first()
     return result
 
-def get_users():
+def get_users(db):
     result = db.session.query(User).all()
     return result
 
-def check_password(username, password):
+def check_password(db, username, password):
     hash = hashlib.md5()
     password = password.encode()
     hash.update(password)
@@ -197,11 +194,36 @@ def check_password(username, password):
     password_hash = db.session.query(User).filter(User.username == f'{username}').first().password_hash
     return (password_hash == hash)
 
+def insert_tags(db, tags):
+    tags = tags.split(',')
+    for tag in tags:
+        tag_tmp = Tags(body=tag)
+        db.session.add(tag_tmp)
+    try:
+        db.session.commit()
+        return True
+    except:
+        db.session.rollback()
+        return False
 
-def insert_ticket(subject,body=None,priority=None, created_by=None, status=None, tags=None, assigned=None, due_by=None):
+def query_tags(db, tags):
+    query = db.session.query(Tags)
+    not_null_filters = []
+    try:
+        tags = tags.split(',')
+    except:
+        pass
+    for tag in tags:
+        tag = tag.strip()
+        if db.session.query(Tags).filter(Tags.body.is_(tag)).first():
+            not_null_filters.append(Tags.body.is_(tag))
+    if len(not_null_filters) > 0:
+        return query.filter(Db.or_(*not_null_filters)).all()
+    else:
+        return None
+
+def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=None, tags=None, assigned=None, due_by=None):
     """Insert Ticket"""
-
-    print('test')
     time = str(datetime.utcnow())[:19]
     insert = Tickets(
         subject= f'{subject}',
@@ -225,19 +247,17 @@ def insert_ticket(subject,body=None,priority=None, created_by=None, status=None,
     else:
         insert.priority = Priority(2)
     if tags:
-        tag_obj = db.session.query(Tags).filter(Tags.body.in_(tags)).all()
-        if tag_obj is None:
-            tags = tags.split(',')
-            for tag in tags:
-                tag_tmp = Tag()
-                tag_tmp.body = tag
-                db.session.add(tag_tmp)
-            tag_obj = db.session.query(Tags).filter(Tags.body.in_(tags)).all()
-        insert.tags = [tag for tag in tag_obj]
+        tags = tags.split(',')
+        for tag in tags:
+            tag_obj = query_tags(db, tag)
+            if tag_obj is None:
+                insert_tags(db, tag)
+        tag_list = query_tags(db, tags)
+        insert.tags = [tag for tag in tag_list]
     if created_by:
         insert.created_by = f'{created_by}'
     if assigned:
-        users = db.session.query(User).filter(User.username.in_(assigned)).all()
+        users = db.session.query(User).filter(User.username.is_(assigned)).all()
         insert.assigned = [user for user in users]
     if due_by:
         insert.due_by = f'{due_by}'
@@ -249,7 +269,7 @@ def insert_ticket(subject,body=None,priority=None, created_by=None, status=None,
         db.session.rollback()
         return False
 
-def update_ticket(id, subject=None, body=None, status=None, priority=None, created_by=None, assigned=None, tags=None, due_by=None):
+def update_ticket(db, id, subject=None, body=None, status=None, priority=None, created_by=None, assigned=None, tags=None, due_by=None):
     """Update ticket"""
     time = str(datetime.utcnow())[:19]
     update_dict = {
@@ -277,25 +297,23 @@ def update_ticket(id, subject=None, body=None, status=None, priority=None, creat
         update_dict['created_by'] = f'{created_by}'
     if due_by:
         update_dict['due_by'] = f'{due_by}'
-    print('-----')
+    
     update = db.session.query(Tickets).filter(Tickets.id == id).update(update_dict)
-    if tags or assigned:
-        ticket = db.session.query(Tickets).filter(Tickets.id == id).first()
+
+    ticket = db.session.query(Tickets).filter(Tickets.id == id).first()
     # Add Tags, needs a seperate call because of it's relationship
     if tags:
         # retrieve tags object to add, if not found then create them and retireve object.
-        tag_obj = db.session.query(Tags).filter(Tags.body.ilike(tags)).all()
-        if tag_obj is None:
-            tags = tags.split(',') # allows receiving multiple tags
-            for tag in tags:
-                tag_tmp = Tag()
-                tag_tmp.body = tag
-                db.session.add(tag_tmp)
-            tag_obj = db.session.query(Tags).filter(Tags.body.ilike(tags)).all()
-        ticket.tags = [tag for tag in tag_obj]
+        tags = tags.split(',')
+        for tag in tags:
+            tag_obj = query_tags(db, tag)
+            if tag_obj is None:
+                insert_tags(db, tag)
+        tag_list = query_tags(db, tags)
+        ticket.tags = [tag for tag in tag_list]
     # Add assigned, needs a seperate call because of it's relationship
     if assigned:
-        users = db.session.query(User).filter(User.username.ilike(assigned)).all()
+        users = db.session.query(User).filter(User.username.is_(assigned)).all()
         ticket.assigned = [user for user in users]
     try:
         db.session.commit()
@@ -304,7 +322,7 @@ def update_ticket(id, subject=None, body=None, status=None, priority=None, creat
         db.session.rollback()
         return False
 
-def insert_comment(ticket, created_by, body):
+def insert_comment(db, ticket, created_by, body):
     """Insert Comment"""
     time = str(datetime.utcnow())[:19]
     insert = Comments(ticket=ticket, body=f'{body}',created_by=f'{created_by}')
@@ -318,7 +336,7 @@ def insert_comment(ticket, created_by, body):
         db.session.rollback()
         return False
 
-def query_tickets(id=None, subject=None, status=None,tags=None,assigned=None,order=None, search=None):
+def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None,order=None, search=None):
     """Query all tickets with defined filters"""
     # Base Query
     query = db.session.query(Tickets)
@@ -386,7 +404,7 @@ def query_tickets(id=None, subject=None, status=None,tags=None,assigned=None,ord
     result = query.order_by(order).all()
     return result
 
-def query_comments(ticket,order=None):
+def query_comments(db, ticket,order=None):
     """Query all comments for a ticket"""
     if order == 'created_at':
         order = Comments.created_at.desc()
@@ -395,7 +413,7 @@ def query_comments(ticket,order=None):
     result = db.session.query(Comments).filter(Comments.ticket == ticket).order_by(order).all()
     return result
 
-def convert_to_dict(items):
+def convert_to_dict(db, items):
     result = []
     try:
         for item in items:

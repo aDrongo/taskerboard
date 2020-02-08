@@ -15,7 +15,12 @@ import modules.forms as Forms
 from modules.assorted import convertRequest
 
 
+# Start application
 app = Flask(__name__)
+
+# Connect to DB
+db = Db.Database('app.db')
+
 
 #TODO Make secret for Production
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
@@ -25,7 +30,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(id):
     """Checks user for login_required"""
-    return Forms.LoginUser(id)
+    return Forms.LoginUser(db, id)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -60,15 +65,15 @@ def logout():
 def users():
     """Manage Users"""
     users=None
-    users = [user for user in Db.get_users()]
+    users = [user for user in Db.get_users(db)]
 
     userInsertForm = Forms.UserInsertForm(request.form)
     userUpdateForm = Forms.UserUpdateForm(request.form)
-    userUpdateForm.username.choices = [(user.username, user.username) for user in Db.get_users()]
+    userUpdateForm.username.choices = [(user.username, user.username) for user in Db.get_users(db)]
 
     # Insert Ticket form
     if userInsertForm.submitInsertUser.data and userInsertForm.validate():
-        result = Forms.user_insert_form(userInsertForm, Db)
+        result = Forms.user_insert_form(db, userInsertForm)
         if result == True:
             flash('Success!')
         else:
@@ -77,7 +82,7 @@ def users():
 
     # Update Ticket form
     if userUpdateForm.submitUpdateUser.data and userUpdateForm.validate():
-        result = Forms.user_update_form(userUpdateForm, Db)
+        result = Forms.user_update_form(db, userUpdateForm)
         if result == True:
             flash('Success!')
         else:
@@ -120,7 +125,7 @@ def home_query(query):
         re_noassigned = re.sub('&?assigned=\w+\.?\w+', '', query)
 
     #Get Tickets based on Query
-    tickets = Db.query_tickets(
+    tickets = Db.query_tickets(db,
             status=requestData.get('status', None),
             tags=requestData.get('tags', None),
             assigned=requestData.get('assigned', None),
@@ -128,7 +133,7 @@ def home_query(query):
             subject=requestData.get('subject', None),
             search=requestData.get('search', None))
 
-    users = [(user.username, user.username) for user in Db.get_users()]
+    users = [(user.username, user.username) for user in Db.get_users(db)]
 
     #Get Display based on Query
     if requestData.get('display') == 'board':
@@ -138,15 +143,15 @@ def home_query(query):
     elif requestData.get('display') == 'index':
         display = 'index.html'
         #if index, get assigned tickets for current user for boards display
-        boards = Db.query_tickets(assigned=current_user.id)
+        boards = Db.query_tickets(db, assigned=current_user.id)
     else:
         display = 'list.html'
 
     # If specific ticket identified, retrieve it
     if 'ticket' in requestList:
         id = requestData['ticket']
-        ticket = Db.query_tickets(id=id)
-        comments = Db.query_comments(requestData['ticket'],'created_at')
+        ticket = Db.query_tickets(db, id=id)
+        comments = Db.query_comments(db, requestData['ticket'],'created_at')
 
         # Initialize forms
         commentForm = Forms.CommentForm(request.form)
@@ -156,13 +161,13 @@ def home_query(query):
 
         # Update Ticket form
         if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
-            result = Forms.ticket_update_form(ticketUpdateForm, Db, id)
+            result = Forms.ticket_update_form(db, ticketUpdateForm, id)
             return redirect(url_for('home_query', query=query))
     
         # Comment form
         if commentForm.submitComment.data and commentForm.validate():
             comment = commentForm.comment.data
-            Db.insert_comment(id, current_user.id, comment)
+            Db.insert_comment(db, id, current_user.id, comment)
             return redirect(url_for('home_query', query=query))
 
     # Initialize insert ticket form
@@ -172,7 +177,7 @@ def home_query(query):
 
     # Insert Ticket Form
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
-        result = Forms.ticket_insert_form(ticketInsertForm, Db, current_user.id)
+        result = Forms.ticket_insert_form(db, ticketInsertForm, current_user.id)
         if requestData.get('display', None):
             re_display = re.sub('&?display=\w+', '', query) + '&display=board'
         return redirect(url_for('home_query', query=(re_display + f'&ticket={result.id}')))
@@ -205,7 +210,7 @@ def api(query):
     else:
         print(query)
         if requestData.get('action') == 'update_ticket':
-            result = Db.update_ticket(
+            result = Db.update_ticket(db,
                 id=requestData['ticket'],
                 subject=requestData.get('subject', None),
                 body=requestData.get('body', None),
@@ -216,7 +221,7 @@ def api(query):
                 assigned=requestData.get('assigned', None),
                 due_by=requestData.get('due_by', None))
         elif requestData.get('action') == 'insert_ticket':
-            result = Db.insert_ticket(
+            result = Db.insert_ticket(db,
                 subject=requestData['subject'],
                 body=requestData.get('body', None),
                 status=requestData.get('status', None),
@@ -227,7 +232,7 @@ def api(query):
                 due_by=requestData.get('due_by', None)
                 )
         elif requestData.get('action') == 'query_tickets':
-            result = Db.query_tickets(
+            result = Db.query_tickets(db,
                 id=requestData.get('ticket', None),
                 subject=requestData.get('subject', None),
                 status=requestData.get('status', None),

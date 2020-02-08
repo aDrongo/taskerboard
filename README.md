@@ -9,11 +9,11 @@
 7. Multiple tags per ticket
 8. Ticket Sorting and Filtering
 9. Manage Users
+10. Search feature
 
 
 ### TODO
 
-* Search feature
 * Take in emails and send out emails. Can use flask-mail
 * PyTests for features
 * Pretty CSS/Reorganize CSS and HTML styling.

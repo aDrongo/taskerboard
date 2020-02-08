@@ -11,10 +11,10 @@ class LoginUser(UserMixin):
     #is_anonymous(boolean)
     #get_id(unicode)
 
-    def __init__(self, username):
+    def __init__(self, db, username):
         """Retrieve user from Db"""
         self.auth = None
-        user = Db.get_user(username)
+        user = Db.get_user(db, username)
         if user is not None:
             self.id = user.username
             self.password = user.password_hash
@@ -86,7 +86,7 @@ class UserUpdateForm(Form):
     password = PasswordField('Password:')
     submitUpdateUser = SubmitField('submit')
 
-def ticket_insert_form(Form, Db, user=None):
+def ticket_insert_form(db, Form, user=None):
     """Insert a Ticket from Form results"""
     subject = Form.subject.data
     body = Form.body.data
@@ -99,11 +99,11 @@ def ticket_insert_form(Form, Db, user=None):
     else:
         assigned = None
     due_by = None
-    Db.insert_ticket(subject=subject,body=body,priority=priority, created_by=created_by, status=status, tags=tags, assigned=assigned, due_by=due_by)
-    result = Db.query_tickets(subject=subject)[0]
+    Db.insert_ticket(db, subject=subject,body=body,priority=priority, created_by=created_by, status=status, tags=tags, assigned=assigned, due_by=due_by)
+    result = Db.query_tickets(db, subject=subject)[0]
     return result
 
-def ticket_update_form(Form, Db, id):
+def ticket_update_form(db, Form, id):
     """"Update a Ticket from Form results"""
     subject = Form.subject.data
     body = Form.body.data
@@ -116,19 +116,19 @@ def ticket_update_form(Form, Db, id):
         assigned = None
     due_by = None
     created_by = Form.created_by.data
-    result = Db.update_ticket(id=id, subject=subject, body=body, status=status, priority=priority, created_by=created_by, assigned=assigned, tags=tags, due_by=due_by)
+    result = Db.update_ticket(db, id=id, subject=subject, body=body, status=status, priority=priority, created_by=created_by, assigned=assigned, tags=tags, due_by=due_by)
     return result
 
-def user_insert_form(Form, Db):
+def user_insert_form(db, Form):
     username = Form.username.data
     email = Form.email.data
     password = Form.password.data
-    result = Db.insert_user(username=username, email=email, password=password)
+    result = Db.insert_user(db, username=username, email=email, password=password)
     return result
 
-def user_update_form(Form, Db):
+def user_update_form(db, Form):
     username = Form.username.data
     email = Form.email.data
     password = Form.password.data
-    result = Db.update_user(username=username, email=email, password=password)
+    result = Db.update_user(db, username=username, email=email, password=password)
     return result
