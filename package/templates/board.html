@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div style='padding: 1% 1%; width: 99vw; height: 93vh'>
-    <div style='height: 98%; width: 820px; overflow: auto; margin: 1%; float: left;'>
+<div class='main-container'>
+    <div class='fixed-container'>
         <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 1 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ query + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %}
         </div>
@@ -14,7 +14,7 @@
             <h3>Working</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 2 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ query + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %}
         </div>
@@ -22,28 +22,44 @@
             <h3>Waiting</h3>
             {% for ticket in tickets %}
             {% if ticket.status.value == 3 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ query + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
                 {% endif %}
             {% endfor %} 
         </div>
         <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Closed</h3>
+            {% set ns = namespace(count=0) %}
             {% for ticket in tickets %}
-                {% if ticket.status.value == 4 %}{% if loop.index < 5 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ query + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
+                {% if ticket.status.value == 4 %}{% set ns.count = ns.count + 1 %}{% if ns.count < 4 %}
+                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
                 {% endif %}{% endif %}
             {% endfor %}
         </div>
     </div>
-    <div style='height: 98%; width: calc(96% - 820px); margin: 1%; float: left; overflow: auto;'>
+    <div class='var-container'>
         {% if noassigned %}
-            <button class='expand-btn' onclick='location.href="{{ noassigned }}";' style='font-size: 8pt;'>All Tickets</button>
+            <button class='dropbtn' onclick='location.href="{{ noassigned }}";' style='font-size: 8pt;'>All Tickets</button>
         {% else %}
-            <button class='expand-btn' onclick='location.href="{{ assigned }}";'style='font-size: 8pt;'>My Tickets</button>
+            <button class='dropbtn' onclick='location.href="{{ assigned }}";' style='font-size: 8pt;'>My Tickets</button>
         {% endif %}
-        <button onclick="showDiv('expandCreate')" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
+        <li class='dropdown'>
+            <button class='dropbtn'>Sort</button>
+            <div class='dropdown-content'>
+              <a href="/{{ queries['order'] + '&order=id' }}">ID</a>
+              <a href="/{{ queries['order'] + '&order=updated_at' }}">Updated At</a>
+              <a href="/{{ queries['order'] + '&order=created_at' }}">Created At</a>
+              <a href="/{{ queries['order'] + '&order=priority' }}">Priority</a>
+              <a href="/{{ queries['order'] + '&order=status' }}">Status</a>
+              {% if queries.get('sorted') == 'asc' %}
+              <a href="/{{ queries['sort'] + '&sort=desc' }}">Descending</a>
+              {% else %}
+              <a href="/{{ queries['sort'] + '&sort=asc' }}">Ascending</a>
+              {% endif %}
+            </div>
+        </li>
+        <button onclick="showDiv('expandCreate')" class='dropbtn'>Create Ticket</button>
         {% if id %}
-        <button onclick="showDiv('expandUpdate')" class='expand-btn' style="font-size: 8pt">Edit Ticket</button>
+        <button onclick="showDiv('expandUpdate')" class='dropbtn'>Edit Ticket</button>
         {% endif %}
         <div id='expandCreate' class='expand-content'>
             <form id='exp1' action="" method="post">

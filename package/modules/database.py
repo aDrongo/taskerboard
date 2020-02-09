@@ -339,7 +339,7 @@ def insert_comment(db, ticket, created_by, body):
         db.session.rollback()
         return False
 
-def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None,order=None, search=None):
+def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None,order=None, search=None, sort=None):
     """Query all tickets with defined filters"""
     # Base Query
     query = db.session.query(Tickets)
@@ -348,17 +348,30 @@ def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None
         return query.filter(Tickets.id == id).first()
     # get Order
     if order == 'updated_at':
-        order = Tickets.updated_at.desc()
+        order = Tickets.updated_at
     elif order == 'created_at':
-        order = Tickets.created_at.desc()
-    elif order == 'id':
-        order = Tickets.id.desc()
+        order = Tickets.created_at
     elif order == 'assigned':
-        order = Tickets.assigned.desc()
+        order = Tickets.assigned
     elif order == 'priority':
-        order = Tickets.priority.asc()
+        order = Db.case([
+                    (Tickets.priority == 'High', Db.literal_column("'3'")),
+                    (Tickets.priority == 'Medium', Db.literal_column("'2'")),
+                    (Tickets.priority == 'Low', Db.literal_column("'1'"))
+                    ])
+    elif order == 'status':
+        order = Db.case([
+                    (Tickets.status == 'Open', Db.literal_column("'4'")),
+                    (Tickets.status == 'Working', Db.literal_column("'3'")),
+                    (Tickets.status == 'Waiting', Db.literal_column("'2'")),
+                    (Tickets.status == 'Closed', Db.literal_column("'1'"))
+                    ])
     else:
-        order = Tickets.id.desc()
+        order = Tickets.id
+    if sort == 'asc':
+        order = order.asc()
+    else:
+        order = order.desc()
     #If we want to return all matches for any attribute
     if search:
         not_null_filters = []

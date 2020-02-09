@@ -3,6 +3,8 @@ import re
 import time
 import json
 import hashlib
+import logging
+import logging.handlers
 from datetime import datetime
 
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
@@ -14,13 +16,14 @@ import modules.database as Db
 import modules.forms as Forms
 from modules.assorted import convertRequest
 
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[logging.handlers.RotatingFileHandler("errors.log", maxBytes=1000000, backupCount=3)])
+logging.info('Running web.py')
 
 # Start application
 app = Flask(__name__)
 
 # Connect to DB
 db = Db.Database('app.db')
-
 
 #TODO Make secret for Production
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
@@ -114,16 +117,21 @@ def home_query(query):
     commentForm = None
     ticketUpdateForm = None
     boards = None
-    re_noassigned = None
+    noassigned = None
 
     # Format query for replacement text insertion
-    re_query = re.sub('&?ticket=\d+', '', query)
-    re_filter = re.sub('&?status=\w+|&?search=\w+|&?assigned=\w+.?\w+', '', query)
-    re_order = re.sub('&?order=\w+', '', query)
-    re_search = re.sub('&?search=\w', '', query)
-    re_assigned = re.sub('&?assigned=\w+\.?\w+', '', query) + f'&assigned={current_user.id}'
+    queries = {}
+    queries['query'] = query
+    queries['ticket'] = re.sub('&?ticket=\d+', '', query)
+    queries['filter'] = re.sub('&?status=\w+|&?search=\w+|&?assigned=\w+.?\w+', '', query)
+    queries['order'] = re.sub('&?order=\w+', '', query)
+    queries['sort'] = re.sub('&?sort=\w+', '', query)
+    queries['search'] = re.sub('&?search=\w', '', query)
+    if 'sort' in requestList:
+        queries['sorted'] = requestData.get('sort')
+    assigned = re.sub('&?assigned=\w+\.?\w+', '', query) + f'&assigned={current_user.id}'
     if 'assigned' in requestList:
-        re_noassigned = re.sub('&?assigned=\w+\.?\w+', '', query)
+        noassigned = re.sub('&?assigned=\w+\.?\w+', '', query)
 
     #Get Tickets based on Query
     tickets = Db.query_tickets(db,
@@ -132,13 +140,16 @@ def home_query(query):
             assigned=requestData.get('assigned', None),
             order=requestData.get('order', None),
             subject=requestData.get('subject', None),
-            search=requestData.get('search', None))
+            search=requestData.get('search', None),
+            sort=requestData.get('sort',None))
 
+    #Data to pass into templates
     users = [(user.username, user.username) for user in Db.get_users(db)]
     tags = [tag for tag in Db.query_tags(db)]
     statuses = [status.name for status in Db.Status]
     priorities = [priority.name for priority in Db.Priority]
 
+    #Convert tags list to string
     def tags_string(list_items):
         """Convert Tags List to String with comma's"""
         string = ""
@@ -154,7 +165,7 @@ def home_query(query):
     elif requestData.get('display') == 'index':
         display = 'index.html'
         #if index, get assigned tickets for current user for boards display
-        boards = Db.query_tickets(db, assigned=current_user.id)
+        boards = Db.query_tickets(db, assigned=current_user.id, order=requestData.get('order', None))
     else:
         display = 'list.html'
 
@@ -199,11 +210,10 @@ def home_query(query):
     # Search Form submission
     if searchForm.submitSearch and searchForm.validate():
         search = searchForm.search.data
-        return redirect(url_for('home_query', query=(re_filter + f"&search={search}")))
-    return render_template(display, tags_string=tags_string, statuses=statuses, priorities=priorities, users=users, tags=tags,
-                            assigned=re_assigned, noassigned=re_noassigned, order=re_order, query=re_query, filter=re_filter, 
-                            id=id, searchForm=searchForm, boards=boards, tickets=tickets, ticket=ticket, ticketInsertForm=ticketInsertForm, 
-                            ticketUpdateForm=ticketUpdateForm, commentForm=commentForm, comments=comments)
+        return redirect(url_for('home_query', query=(queries['filter'] + f"&search={search}")))
+    return render_template(display, tags_string=tags_string, statuses=statuses, priorities=priorities, users=users, tags=tags, queries=queries, 
+                            id=id, searchForm=searchForm, assigned=assigned, noassigned=noassigned, boards=boards, tickets=tickets, ticket=ticket,
+                            ticketInsertForm=ticketInsertForm, ticketUpdateForm=ticketUpdateForm, commentForm=commentForm, comments=comments)
 
 @app.route("/api/<query>")
 def api(query):

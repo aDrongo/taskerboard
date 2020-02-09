@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<div style='padding: 1% 1%; width: 99vw; height: 93vh'>
-    <div style='height: auto; width: calc(96% - 820px); margin: 1%; float: left; overflow: auto;'>
-        <div class='buttonline'>
-            <button onclick="showDiv('expandCreate')" class='expand-btn' style="font-size: 8pt">Create Ticket</button>
+<div class='main-container'>
+    <div class='var-container'>
+        <div class='button-row'>
+            <button onclick="showDiv('expandCreate')" class='dropbtn'>Create Ticket</button>
             <div id='expandCreate' class='expand-content'>
                 <form id='exp1' action="" method="post">
                     <div>
@@ -18,11 +18,11 @@
             <li class='dropdown'>
                 <button class='dropbtn'>Filter</button>
                 <div class='dropdown-content'>
-                  <a href="/{{ filter }}">All</a>
-                  <a href="/{{ filter + '&status=Open' }}">Open</a>
-                  <a href="/{{ filter + '&status=Working' }}">Working</a>
-                  <a href="/{{ filter + '&status=Waiting' }}">Waiting</a>
-                  <a href="/{{ filter + '&status=Closed' }}">Closed</a>
+                  <a href="/{{ queries['filter'] }}">All</a>
+                  <a href="/{{ queries['filter'] + '&status=Open' }}">Open</a>
+                  <a href="/{{ queries['filter'] + '&status=Working' }}">Working</a>
+                  <a href="/{{ queries['filter'] + '&status=Waiting' }}">Waiting</a>
+                  <a href="/{{ queries['filter'] + '&status=Closed' }}">Closed</a>
                   {% if noassigned %}
                   <a href="/{{ noassigned }}">All Tickets</a>
                   {% else %}
@@ -33,10 +33,16 @@
             <li class='dropdown'>
                 <button class='dropbtn'>Sort</button>
                 <div class='dropdown-content'>
-                  <a href="/{{ order + '&order=id' }}">ID</a>
-                  <a href="/{{ order + '&order=updated_at' }}">Updated At</a>
-                  <a href="/{{ order + '&order=created_at' }}">Created At</a>
-                  <a href="/{{ order + '&order=priority' }}">Priority</a>
+                  <a href="/{{ queries['order'] + '&order=id' }}">ID</a>
+                  <a href="/{{ queries['order'] + '&order=updated_at' }}">Updated At</a>
+                  <a href="/{{ queries['order'] + '&order=created_at' }}">Created At</a>
+                  <a href="/{{ queries['order'] + '&order=priority' }}">Priority</a>
+                  <a href="/{{ queries['order'] + '&order=status' }}">Status</a>
+                  {% if queries.get('sorted') == 'asc' %}
+                  <a href="/{{ queries['sort'] + '&sort=desc' }}">Descending</a>
+                  {% else %}
+                  <a href="/{{ queries['sort'] + '&sort=asc' }}">Ascending</a>
+                  {% endif %}
                 </div>
             </li>
             <div class='search-container'>
@@ -97,7 +103,7 @@
                 </table>
             </div>
         </div>
-        <div style='height: 98%; width: 820px; overflow: auto; margin: 1%; float: left;'>
+        <div class='fixed-container'>
         <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Open</h3>
             {% for ticket in boards %}
@@ -124,8 +130,9 @@
         </div>
         <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
             <h3>Closed</h3>
+            {% set ns = namespace(count=0) %}
             {% for ticket in boards %}
-                {% if ticket.status.value == 4 %}{% if loop.index < 5 %}
+                {% if ticket.status.value == 4 %}{% set ns.count = ns.count + 1 %}{% if ns.count < 4 %}
                 <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                 {% endif %}{% endif %}
             {% endfor %}

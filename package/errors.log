@@ -1,0 +1,348 @@
+2020-02-09 12:02:57,238 - INFO - Running web.py
+2020-02-09 12:02:57,253 - INFO -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+2020-02-09 12:02:57,253 - INFO -  * Restarting with stat
+2020-02-09 12:02:57,533 - INFO - Running web.py
+2020-02-09 12:02:57,545 - WARNING -  * Debugger is active!
+2020-02-09 12:02:57,546 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:03:01,320 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:01] "GET /display=index HTTP/1.1" 200 -
+2020-02-09 12:03:01,394 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:01] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:03:01,395 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:01] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:03:04,441 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:04] "GET /display=board HTTP/1.1" 200 -
+2020-02-09 12:03:07,608 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:07] "GET /display=board&ticket=7 HTTP/1.1" 200 -
+2020-02-09 12:03:09,684 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:09] "GET /display=board&ticket=6 HTTP/1.1" 200 -
+2020-02-09 12:03:10,406 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:10] "GET /display=board&ticket=11 HTTP/1.1" 200 -
+2020-02-09 12:03:11,497 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:11] "GET /display=board&ticket=10 HTTP/1.1" 200 -
+2020-02-09 12:03:26,446 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:26] "GET /display=list HTTP/1.1" 200 -
+2020-02-09 12:03:27,684 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:27] "GET /display=list&ticket=11 HTTP/1.1" 200 -
+2020-02-09 12:03:29,442 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:29] "GET /display=list&ticket=12 HTTP/1.1" 200 -
+2020-02-09 12:03:30,306 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:30] "GET /display=list&ticket=8 HTTP/1.1" 200 -
+2020-02-09 12:03:31,793 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:31] "GET /display=list&ticket=5 HTTP/1.1" 200 -
+2020-02-09 12:03:32,890 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:32] "GET /display=list&ticket=3 HTTP/1.1" 200 -
+2020-02-09 12:03:35,119 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:35] "GET / HTTP/1.1" 302 -
+2020-02-09 12:03:35,143 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:35] "GET /display=index HTTP/1.1" 200 -
+2020-02-09 12:03:36,698 - INFO - 127.0.0.1 - - [09/Feb/2020 12:03:36] "GET /display=list HTTP/1.1" 200 -
+2020-02-09 12:04:43,415 - INFO - 127.0.0.1 - - [09/Feb/2020 12:04:43] "GET /display=list&ticket=12 HTTP/1.1" 200 -
+2020-02-09 12:04:45,253 - INFO - 127.0.0.1 - - [09/Feb/2020 12:04:45] "GET /display=list&ticket=9 HTTP/1.1" 200 -
+2020-02-09 12:04:48,195 - INFO - 127.0.0.1 - - [09/Feb/2020 12:04:48] "GET /display=list&ticket=1 HTTP/1.1" 200 -
+2020-02-09 12:05:43,988 - INFO - 127.0.0.1 - - [09/Feb/2020 12:05:43] "GET /display=list&ticket=1 HTTP/1.1" 200 -
+2020-02-09 12:05:44,043 - INFO - 127.0.0.1 - - [09/Feb/2020 12:05:44] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:05:44,043 - INFO - 127.0.0.1 - - [09/Feb/2020 12:05:44] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:06:17,109 - INFO - 127.0.0.1 - - [09/Feb/2020 12:06:17] "GET /display=list&ticket=1 HTTP/1.1" 200 -
+2020-02-09 12:06:17,149 - INFO - 127.0.0.1 - - [09/Feb/2020 12:06:17] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:06:17,149 - INFO - 127.0.0.1 - - [09/Feb/2020 12:06:17] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:06:58,887 - INFO - 127.0.0.1 - - [09/Feb/2020 12:06:58] "GET /display=list&ticket=1 HTTP/1.1" 200 -
+2020-02-09 12:06:58,927 - INFO - 127.0.0.1 - - [09/Feb/2020 12:06:58] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:06:58,927 - INFO - 127.0.0.1 - - [09/Feb/2020 12:06:58] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:07:30,308 - INFO - 127.0.0.1 - - [09/Feb/2020 12:07:30] "GET / HTTP/1.1" 302 -
+2020-02-09 12:07:30,340 - INFO - 127.0.0.1 - - [09/Feb/2020 12:07:30] "GET /display=index HTTP/1.1" 200 -
+2020-02-09 12:07:50,066 - INFO - 127.0.0.1 - - [09/Feb/2020 12:07:50] "GET /display=board HTTP/1.1" 200 -
+2020-02-09 12:07:57,147 - INFO - 127.0.0.1 - - [09/Feb/2020 12:07:57] "GET /display=board&ticket=8 HTTP/1.1" 200 -
+2020-02-09 12:08:27,990 - INFO - 127.0.0.1 - - [09/Feb/2020 12:08:27] "GET /display=board&ticket=8 HTTP/1.1" 200 -
+2020-02-09 12:08:28,048 - INFO - 127.0.0.1 - - [09/Feb/2020 12:08:28] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:08:28,048 - INFO - 127.0.0.1 - - [09/Feb/2020 12:08:28] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:08:38,193 - INFO - 127.0.0.1 - - [09/Feb/2020 12:08:38] "GET /display=board&ticket=10 HTTP/1.1" 200 -
+2020-02-09 12:08:39,520 - INFO - 127.0.0.1 - - [09/Feb/2020 12:08:39] "GET /display=board&ticket=5 HTTP/1.1" 200 -
+2020-02-09 12:09:50,779 - INFO - 127.0.0.1 - - [09/Feb/2020 12:09:50] "GET /display=board&ticket=5 HTTP/1.1" 200 -
+2020-02-09 12:09:50,849 - INFO - 127.0.0.1 - - [09/Feb/2020 12:09:50] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:09:50,849 - INFO - 127.0.0.1 - - [09/Feb/2020 12:09:50] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:10:09,557 - INFO - 127.0.0.1 - - [09/Feb/2020 12:10:09] "GET /display=board&ticket=5 HTTP/1.1" 200 -
+2020-02-09 12:10:09,615 - INFO - 127.0.0.1 - - [09/Feb/2020 12:10:09] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:10:09,615 - INFO - 127.0.0.1 - - [09/Feb/2020 12:10:09] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:11:03,874 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:03] "GET /display=board&ticket=5 HTTP/1.1" 200 -
+2020-02-09 12:11:03,927 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:03] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:11:03,927 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:03] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:11:24,830 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:24] "GET /api/action=update_ticket&ticket=5&status=Waiting HTTP/1.1" 200 -
+2020-02-09 12:11:24,885 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:24] "GET /display=board&ticket=5 HTTP/1.1" 200 -
+2020-02-09 12:11:24,927 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:24] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:11:24,927 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:24] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:11:29,516 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:29] "GET /api/action=update_ticket&ticket=9&status=Open HTTP/1.1" 200 -
+2020-02-09 12:11:29,619 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:29] "GET /display=board&ticket=5 HTTP/1.1" 200 -
+2020-02-09 12:11:29,661 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:29] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:11:29,662 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:29] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:11:35,000 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:35] "GET /display=board&ticket=5&order=priority HTTP/1.1" 200 -
+2020-02-09 12:11:38,458 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:38] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:11:43,772 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:43] "GET /display=board&ticket=5&order=priority&sort=desc HTTP/1.1" 200 -
+2020-02-09 12:11:45,606 - INFO - 127.0.0.1 - - [09/Feb/2020 12:11:45] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:12:12,644 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:12:12,706 - INFO -  * Restarting with stat
+2020-02-09 12:12:13,090 - INFO - Running web.py
+2020-02-09 12:12:13,106 - WARNING -  * Debugger is active!
+2020-02-09 12:12:13,106 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:12:13,263 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:13] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 500 -
+2020-02-09 12:12:13,322 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:13] "GET /display=board&ticket=5&order=priority&sort=asc?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:12:13,323 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:13] "GET /display=board&ticket=5&order=priority&sort=asc?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:12:13,324 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:13] "GET /display=board&ticket=5&order=priority&sort=asc?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:12:13,425 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:13] "GET /display=board&ticket=5&order=priority&sort=asc?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+2020-02-09 12:12:13,440 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:13] "GET /display=board&ticket=5&order=priority&sort=asc?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:12:13,621 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:13] "GET /display=board&ticket=5&order=priority&sort=asc?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:12:22,173 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:12:22,227 - INFO -  * Restarting with stat
+2020-02-09 12:12:22,515 - INFO - Running web.py
+2020-02-09 12:12:22,530 - WARNING -  * Debugger is active!
+2020-02-09 12:12:22,530 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:12:23,340 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:23] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:12:23,376 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:23] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:12:23,377 - INFO - 127.0.0.1 - - [09/Feb/2020 12:12:23] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:13:21,973 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:13:22,024 - INFO -  * Restarting with stat
+2020-02-09 12:13:22,327 - INFO - Running web.py
+2020-02-09 12:13:22,352 - WARNING -  * Debugger is active!
+2020-02-09 12:13:22,353 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:13:24,873 - INFO - 127.0.0.1 - - [09/Feb/2020 12:13:24] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:13:24,919 - INFO - 127.0.0.1 - - [09/Feb/2020 12:13:24] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:13:24,919 - INFO - 127.0.0.1 - - [09/Feb/2020 12:13:24] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:13:54,607 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:13:54,657 - INFO -  * Restarting with stat
+2020-02-09 12:13:54,939 - INFO - Running web.py
+2020-02-09 12:13:54,953 - WARNING -  * Debugger is active!
+2020-02-09 12:13:54,954 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:13:56,730 - INFO - 127.0.0.1 - - [09/Feb/2020 12:13:56] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:13:56,767 - INFO - 127.0.0.1 - - [09/Feb/2020 12:13:56] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:13:56,767 - INFO - 127.0.0.1 - - [09/Feb/2020 12:13:56] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:14:29,197 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:14:29,250 - INFO -  * Restarting with stat
+2020-02-09 12:14:29,561 - INFO - Running web.py
+2020-02-09 12:14:29,575 - WARNING -  * Debugger is active!
+2020-02-09 12:14:29,575 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:14:29,808 - INFO - 127.0.0.1 - - [09/Feb/2020 12:14:29] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:14:29,848 - INFO - 127.0.0.1 - - [09/Feb/2020 12:14:29] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:14:29,849 - INFO - 127.0.0.1 - - [09/Feb/2020 12:14:29] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:20:16,096 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:20:16,152 - INFO -  * Restarting with stat
+2020-02-09 12:20:16,722 - INFO - Running web.py
+2020-02-09 12:20:16,753 - WARNING -  * Debugger is active!
+2020-02-09 12:20:16,753 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:20:20,158 - INFO - 127.0.0.1 - - [09/Feb/2020 12:20:20] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:20:20,195 - INFO - 127.0.0.1 - - [09/Feb/2020 12:20:20] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:20:20,198 - INFO - 127.0.0.1 - - [09/Feb/2020 12:20:20] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:21:01,100 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:21:01,157 - INFO -  * Restarting with stat
+2020-02-09 12:21:01,442 - INFO - Running web.py
+2020-02-09 12:21:01,458 - WARNING -  * Debugger is active!
+2020-02-09 12:21:01,459 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:21:04,074 - INFO - 127.0.0.1 - - [09/Feb/2020 12:21:04] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:21:04,114 - INFO - 127.0.0.1 - - [09/Feb/2020 12:21:04] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:21:04,115 - INFO - 127.0.0.1 - - [09/Feb/2020 12:21:04] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:21:47,802 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:21:47,854 - INFO -  * Restarting with stat
+2020-02-09 12:21:48,132 - INFO - Running web.py
+2020-02-09 12:21:48,148 - WARNING -  * Debugger is active!
+2020-02-09 12:21:48,148 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:21:48,558 - INFO - 127.0.0.1 - - [09/Feb/2020 12:21:48] "GET /display=board&ticket=5&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:21:48,589 - INFO - 127.0.0.1 - - [09/Feb/2020 12:21:48] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:21:48,590 - INFO - 127.0.0.1 - - [09/Feb/2020 12:21:48] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:23:58,212 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:23:58,268 - INFO -  * Restarting with stat
+2020-02-09 12:23:58,566 - INFO - Running web.py
+2020-02-09 12:23:58,580 - WARNING -  * Debugger is active!
+2020-02-09 12:23:58,580 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:24:37,896 - INFO - 127.0.0.1 - - [09/Feb/2020 12:24:37] "GET / HTTP/1.1" 302 -
+2020-02-09 12:24:37,977 - INFO - 127.0.0.1 - - [09/Feb/2020 12:24:37] "GET /display=index HTTP/1.1" 200 -
+2020-02-09 12:27:12,006 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:27:12,061 - INFO -  * Restarting with stat
+2020-02-09 12:27:12,405 - INFO - Running web.py
+2020-02-09 12:27:12,426 - WARNING -  * Debugger is active!
+2020-02-09 12:27:12,427 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:27:14,799 - INFO - 127.0.0.1 - - [09/Feb/2020 12:27:14] "GET /display=index HTTP/1.1" 200 -
+2020-02-09 12:27:14,846 - INFO - 127.0.0.1 - - [09/Feb/2020 12:27:14] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:27:14,846 - INFO - 127.0.0.1 - - [09/Feb/2020 12:27:14] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:27:16,938 - INFO - 127.0.0.1 - - [09/Feb/2020 12:27:16] "GET /display=index HTTP/1.1" 200 -
+2020-02-09 12:27:16,969 - INFO - 127.0.0.1 - - [09/Feb/2020 12:27:16] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:27:16,970 - INFO - 127.0.0.1 - - [09/Feb/2020 12:27:16] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:27:24,515 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:27:24,566 - INFO -  * Restarting with stat
+2020-02-09 12:27:24,876 - INFO - Running web.py
+2020-02-09 12:27:24,890 - WARNING -  * Debugger is active!
+2020-02-09 12:27:24,891 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:30:18,074 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:30:18,133 - INFO -  * Restarting with stat
+2020-02-09 12:30:18,591 - INFO - Running web.py
+2020-02-09 12:30:18,607 - WARNING -  * Debugger is active!
+2020-02-09 12:30:18,608 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:30:20,214 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:20] "GET /display=index HTTP/1.1" 200 -
+2020-02-09 12:30:20,257 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:20] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:30:20,258 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:20] "GET /static/css/template.css HTTP/1.1" 200 -
+2020-02-09 12:30:20,496 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:20] "GET /favicon.ico HTTP/1.1" 200 -
+2020-02-09 12:30:27,915 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:27] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:30:27,977 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:27] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:30:27,978 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:27] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:30:27,978 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:27] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:30:28,059 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:28] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:30:28,118 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:28] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+2020-02-09 12:30:28,215 - INFO - 127.0.0.1 - - [09/Feb/2020 12:30:28] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:33:09,851 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:33:09,900 - INFO -  * Restarting with stat
+2020-02-09 12:33:10,284 - INFO - Running web.py
+2020-02-09 12:33:10,301 - WARNING -  * Debugger is active!
+2020-02-09 12:33:10,302 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:33:13,375 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:13] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:33:13,426 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:13] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:33:13,444 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:13] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:33:13,444 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:13] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:33:13,654 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:13] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:33:30,434 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:33:30,480 - INFO -  * Restarting with stat
+2020-02-09 12:33:30,742 - INFO - Running web.py
+2020-02-09 12:33:30,755 - WARNING -  * Debugger is active!
+2020-02-09 12:33:30,755 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:33:31,917 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:31] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:33:31,957 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:31] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:33:31,959 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:31] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:33:31,960 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:31] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:33:32,209 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:32] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:33:44,855 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:33:44,910 - INFO -  * Restarting with stat
+2020-02-09 12:33:45,213 - INFO - Running web.py
+2020-02-09 12:33:45,228 - WARNING -  * Debugger is active!
+2020-02-09 12:33:45,229 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:33:45,280 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:45] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:33:45,328 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:45] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:33:45,328 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:45] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:33:45,329 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:45] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:33:45,544 - INFO - 127.0.0.1 - - [09/Feb/2020 12:33:45] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:37:01,781 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:37:01,835 - INFO -  * Restarting with stat
+2020-02-09 12:37:02,250 - INFO - Running web.py
+2020-02-09 12:37:02,268 - WARNING -  * Debugger is active!
+2020-02-09 12:37:02,269 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:37:04,570 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:04] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:37:04,618 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:04] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:37:04,618 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:04] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:37:04,618 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:04] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:37:04,836 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:04] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:37:17,396 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:37:17,451 - INFO -  * Restarting with stat
+2020-02-09 12:37:17,740 - INFO - Running web.py
+2020-02-09 12:37:17,753 - WARNING -  * Debugger is active!
+2020-02-09 12:37:17,754 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:37:18,880 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:18] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:37:18,918 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:18] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:37:18,921 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:18] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:37:18,922 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:18] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:37:19,156 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:19] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:37:42,936 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:37:42,987 - INFO -  * Restarting with stat
+2020-02-09 12:37:43,287 - INFO - Running web.py
+2020-02-09 12:37:43,320 - WARNING -  * Debugger is active!
+2020-02-09 12:37:43,321 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:37:45,224 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:45] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:37:45,275 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:45] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:37:45,276 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:45] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:37:45,277 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:45] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:37:45,534 - INFO - 127.0.0.1 - - [09/Feb/2020 12:37:45] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:37:59,433 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:37:59,487 - INFO -  * Restarting with stat
+2020-02-09 12:37:59,759 - INFO - Running web.py
+2020-02-09 12:37:59,774 - WARNING -  * Debugger is active!
+2020-02-09 12:37:59,774 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:38:18,918 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:38:18,963 - INFO -  * Restarting with stat
+2020-02-09 12:38:19,272 - INFO - Running web.py
+2020-02-09 12:38:19,289 - WARNING -  * Debugger is active!
+2020-02-09 12:38:19,289 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:38:22,704 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:22] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:38:22,746 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:22] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:38:22,750 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:22] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:38:22,750 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:22] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:38:22,978 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:22] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:38:30,367 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:38:30,429 - INFO -  * Restarting with stat
+2020-02-09 12:38:30,715 - INFO - Running web.py
+2020-02-09 12:38:30,730 - WARNING -  * Debugger is active!
+2020-02-09 12:38:30,730 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:38:32,769 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:32] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:38:32,816 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:32] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:38:32,816 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:32] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:38:32,817 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:32] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:38:33,056 - INFO - 127.0.0.1 - - [09/Feb/2020 12:38:33] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:48:15,023 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:48:15,083 - INFO -  * Restarting with stat
+2020-02-09 12:48:15,432 - INFO - Running web.py
+2020-02-09 12:48:15,451 - WARNING -  * Debugger is active!
+2020-02-09 12:48:15,451 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:48:17,626 - INFO - 127.0.0.1 - - [09/Feb/2020 12:48:17] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:48:17,734 - INFO - 127.0.0.1 - - [09/Feb/2020 12:48:17] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:48:17,734 - INFO - 127.0.0.1 - - [09/Feb/2020 12:48:17] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:48:17,735 - INFO - 127.0.0.1 - - [09/Feb/2020 12:48:17] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:48:18,035 - INFO - 127.0.0.1 - - [09/Feb/2020 12:48:18] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:48:59,822 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:48:59,877 - INFO -  * Restarting with stat
+2020-02-09 12:49:00,149 - INFO - Running web.py
+2020-02-09 12:49:00,162 - WARNING -  * Debugger is active!
+2020-02-09 12:49:00,163 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:49:11,234 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:49:11,282 - INFO -  * Restarting with stat
+2020-02-09 12:49:11,581 - INFO - Running web.py
+2020-02-09 12:49:11,594 - WARNING -  * Debugger is active!
+2020-02-09 12:49:11,594 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:49:14,727 - INFO - 127.0.0.1 - - [09/Feb/2020 12:49:14] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:49:14,770 - INFO - 127.0.0.1 - - [09/Feb/2020 12:49:14] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:49:14,773 - INFO - 127.0.0.1 - - [09/Feb/2020 12:49:14] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:49:14,773 - INFO - 127.0.0.1 - - [09/Feb/2020 12:49:14] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:49:15,003 - INFO - 127.0.0.1 - - [09/Feb/2020 12:49:15] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:49:58,922 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:49:58,977 - INFO -  * Restarting with stat
+2020-02-09 12:49:59,289 - INFO - Running web.py
+2020-02-09 12:49:59,302 - WARNING -  * Debugger is active!
+2020-02-09 12:49:59,303 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:50:01,846 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:01] "GET /display=index&order=priority HTTP/1.1" 500 -
+2020-02-09 12:50:01,886 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:01] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2020-02-09 12:50:01,887 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:01] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2020-02-09 12:50:01,887 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:01] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
+2020-02-09 12:50:02,120 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:02] "GET /display=index&order=priority?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2020-02-09 12:50:37,622 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:50:37,671 - INFO -  * Restarting with stat
+2020-02-09 12:50:37,955 - INFO - Running web.py
+2020-02-09 12:50:37,970 - WARNING -  * Debugger is active!
+2020-02-09 12:50:37,970 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:50:38,462 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:38] "GET /display=index&order=priority HTTP/1.1" 200 -
+2020-02-09 12:50:38,502 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:38] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:50:38,510 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:38] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:50:38,740 - INFO - 127.0.0.1 - - [09/Feb/2020 12:50:38] "GET /favicon.ico HTTP/1.1" 200 -
+2020-02-09 12:51:07,159 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:51:07,207 - INFO -  * Restarting with stat
+2020-02-09 12:51:07,498 - INFO - Running web.py
+2020-02-09 12:51:07,512 - WARNING -  * Debugger is active!
+2020-02-09 12:51:07,513 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:51:10,126 - INFO - 127.0.0.1 - - [09/Feb/2020 12:51:10] "GET /display=index&order=priority HTTP/1.1" 200 -
+2020-02-09 12:51:10,164 - INFO - 127.0.0.1 - - [09/Feb/2020 12:51:10] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:51:10,164 - INFO - 127.0.0.1 - - [09/Feb/2020 12:51:10] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:52:17,014 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:52:17,057 - INFO -  * Restarting with stat
+2020-02-09 12:52:17,333 - INFO - Running web.py
+2020-02-09 12:52:17,352 - WARNING -  * Debugger is active!
+2020-02-09 12:52:17,353 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:52:18,639 - INFO - 127.0.0.1 - - [09/Feb/2020 12:52:18] "GET /display=index&order=priority HTTP/1.1" 200 -
+2020-02-09 12:52:18,667 - INFO - 127.0.0.1 - - [09/Feb/2020 12:52:18] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:52:18,668 - INFO - 127.0.0.1 - - [09/Feb/2020 12:52:18] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:52:22,949 - INFO - 127.0.0.1 - - [09/Feb/2020 12:52:22] "GET /display=index&order=status HTTP/1.1" 200 -
+2020-02-09 12:53:15,248 - INFO - 127.0.0.1 - - [09/Feb/2020 12:53:15] "GET /display=index&order=status HTTP/1.1" 200 -
+2020-02-09 12:53:15,284 - INFO - 127.0.0.1 - - [09/Feb/2020 12:53:15] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:53:15,284 - INFO - 127.0.0.1 - - [09/Feb/2020 12:53:15] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:53:19,292 - INFO - 127.0.0.1 - - [09/Feb/2020 12:53:19] "GET /display=index&order=priority HTTP/1.1" 200 -
+2020-02-09 12:53:23,453 - INFO - 127.0.0.1 - - [09/Feb/2020 12:53:23] "GET /display=index&order=priority&sort=asc HTTP/1.1" 200 -
+2020-02-09 12:53:38,619 - INFO - 127.0.0.1 - - [09/Feb/2020 12:53:38] "GET /display=index&sort=asc&order=id HTTP/1.1" 200 -
+2020-02-09 12:53:54,818 - INFO - 127.0.0.1 - - [09/Feb/2020 12:53:54] "GET /display=index&sort=asc&order=status HTTP/1.1" 200 -
+2020-02-09 12:54:09,076 - INFO -  * Detected change in '/home/ben.gardner.admin@internal.northwestmotorsportinc.com/MyProjects/taskerboard/package/modules/database.py', reloading
+2020-02-09 12:54:09,130 - INFO -  * Restarting with stat
+2020-02-09 12:54:09,425 - INFO - Running web.py
+2020-02-09 12:54:09,438 - WARNING -  * Debugger is active!
+2020-02-09 12:54:09,439 - INFO -  * Debugger PIN: 783-880-754
+2020-02-09 12:54:09,569 - INFO - 127.0.0.1 - - [09/Feb/2020 12:54:09] "GET /display=index&sort=asc&order=status HTTP/1.1" 200 -
+2020-02-09 12:54:09,604 - INFO - 127.0.0.1 - - [09/Feb/2020 12:54:09] "GET /static/css/template.css HTTP/1.1" 304 -
+2020-02-09 12:54:09,604 - INFO - 127.0.0.1 - - [09/Feb/2020 12:54:09] "GET /static/js/main.js HTTP/1.1" 304 -
+2020-02-09 12:54:17,403 - INFO - 127.0.0.1 - - [09/Feb/2020 12:54:17] "GET /display=index&order=status&sort=desc HTTP/1.1" 200 -
+2020-02-09 12:54:27,447 - INFO - 127.0.0.1 - - [09/Feb/2020 12:54:27] "GET /display=index&sort=desc&order=priority HTTP/1.1" 200 -
+2020-02-09 12:54:35,016 - INFO - 127.0.0.1 - - [09/Feb/2020 12:54:35] "GET /display=index&sort=desc&order=priority&assigned=sample.user HTTP/1.1" 200 -
+2020-02-09 12:54:36,831 - INFO - 127.0.0.1 - - [09/Feb/2020 12:54:36] "GET /display=index&sort=desc&order=priority HTTP/1.1" 200 -
+2020-02-09 12:56:04,571 - INFO - 127.0.0.1 - - [09/Feb/2020 12:56:04] "GET /display=board HTTP/1.1" 200 -
+2020-02-09 12:56:06,488 - INFO - 127.0.0.1 - - [09/Feb/2020 12:56:06] "GET /display=board&ticket=9 HTTP/1.1" 200 -
+2020-02-09 12:56:08,090 - INFO - 127.0.0.1 - - [09/Feb/2020 12:56:08] "GET /display=board&ticket=8 HTTP/1.1" 200 -
+2020-02-09 12:56:17,844 - INFO - 127.0.0.1 - - [09/Feb/2020 12:56:17] "GET /display=board&ticket=8&order=priority HTTP/1.1" 200 -
+2020-02-09 12:56:28,640 - INFO - 127.0.0.1 - - [09/Feb/2020 12:56:28] "GET /display=board&order=priority HTTP/1.1" 200 -
+2020-02-09 12:56:32,836 - INFO - 127.0.0.1 - - [09/Feb/2020 12:56:32] "GET /display=board&ticket=1 HTTP/1.1" 200 -
+2020-02-09 12:57:25,675 - INFO - 127.0.0.1 - - [09/Feb/2020 12:57:25] "GET /display=board&ticket=1&order=priority HTTP/1.1" 200 -
+2020-02-09 12:57:27,040 - INFO - 127.0.0.1 - - [09/Feb/2020 12:57:27] "GET /display=board&order=priority&ticket=2 HTTP/1.1" 200 -
+2020-02-09 12:57:28,027 - INFO - 127.0.0.1 - - [09/Feb/2020 12:57:28] "GET /display=board&order=priority&ticket=3 HTTP/1.1" 200 -
+2020-02-09 12:57:29,472 - INFO - 127.0.0.1 - - [09/Feb/2020 12:57:29] "GET /display=board&order=priority&ticket=10 HTTP/1.1" 200 -
+2020-02-09 12:57:30,704 - INFO - 127.0.0.1 - - [09/Feb/2020 12:57:30] "GET /display=board&order=priority&ticket=8 HTTP/1.1" 200 -
