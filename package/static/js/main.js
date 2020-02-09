@@ -50,3 +50,39 @@ function assign(user, id) {
   xmlHttp.open("GET", theUrl, true);
   xmlHttp.send(null);
 }
+
+function tag(tag, id) {
+  var theUrl = new String(`/api/action=update_ticket&ticket=${id}&tags=${tag}`)
+  console.log(theUrl)
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function() { 
+    if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+      location.reload();
+  }
+  xmlHttp.open("GET", theUrl, true);
+  xmlHttp.send(null);
+}
+
+function status(status, id) {
+  var theUrl = new String(`/api/action=update_ticket&ticket=${id}&status=${status}`)
+  console.log(theUrl)
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function() { 
+    if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+      location.reload();
+  }
+  xmlHttp.open("GET", theUrl, true);
+  xmlHttp.send(null);
+}
+
+function priority(priority, id) {
+  var theUrl = new String(`/api/action=update_ticket&ticket=${id}&priority=${priority}`)
+  console.log(theUrl)
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function() { 
+    if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+      location.reload();
+  }
+  xmlHttp.open("GET", theUrl, true);
+  xmlHttp.send(null);
+}

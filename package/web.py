@@ -26,6 +26,7 @@ db = Db.Database('app.db')
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = "/login"
 
 @login_manager.user_loader
 def load_user(id):
@@ -35,12 +36,12 @@ def load_user(id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Allows User to login"""
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and len(current_user.id) > 0:
         flash('Logged in successfully.')
         return redirect(url_for('home'))
     loginForm = Forms.LoginForm(request.form)
     if loginForm.submitLogin.data and loginForm.validate():
-        user = Forms.LoginUser(loginForm.username.data)
+        user = Forms.LoginUser(db, loginForm.username.data)
         if user.auth is False:
             flash('Failed to Login, bad username')
             return redirect(url_for('login'))
@@ -134,6 +135,16 @@ def home_query(query):
             search=requestData.get('search', None))
 
     users = [(user.username, user.username) for user in Db.get_users(db)]
+    tags = [tag for tag in Db.query_tags(db)]
+    statuses = [status.name for status in Db.Status]
+    priorities = [priority.name for priority in Db.Priority]
+
+    def tags_string(list_items):
+        """Convert Tags List to String with comma's"""
+        string = ""
+        for item in list_items:
+            string = string + "," + item.body
+        return string[1:]
 
     #Get Display based on Query
     if requestData.get('display') == 'board':
@@ -186,13 +197,13 @@ def home_query(query):
     searchForm = Forms.TicketSearchForm(request.form)
 
     # Search Form submission
-    print(searchForm.search.data)
     if searchForm.submitSearch and searchForm.validate():
         search = searchForm.search.data
         return redirect(url_for('home_query', query=(re_filter + f"&search={search}")))
-
-    return render_template(display, users=users, assigned=re_assigned, noassigned=re_noassigned, order=re_order, query=re_query, filter=re_filter, id=id, searchForm=searchForm, boards=boards, tickets=tickets, ticket=ticket, ticketInsertForm=ticketInsertForm, ticketUpdateForm=ticketUpdateForm, commentForm=commentForm, comments=comments)
-
+    return render_template(display, tags_string=tags_string, statuses=statuses, priorities=priorities, users=users, tags=tags,
+                            assigned=re_assigned, noassigned=re_noassigned, order=re_order, query=re_query, filter=re_filter, 
+                            id=id, searchForm=searchForm, boards=boards, tickets=tickets, ticket=ticket, ticketInsertForm=ticketInsertForm, 
+                            ticketUpdateForm=ticketUpdateForm, commentForm=commentForm, comments=comments)
 
 @app.route("/api/<query>")
 def api(query):

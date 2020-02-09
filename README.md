@@ -1,4 +1,4 @@
-### Complated
+### Completed
 
 1. Database for Tickets, Users and Comments
 2. Display to show tickets as a traditional list
@@ -10,10 +10,12 @@
 8. Ticket Sorting and Filtering
 9. Manage Users
 10. Search feature
+11. Quick editing from list menu
 
 
 ### TODO
 
+* Due in X time
 * Take in emails and send out emails. Can use flask-mail
 * PyTests for features
 * Pretty CSS/Reorganize CSS and HTML styling.

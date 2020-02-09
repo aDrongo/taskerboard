@@ -209,3 +209,17 @@ li.dropdown {
   font-size: 12pt;
   border: none;
 }
+
+.click {
+  cursor: pointer;
+}
+
+.hidden-scroll {
+  position: absolute;
+  background-color:white;
+  width: auto;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  cursor: pointer;
+}

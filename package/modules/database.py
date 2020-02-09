@@ -197,6 +197,7 @@ def check_password(db, username, password):
 def insert_tags(db, tags):
     tags = tags.split(',')
     for tag in tags:
+        tag = tag.strip()
         tag_tmp = Tags(body=tag)
         db.session.add(tag_tmp)
     try:
@@ -206,8 +207,10 @@ def insert_tags(db, tags):
         db.session.rollback()
         return False
 
-def query_tags(db, tags):
+def query_tags(db, tags=None):
     query = db.session.query(Tags)
+    if tags is None:
+        return query
     not_null_filters = []
     try:
         tags = tags.split(',')
