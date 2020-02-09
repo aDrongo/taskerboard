@@ -18,7 +18,7 @@ body {
     position: relative;
     overflow: auto;
     font-size:10pt;
-    padding: 60px 0 0 0;
+    padding: 30px 0 0 0;
     transition: all 0.4s ease-in;
   }
 *, ::after, ::before {
@@ -59,7 +59,7 @@ nav {
   top: 0;
   position: fixed;
 }
-@media screen and (max-width: 600px){
+@media screen and (max-width: 400px){
   .navicon {
     display: none;
   }
@@ -95,10 +95,12 @@ nav {
 
 .button-row {
   overflow: hidden;
+  float: left;
   padding: 5px;
+  width: 100%;
 }
 
-.button-row .search-container {
+.search-container {
   float: right;
   padding: 5px;
 }
@@ -108,6 +110,12 @@ nav {
   margin-top: 8px;
   font-size: 12pt;
   border: none;
+}
+
+.table {
+  float: left;
+  width: 100%;
+  height: 50vh;
 }
 .click {
   cursor: pointer;
@@ -123,6 +131,10 @@ nav {
   overflow-y: auto;
   overflow-x: hidden;
   cursor: pointer;
+}
+
+.hidden-list {
+  color: black;
 }
 
 .fresh-btn:hover {

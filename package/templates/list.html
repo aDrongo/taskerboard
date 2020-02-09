@@ -2,72 +2,72 @@
 {% block content %}
 <div class='main-container'>
     <div class='var-container'>
-        <div class='buttonline'>
-        <button onclick="showDiv('expandCreate')" class='dropbtn'>Create Ticket</button>
-        <button onclick="showDiv('expandUpdate')" class='dropbtn'>Edit Ticket</button>
-        <div id='expandCreate' class='expand-content'>
-            <form id='exp1' action="" method="post">
-                <div>
-                    Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketInsertForm.tags(class_="submit-frm") }} Body:{{ ticketInsertForm.body(class_="fresh-frm") }}            </div>
-                <div style='margin: 10px'>
-                    {{ ticketInsertForm.submitInsertTicket }}
-                </div>
-            </form>
-        </div>
-        {% if ticket %}
-        <div id='expandUpdate' class='expand-content'>
-            <form id='exp2' action="" method="post">
-                <div>
-                    Subject:{{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
-                    Priority:<select id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
-                    Status:<select id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
-                    Assigned:<select id="assigned" name="assigned">{% for assigned in ticketUpdateForm.assigned.choices %}<option value="{{ assigned[0] }}"{% if assigned[0] == ticket.assigned[0] %} selected="selected"{% endif %}>{{ assigned[0] }}</option>{% endfor %}</select>
-                    Tags:{{ ticketUpdateForm.tags(class_='submit-frm', value=tags) }}
-                    Created&nbsp;By:{{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
-                    <textarea id="body" class="fresh-frm" name="body" required="">{{ ticket.body }}</textarea>
-                </div>
-                <div style='margin: 10px'>
-                    {{ ticketUpdateForm.submitUpdateTicket }}
-                </div>
-            </form>
-        </div>
-        {% endif %}
-        <li class='dropdown'>
-            <button class='dropbtn'>Filter</button>
-            <div class='dropdown-content'>
-              <a href="/{{ queries['filter'] }}">All</a>
-              <a href="/{{ queries['filter'] + '&status=Open' }}">Open</a>
-              <a href="/{{ queries['filter'] + '&status=Working' }}">Working</a>
-              <a href="/{{ queries['filter'] + '&status=Waiting' }}">Waiting</a>
-              <a href="/{{ queries['filter'] + '&status=Closed' }}">Closed</a>
-              {% if noassigned %}
-              <a href="/{{ noassigned }}">All Tickets</a>
-              {% else %}
-              <a href="{{ assigned }}">My Tickets</a>
-              {% endif %}
+        <div class='button-row'>
+            <button onclick="showDiv('expandCreate')" class='dropbtn'>Create Ticket</button>
+            <button onclick="showDiv('expandUpdate')" class='dropbtn'>Edit Ticket</button>
+            <div id='expandCreate' class='expand-content'>
+                <form id='exp1' action="" method="post">
+                    <div>
+                        Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketInsertForm.tags(class_="submit-frm") }} Body:{{ ticketInsertForm.body(class_="fresh-frm") }}            </div>
+                    <div style='margin: 10px'>
+                        {{ ticketInsertForm.submitInsertTicket }}
+                    </div>
+                </form>
             </div>
-        </li>
-        <li class='dropdown'>
-            <button class='dropbtn'>Sort</button>
-            <div class='dropdown-content'>
-              <a href="/{{ queries['order'] + '&order=id' }}">ID</a>
-              <a href="/{{ queries['order'] + '&order=updated_at' }}">Updated At</a>
-              <a href="/{{ queries['order'] + '&order=created_at' }}">Created At</a>
-              <a href="/{{ queries['order'] + '&order=priority' }}">Priority</a>
-              <a href="/{{ queries['order'] + '&order=status' }}">Status</a>
-              {% if queries.get('sorted') == 'asc' %}
-              <a href="/{{ queries['sort'] + '&sort=desc' }}">Descending</a>
-              {% else %}
-              <a href="/{{ queries['sort'] + '&sort=asc' }}">Ascending</a>
-              {% endif %}
+            {% if ticket %}
+            <div id='expandUpdate' class='expand-content'>
+                <form id='exp2' action="" method="post">
+                    <div>
+                        Subject:{{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
+                        Priority:<select id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
+                        Status:<select id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
+                        Assigned:<select id="assigned" name="assigned">{% for assigned in ticketUpdateForm.assigned.choices %}<option value="{{ assigned[0] }}"{% if assigned[0] == ticket.assigned[0] %} selected="selected"{% endif %}>{{ assigned[0] }}</option>{% endfor %}</select>
+                        Tags:{{ ticketUpdateForm.tags(class_='submit-frm', value=tags) }}
+                        Created&nbsp;By:{{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
+                        <textarea id="body" class="fresh-frm" name="body" required="">{{ ticket.body }}</textarea>
+                    </div>
+                    <div style='margin: 10px'>
+                        {{ ticketUpdateForm.submitUpdateTicket }}
+                    </div>
+                </form>
             </div>
-        </li>
-            <div class='search-container'>
-            <form id='search' action="" method="post">
-            {{ searchForm.search(style="font-size: 8pt; margin: 0 5px") }}{{ searchForm.submitSearch(style="font-size: 8pt") }}
-            </form></div>
+            {% endif %}
+            <li class='dropdown'>
+                <button class='dropbtn'>Filter</button>
+                <div class='dropdown-content'>
+                    {% if noassigned %}
+                    <!--<a href="/{{ noassigned }}">All Tickets</a>-->
+                    {% else %}
+                    <a href="{{ assigned }}">My Tickets</a>
+                    {% endif %}
+                <a href="/{{ queries['filter'] }}">All</a>
+                <a href="/{{ queries['filter'] + '&status=Open' }}">Open</a>
+                <a href="/{{ queries['filter'] + '&status=Working' }}">Working</a>
+                <a href="/{{ queries['filter'] + '&status=Waiting' }}">Waiting</a>
+                <a href="/{{ queries['filter'] + '&status=Closed' }}">Closed</a>
+                </div>
+            </li>
+            <li class='dropdown'>
+                <button class='dropbtn'>Sort</button>
+                <div class='dropdown-content'>
+                <a href="/{{ queries['order'] + '&order=id' }}">ID</a>
+                <a href="/{{ queries['order'] + '&order=updated_at' }}">Updated At</a>
+                <a href="/{{ queries['order'] + '&order=created_at' }}">Created At</a>
+                <a href="/{{ queries['order'] + '&order=priority' }}">Priority</a>
+                <a href="/{{ queries['order'] + '&order=status' }}">Status</a>
+                {% if queries.get('sorted') == 'asc' %}
+                <a href="/{{ queries['sort'] + '&sort=desc' }}">Descending</a>
+                {% else %}
+                <a href="/{{ queries['sort'] + '&sort=asc' }}">Ascending</a>
+                {% endif %}
+                </div>
+            </li>
+                <div class='search-container'>
+                <form id='search' action="" method="post">
+                {{ searchForm.search(style="font-size: 8pt; margin: 0 5px") }}{{ searchForm.submitSearch(style="font-size: 8pt") }}
+                </form></div>
         </div>
-        <div style='overflow: auto;'>
+        <div class='table'>
             <table>
                 <tr><th style='width: 5%'>ID</th>
                     <th style='width: 45%'>Subject</th>

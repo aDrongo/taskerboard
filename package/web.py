@@ -123,7 +123,7 @@ def home_query(query):
     queries = {}
     queries['query'] = query
     queries['ticket'] = re.sub('&?ticket=\d+', '', query)
-    queries['filter'] = re.sub('&?status=\w+|&?search=\w+|&?assigned=\w+.?\w+', '', query)
+    queries['filter'] = re.sub('&?status=\w+|&?search=\w+', '', query)
     queries['order'] = re.sub('&?order=\w+', '', query)
     queries['sort'] = re.sub('&?sort=\w+', '', query)
     queries['search'] = re.sub('&?search=\w', '', query)

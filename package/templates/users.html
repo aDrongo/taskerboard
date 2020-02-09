@@ -1,39 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
-<div style='padding: 1%; width: 99vw; height: 93vh'>
-    <button onclick="showDiv('create')" class='expand-btn' style="font-size: 8pt">Create User</button>
-    <button onclick="showDiv('update')" class='expand-btn' style="font-size: 8pt">Edit User</button>
-    <div style='width:40%;'>
-    <table>
-        <tr><th>Username</th><th>Email</th></tr>
-        {% for user in users %}
-        <tr><td>{{ user.username }}</td><td>{{ user.email }}</td></tr>
-        {% endfor %}
-    </table>
+<div class='main-container'>
+    <div class='fixed-container'>
+        <div class='button-row'>
+        <button onclick="showDiv('create')" class='dropbtn'>Create User</button>
+        <button onclick="showDiv('update')" class='dropbtn'>Edit User</button>
+        </div>
+        <div class='table'>
+        <table>
+            <tr><th>Username</th><th>Email</th></tr>
+            {% for user in users %}
+            <tr><td>{{ user.username }}</td><td>{{ user.email }}</td></tr>
+            {% endfor %}
+        </table>
+        </div>
+        <div id='create' class='expand-content'>
+            <form id='1' action="" method="post">
+                <div>
+                    Username:{{ userInsertForm.username }} 
+                    Email:{{ userInsertForm.email }} 
+                    Password:{{ userInsertForm.password }}
+                </div>
+                <div style='margin: 10px'>
+                    {{ userInsertForm.submitInsertUser }}
+                </div>
+            </form>
+        </div>
+        <div id='update' class='expand-content'>
+            <form id='2' action="" method="post">
+                <div>
+                    User:<select id="username" name="username">{% for username in userUpdateForm.username.choices %}<option value="{{ username[0] }}">{{ username[0] }}</option>{% endfor %}</select>
+                    Email:{{ userUpdateForm.email }}
+                    Password:{{ userUpdateForm.password }}
+                </div>
+                <div style='margin: 10px'>
+                    {{ userUpdateForm.submitUpdateUser }}
+                </div>
+            </form>
+        </div>
     </div>
-    <div id='create' class='expand-content'>
-        <form id='1' action="" method="post">
-            <div>
-                Username:{{ userInsertForm.username }} 
-                Email:{{ userInsertForm.email }} 
-                Password:{{ userInsertForm.password }}
-            </div>
-            <div style='margin: 10px'>
-                {{ userInsertForm.submitInsertUser }}
-            </div>
-          </form>
-    </div>
-    <div id='update' class='expand-content'>
-        <form id='2' action="" method="post">
-            <div>
-                User:<select id="username" name="username">{% for username in userUpdateForm.username.choices %}<option value="{{ username[0] }}">{{ username[0] }}</option>{% endfor %}</select>
-                Email:{{ userUpdateForm.email }}
-                Password:{{ userUpdateForm.password }}
-            </div>
-            <div style='margin: 10px'>
-                {{ userUpdateForm.submitUpdateUser }}
-            </div>
-        </form>
-      </div>
 </div>
 {% endblock %}

@@ -18,16 +18,16 @@
             <li class='dropdown'>
                 <button class='dropbtn'>Filter</button>
                 <div class='dropdown-content'>
+                    {% if noassigned %}
+                    <a href="/{{ noassigned }}">All Tickets</a>
+                    {% else %}
+                    <a href="{{ assigned }}">My Tickets</a>
+                    {% endif %}
                   <a href="/{{ queries['filter'] }}">All</a>
                   <a href="/{{ queries['filter'] + '&status=Open' }}">Open</a>
                   <a href="/{{ queries['filter'] + '&status=Working' }}">Working</a>
                   <a href="/{{ queries['filter'] + '&status=Waiting' }}">Waiting</a>
                   <a href="/{{ queries['filter'] + '&status=Closed' }}">Closed</a>
-                  {% if noassigned %}
-                  <a href="/{{ noassigned }}">All Tickets</a>
-                  {% else %}
-                  <a href="{{ assigned }}">My Tickets</a>
-                  {% endif %}
                 </div>
             </li>
             <li class='dropdown'>
@@ -50,7 +50,7 @@
             {{ searchForm.search(style="font-size: 8pt; margin: 0 5px") }}{{ searchForm.submitSearch(style="font-size: 8pt") }}
             </form></div>
             </div>
-            <div style='display: flex; overflow: auto;'>
+            <div class='table'>
                 <table>
                     <tr><th style='width: 5%'>ID</th>
                         <th style='width: 45%'>Subject</th>
@@ -67,16 +67,16 @@
                         <td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td>
                         <!-- Status -->
                         <td class='selected'><a><div class='click' onclick='showDiv("status{{ tick.id }}")'>{{ tick.status.name }}</div><div class='hidden-scroll' style='display: none;' id='status{{ tick.id }}'><!--
-                        --><ul>{% for status in statuses %}<li style='color: black;'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for status in statuses %}<li class='hidden-list'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li><br>{% endfor %}</ul></div></a></td>
                         <!-- Priority -->
                         <td class='selected'><a><div class='click' onclick='showDiv("priority{{ tick.id }}")'>{{ tick.priority.name }}</div><div class='hidden-scroll' style='display: none;' id='priority{{ tick.id }}'><!--
-                        --><ul>{% for pri in priorities %}<li style='color: black;'><a onclick='priority("{{ pri }}",{{ tick.id }})'>{{ pri }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for pri in priorities %}<li class='hidden-list'><a onclick='priority("{{ pri }}",{{ tick.id }})'>{{ pri }}</a></li><br>{% endfor %}</ul></div></a></td>
                         <!-- Assigned -->
                         <td class='selected'><a><div class='click' onclick='showDiv("assigned{{ tick.id }}")'>{% if tick.assigned[0] %}{{ tick.assigned[0] }}{% else %}____{% endif %}</div><div class='hidden-scroll' style='display: none;' id='assigned{{ tick.id }}'><!--
-                        --><ul>{% for user in users %}<li style='color: black;'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for user in users %}<li class='hidden-list'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}</ul></div></a></td>
                         <!-- Tags -->
                         <td class='selected'><a><div class='click' onclick='showDiv("tags{{ tick.id }}")'>{% if tick.tags[0] %}{{ tags_string(tick.tags) }}{% else %}____{% endif %}</div><div class='hidden-scroll' style='display: none;' id='tags{{ tick.id }}'><!--
-                        --><ul>{% for tag in tags %}<li style='color: black;'><a onclick='tag("{{ tag.body }}",{{ tick.id }})'>{{ tag.body }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for tag in tags %}<li class='hidden-list'><a onclick='tag("{{ tag.body }}",{{ tick.id }})'>{{ tag.body }}</a></li><br>{% endfor %}</ul></div></a></td>
                         <td class='selected'>{{ tick.updated_at[5:-3] }}</td>
                         <td class='selected'>{{ tick.created_by }}</td>
                         <td class='selected'>{{ tick.due_by }}</td></tr>
@@ -85,16 +85,16 @@
                         <td><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td>
                         <!-- Status -->
                         <td><a><div class='click' onclick='showDiv("status{{ tick.id }}")'>{{ tick.status.name }}</div><div class='hidden-scroll' style='display: none;' id='status{{ tick.id }}'><!--
-                        --><ul>{% for status in statuses %}<li style='color: black;'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for status in statuses %}<li class='hidden-list'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li><br>{% endfor %}</ul></div></a></td>
                         <!-- Priority -->
                         <td><a><div class='click' onclick='showDiv("priority{{ tick.id }}")'>{{ tick.priority.name }}</div><div class='hidden-scroll' style='display: none;' id='priority{{ tick.id }}'><!--
-                        --><ul>{% for pri in priorities %}<li style='color: black;'><a onclick='priority("{{ pri }}",{{ tick.id }})'>{{ pri }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for pri in priorities %}<li class='hidden-list'><a onclick='priority("{{ pri }}",{{ tick.id }})'>{{ pri }}</a></li><br>{% endfor %}</ul></div></a></td>
                         <!-- Assigned -->
                         <td><a><div class='click' onclick='showDiv("assigned{{ tick.id }}")'>{% if tick.assigned[0] %}{{ tick.assigned[0] }}{% else %}____{% endif %}</div><div class='hidden-scroll' style='display: none;' id='assigned{{ tick.id }}'><!--
-                        --><ul>{% for user in users %}<li style='color: black;'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for user in users %}<li class='hidden-list'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}</ul></div></a></td>
                         <!-- Tags -->
                         <td><a><div class='click' onclick='showDiv("tags{{ tick.id }}")'>{% if tick.tags[0] %}{{ tags_string(tick.tags) }}{% else %}____{% endif %}</div><div class='hidden-scroll' style='display: none;' id='tags{{ tick.id }}'><!--
-                        --><ul>{% for tag in tags %}<li style='color: black;'><a onclick='tag("{{ tag.body }}",{{ tick.id }})'>{{ tag.body }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for tag in tags %}<li class='hidden-list'><a onclick='tag("{{ tag.body }}",{{ tick.id }})'>{{ tag.body }}</a></li><br>{% endfor %}</ul></div></a></td>
                         <td>{{ tick.updated_at[5:-3] }}</td>
                         <td>{{ tick.created_by }}</td>
                         <td>{{ tick.due_by }}</td></tr>

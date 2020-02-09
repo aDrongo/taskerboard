@@ -1,1 +1,7 @@
 .vscode/
+venv/
+.pytest_cache/
+errors.log
+app.db
+__pychache__/
+*/__pycache__/
