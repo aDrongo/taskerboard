@@ -80,11 +80,11 @@ def internal_error(error):
 def settings():
     """Manage Settings"""
     users=None
-    users = [user for user in Db.get_users(db)]
+    users = [user for user in Db.query_users(db)]
 
     userInsertForm = Forms.UserInsertForm(request.form)
     userUpdateForm = Forms.UserUpdateForm(request.form)
-    userUpdateForm.username.choices = [(user.username, user.username) for user in Db.get_users(db)]
+    userUpdateForm.username.choices = [(user.username, user.username) for user in users]
 
     # Download Form
 
@@ -103,7 +103,8 @@ def settings():
             tags = ''
             for tag in ticket.get('tags'):
                 tag = tag.get("body")
-                tags = tags + f'{tag},'
+                tags = tags + f',{tag}'
+            tags = tags[1:]
             assigned = ''
             for user in ticket.get('assigned'):
                 user = user.get("username")
@@ -189,7 +190,7 @@ def home_query(query):
             sort=requestData.get('sort',None))
 
     # Data to pass into templates
-    users = [(user.username, user.username) for user in Db.get_users(db)]
+    users = [(user.username, user.username) for user in Db.query_users(db)]
     tags = [tag for tag in Db.query_tags(db)]
     statuses = [status.name for status in Db.Status]
     priorities = [priority.name for priority in Db.Priority]

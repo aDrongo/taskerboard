@@ -16,7 +16,7 @@ class LoginUser(UserMixin):
     def __init__(self, db, username):
         """Retrieve user from Db"""
         self.auth = None
-        user = Db.get_user(db, username)
+        user = Db.query_users(db, username)[0]
         if user is not None:
             self.id = user.username
             self.password = user.password_hash

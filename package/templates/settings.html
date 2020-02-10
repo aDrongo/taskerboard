@@ -6,14 +6,6 @@
         <button onclick="showDiv('create')" class='dropbtn'>Create User</button>
         <button onclick="showDiv('update')" class='dropbtn'>Edit User</button>
         </div>
-        <div class='table'>
-        <table>
-            <tr><th>Username</th><th>Email</th></tr>
-            {% for user in users %}
-            <tr><td>{{ user.username }}</td><td>{{ user.email }}</td></tr>
-            {% endfor %}
-        </table>
-        </div>
         <div id='create' class='expand-content'>
             <form id='1' action="" method="post">
                 <div>
@@ -37,6 +29,14 @@
                     {{ userUpdateForm.submitUpdateUser }}
                 </div>
             </form>
+        </div>
+        <div class='table'>
+        <table>
+            <tr><th>Username</th><th>Email</th></tr>
+            {% for user in users %}
+            <tr><td>{{ user.username }}</td><td>{{ user.email }}</td></tr>
+            {% endfor %}
+        </table>
         </div>
     </div>
     <div class='var-container'>
