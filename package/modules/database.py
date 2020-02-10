@@ -98,6 +98,7 @@ class Tickets(Base):
         subject = self.subject,
         body = self.body,
         created_at = self.created_at,
+        updated_at = self.updated_at,
         due_by = self.due_by,
         created_by = self.created_by,
         assigned = [item.to_dict_user() for item in self.assigned],
@@ -178,14 +179,6 @@ def delete_user(db, username):
         db.session.rollback()
         return False
 
-def get_user(db, username):
-    result = db.session.query(User).filter(User.username == f'{username}').first()
-    return result
-
-def get_users(db):
-    result = db.session.query(User).all()
-    return result
-
 def check_password(db, username, password):
     hash = hashlib.md5()
     password = password.encode()
@@ -207,23 +200,6 @@ def insert_tags(db, tags):
         db.session.rollback()
         return False
 
-def query_tags(db, tags=None):
-    query = db.session.query(Tags)
-    if tags is None:
-        return query
-    not_null_filters = []
-    try:
-        tags = tags.split(',')
-    except:
-        pass
-    for tag in tags:
-        tag = tag.strip()
-        if db.session.query(Tags).filter(Tags.body.is_(tag)).first():
-            not_null_filters.append(Tags.body.is_(tag))
-    if len(not_null_filters) > 0:
-        return query.filter(Db.or_(*not_null_filters)).all()
-    else:
-        return None
 
 def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=None, tags=None, assigned=None, due_by=None):
     """Insert Ticket"""
@@ -260,7 +236,7 @@ def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=
     if created_by:
         insert.created_by = f'{created_by}'
     if assigned:
-        users = db.session.query(User).filter(User.username.is_(assigned)).all()
+        users = query_users(db, assigned)
         insert.assigned = [user for user in users]
     if due_by:
         insert.due_by = f'{due_by}'
@@ -419,6 +395,42 @@ def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None
     # Run Query
     result = query.order_by(order).all()
     return result
+
+def query_tags(db, tags=None):
+    query = db.session.query(Tags)
+    if tags is None:
+        return query
+    not_null_filters = []
+    try:
+        tags = tags.split(',')
+    except:
+        pass
+    for tag in tags:
+        tag = tag.strip()
+        if db.session.query(Tags).filter(Tags.body.is_(tag)).first():
+            not_null_filters.append(Tags.body.is_(tag))
+    if len(not_null_filters) > 0:
+        return query.filter(Db.or_(*not_null_filters)).all()
+    else:
+        return None
+
+def query_users(db, users=None):
+    query = db.session.query(User)
+    if users is None:
+        return query
+    not_null_filters = []
+    try:
+        users = users.split(',')
+    except:
+        pass
+    for user in users:
+        user = user.strip()
+        if db.session.query(User).filter(User.username.is_(user)).first():
+            not_null_filters.append(User.username.is_(user))
+    if len(not_null_filters) > 0:
+        return query.filter(Db.or_(*not_null_filters)).all()
+    else:
+        return None
 
 def query_comments(db, ticket,order=None):
     """Query all comments for a ticket"""

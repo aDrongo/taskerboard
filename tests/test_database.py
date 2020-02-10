@@ -16,24 +16,24 @@ def test_insert_user(database):
     Db.insert_user(database, 'test', 'test@contoso.com', '1234')
     Db.insert_user(database, 'tester', 'tester@contoso.com', '1234')
     Db.insert_user(database, 'testing', 'someone@contoso.com', '1234')
-    user = Db.get_user(database, 'test')
-    assert user.username == 'test'
-    assert user.email == 'test@contoso.com'
+    user = Db.query_users(database, 'test')
+    assert user[0].username == 'test'
+    assert user[0].email == 'test@contoso.com'
 
 def test_check_password(database):
     assert Db.check_password(database, 'test', '1234')
 
 def test_update_user(database):
     Db.update_user(database, 'test', 'different@contoso.com', '5678')
-    user = Db.get_user(database, 'test')
-    assert user.email == 'different@contoso.com'
+    user = Db.query_users(database, 'test')
+    assert user[0].email == 'different@contoso.com'
     assert Db.check_password(database, 'test', '5678')
 
 def test_delete_user(database):
-    user = Db.get_user(database, 'testing')
+    user = Db.query_users(database, 'testing')[0]
     assert user.username == 'testing'
     assert Db.delete_user(database, 'testing') == True
-    assert Db.get_user(database, 'testing') == None
+    assert Db.query_users(database, 'testing') == None
 
 def test_insert_tags(database):
     Db.insert_tags(database, 'test')

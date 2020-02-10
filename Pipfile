@@ -12,6 +12,7 @@ wtforms = "*"
 sqlalchemy = "*"
 pipfile = "*"
 flask-login = "*"
+flask-wtf = "*"
 
 [requires]
 python_version = "3.7"

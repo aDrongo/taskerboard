@@ -1,8 +1,10 @@
 import os
 import re
+import csv
 import time
 import json
 import hashlib
+import requests
 import logging
 import logging.handlers
 from datetime import datetime
@@ -64,16 +66,58 @@ def logout():
     flash('Logged Out')
     return redirect(url_for('login'))
 
-@app.route("/users", methods=['GET','POST'])
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
+@app.route("/settings", methods=['GET','POST'])
 @login_required
-def users():
-    """Manage Users"""
+def settings():
+    """Manage Settings"""
     users=None
     users = [user for user in Db.get_users(db)]
 
     userInsertForm = Forms.UserInsertForm(request.form)
     userUpdateForm = Forms.UserUpdateForm(request.form)
     userUpdateForm.username.choices = [(user.username, user.username) for user in Db.get_users(db)]
+
+    # Download Form
+
+
+    # Import Form
+    importDataForm = Forms.ImportDataForm()
+
+    if importDataForm.validate_on_submit():
+        filepath = os.getcwd() + "/upload"
+        importDataForm.file.data.save(filepath)
+        with open(filepath) as file:
+            data = json.load(file)
+        os.remove(filepath)
+
+        for ticket in data:
+            tags = ''
+            for tag in ticket.get('tags'):
+                tag = tag.get("body")
+                tags = tags + f'{tag},'
+            assigned = ''
+            for user in ticket.get('assigned'):
+                user = user.get("username")
+                assigned = assigned + f'{user},'
+            Db.insert_ticket(db,
+                subject=ticket['subject'],
+                body=ticket.get('body', None),
+                status=ticket.get('status', None),
+                priority=ticket.get('priority', None),
+                tags=tags,
+                created_by=ticket.get('created_by', None),
+                assigned=assigned,
+                due_by=ticket.get('due_by', None)
+                )
 
     # Insert Ticket form
     if userInsertForm.submitInsertUser.data and userInsertForm.validate():
@@ -82,7 +126,7 @@ def users():
             flash('Success!')
         else:
             flash('Failed!')
-        return redirect(url_for('users'))
+        return redirect(url_for('settings'))
 
     # Update Ticket form
     if userUpdateForm.submitUpdateUser.data and userUpdateForm.validate():
@@ -91,9 +135,9 @@ def users():
             flash('Success!')
         else:
             flash('Failed!')
-        return redirect(url_for('users'))
+        return redirect(url_for('settings'))
 
-    return render_template('users.html', users=users, userInsertForm=userInsertForm, userUpdateForm=userUpdateForm)
+    return render_template('settings.html', users=users, userInsertForm=userInsertForm, userUpdateForm=userUpdateForm, importDataForm=importDataForm)
 
 @app.route("/", methods=['GET','POST'])
 @login_required
@@ -105,12 +149,12 @@ def home():
 @login_required
 def home_query(query):
     """Main webpage, dynamically generate from url string"""
-    #Split data
+    # Split data
     requestData = convertRequest(query)
-    #Get List of Keys
+    # Get List of Keys
     requestList = list(requestData)
 
-    #Pass variables as None if nothing set for them
+    # Pass variables as None if nothing set for them
     id = None
     ticket = None
     comments = None
@@ -133,7 +177,8 @@ def home_query(query):
     if 'assigned' in requestList:
         noassigned = re.sub('&?assigned=\w+\.?\w+', '', query)
 
-    #Get Tickets based on Query
+
+    # Get Tickets based on Query
     tickets = Db.query_tickets(db,
             status=requestData.get('status', None),
             tags=requestData.get('tags', None),
@@ -143,13 +188,13 @@ def home_query(query):
             search=requestData.get('search', None),
             sort=requestData.get('sort',None))
 
-    #Data to pass into templates
+    # Data to pass into templates
     users = [(user.username, user.username) for user in Db.get_users(db)]
     tags = [tag for tag in Db.query_tags(db)]
     statuses = [status.name for status in Db.Status]
     priorities = [priority.name for priority in Db.Priority]
 
-    #Convert tags list to string
+    # Convert tags list to string
     def tags_string(list_items):
         """Convert Tags List to String with comma's"""
         string = ""
@@ -157,7 +202,7 @@ def home_query(query):
             string = string + "," + item.body
         return string[1:]
 
-    #Get Display based on Query
+    # Get Display based on Query
     if requestData.get('display') == 'board':
         display = 'board.html'
     elif requestData.get('display') == 'list':
@@ -181,12 +226,12 @@ def home_query(query):
         ticketUpdateForm.assigned.choices = users
         ticketUpdateForm.assigned.choices.append(('None', 'None'))
 
-        # Update Ticket form
+        # Submit Update Ticket form
         if ticketUpdateForm.submitUpdateTicket.data and ticketUpdateForm.validate():
             result = Forms.ticket_update_form(db, ticketUpdateForm, id)
             return redirect(url_for('home_query', query=query))
     
-        # Comment form
+        # Submit Comment form
         if commentForm.submitComment.data and commentForm.validate():
             comment = commentForm.comment.data
             Db.insert_comment(db, id, current_user.id, comment)
@@ -197,7 +242,7 @@ def home_query(query):
     ticketInsertForm.assigned.choices = users
     ticketInsertForm.assigned.choices.append(('None', 'None'))
 
-    # Insert Ticket Form
+    # Submit Insert Ticket Form
     if ticketInsertForm.submitInsertTicket.data and ticketInsertForm.validate():
         result = Forms.ticket_insert_form(db, ticketInsertForm, current_user.id)
         if requestData.get('display', None):
@@ -207,7 +252,7 @@ def home_query(query):
     # Intialize search form
     searchForm = Forms.TicketSearchForm(request.form)
 
-    # Search Form submission
+    # Submit Search Form submission
     if searchForm.submitSearch and searchForm.validate():
         search = searchForm.search.data
         return redirect(url_for('home_query', query=(queries['filter'] + f"&search={search}")))
@@ -252,6 +297,10 @@ def api(query):
                 assigned=requestData.get('assigned', None),
                 due_by=requestData.get('due_by', None)
                 )
+        elif requestData.get('action') == 'insert_tags':
+            result = Db.insert_tags(db,
+                tags=requestData.get('tags', None)
+                )
         elif requestData.get('action') == 'query_tickets':
             result = Db.query_tickets(db,
                 id=requestData.get('ticket', None),
@@ -263,12 +312,12 @@ def api(query):
                 )
         else: 
             result = {"result": 1, "description": "failure", "message": 'Messed up'}
-    try:
-        result = json.dumps(result)
-    except:
-        result = Db.convert_to_dict(result)
-        result = json.dumps(result)
-    return result
+        try:
+            result = json.dumps(result)
+        except:
+            result = Db.convert_to_dict(db, result)
+            result = json.dumps(result)
+        return result
 
 # export environment='dev' for no ssl or debugging
 if __name__ == "__main__":

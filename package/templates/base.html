@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>LDAP Device Surveyor</title>
+    <title>Taskerboard</title>
     <link rel="stylesheet" href="{{ url_for('static',    filename='css/template.css') }}">
   </head>
   <body>
@@ -12,7 +12,7 @@
         <li><a href="/">Home</a></li>
         <li><a href="/display=list">Tasks</a></li>
         <li><a href="/display=board">Board</a></li>
-        <li><a href="/users">Users</a></li>
+        <li><a href="/settings">Settings</a></li>
       </ul>
       <ul class='navicon'>
         {% if current_user.is_authenticated %}

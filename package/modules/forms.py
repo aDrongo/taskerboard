@@ -1,5 +1,7 @@
-from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField, PasswordField, BooleanField, SelectMultipleField
+from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField, PasswordField, BooleanField, SelectMultipleField, FileField
 from wtforms.fields.html5 import EmailField
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from flask_login import UserMixin
 import modules.database as Db
 import hashlib
@@ -85,6 +87,10 @@ class UserUpdateForm(Form):
     email = EmailField('Email:')
     password = PasswordField('Password:')
     submitUpdateUser = SubmitField('submit')
+
+class ImportDataForm(FlaskForm):
+    """WTform for Importing data"""
+    file = FileField()
 
 def ticket_insert_form(db, Form, user=None):
     """Insert a Ticket from Form results"""
