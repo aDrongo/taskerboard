@@ -9,23 +9,31 @@ import logging
 import logging.handlers
 from datetime import datetime
 
+
+#import flaskext.mail as Mail
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 from flask import Flask, render_template, Response, redirect, url_for, request, flash, abort, session
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField, PasswordField
 from wtforms.fields.html5 import EmailField
+from imapclient import IMAPClient
+import pyzmail
 
 import modules.database as Db
 import modules.forms as Forms
-from modules.assorted import convertRequest
+from modules.assorted import convertRequest, Load_Config
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[logging.handlers.RotatingFileHandler("errors.log", maxBytes=1000000, backupCount=3)])
 logging.info('Running web.py')
+
+#config = Load_Config()
 
 # Start application
 app = Flask(__name__)
 
 # Connect to DB
 db = Db.Database('app.db')
+#if config.get('mail', None):
+#    mail = Mail.Mail(app)
 
 #TODO Make secret for Production
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
@@ -319,6 +327,65 @@ def api(query):
             result = Db.convert_to_dict(db, result)
             result = json.dumps(result)
         return result
+
+@app.route("/mail/receive")
+def mail_receieve():
+    mail_username = os.environ['mail_user']
+    mail_password = os.environ['mail_pass']
+    mail_server = os.environ['mail_server']
+    mail_connection = IMAPClient(mail_server, use_uid=True)
+
+    with mail_connection as c:
+        c.login(mail_username,mail_password)
+        c.select_folder('INBOX', readonly=True)
+        #messages = server.sort('ARRIVAL')
+        UIDs = c.search(['ALL'])
+        print(UIDs)
+        messages = c.fetch([UIDs[-1]], ['Body[]', 'FLAGS'])
+        message = messages[list(messages)[0]][b'BODY[]']
+        pyzmessage = pyzmail.PyzMessage.factory(message)
+        from_address = pyzmessage.get_address('from')[1]
+        from_user = pyzmessage.get_address('from')[0]
+        cc = pyzmessage.get_adresses('cc')
+        subject = pyzmessage.get_subject()
+        body = pyzmessage.html_part.get_payload().decode('UTF-8')
+        #body = pyzmessage.text_part.get_payload().decode('UTF-8')
+
+    result = f'{from_address} <br>{from_user} <br>{subject} <br>{body}'
+    return result
+
+@app.route("/mail/send/<details>")
+def mail_send(details):
+    """Send Mail
+    MAIL_SERVER : default ‘localhost’
+    MAIL_PORT : default 25
+    MAIL_USE_TLS : default False
+    MAIL_USE_SSL : default False
+    MAIL_DEBUG : default app.debug
+    MAIL_USERNAME : default None
+    MAIL_PASSWORD : default None
+    DEFAULT_MAIL_SENDER : default None """
+    #Split data
+    requestData = convertRequest(query)
+    #Get List of Keys
+    requestList = list(requestData)
+
+    #msg = Message("String")
+
+    #Recipients
+    #msg.recipients = ['example@test.com']
+    #msg.add_recipient('example2@test.com)
+
+    #Body
+    #msg.body = "testing"
+    #msg.html = "<b>testing</b>"
+
+    #Attachments
+    #with app.open_resource("image.png") as fp:
+    #msg.attach("image.png", "image/png", fp.read())
+
+    #Send
+    #mail.send(msg)
 
 # export environment='dev' for no ssl or debugging
 if __name__ == "__main__":

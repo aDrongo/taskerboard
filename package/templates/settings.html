@@ -41,14 +41,16 @@
     </div>
     <div class='var-container'>
         <button onclick="showDiv('importTickets')" class='dropbtn'>Import Tickets</button>
+        <button onclick="window.open('/api/action=query_tickets');" class='dropbtn'>Export Tickets</button>
         <div id='importTickets' class='expand-content' style='display: none'>
+            <p style='margin: 5px;'>Please upload in JSON list format, see export for example</p>
             <form id='3' action='' method='post' enctype="multipart/form-data">
                 {{ importDataForm.hidden_tag() }}
                 {{ importDataForm.file }}
-                <input type='submit'>
+                <input type='submit' value='Submit'>
             </form>
         </div>
-        <button onclick="window.open('/api/action=query_tickets');" class='dropbtn'>Export Tickets</button>
+
     </div>
 </div>
 {% endblock %}
