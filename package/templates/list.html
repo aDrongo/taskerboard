@@ -22,7 +22,7 @@
                         Priority:<select id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
                         Status:<select id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
                         Assigned:<select id="assigned" name="assigned">{% for assigned in ticketUpdateForm.assigned.choices %}<option value="{{ assigned[0] }}"{% if assigned[0] == ticket.assigned[0] %} selected="selected"{% endif %}>{{ assigned[0] }}</option>{% endfor %}</select>
-                        Tags:{{ ticketUpdateForm.tags(class_='submit-frm', value=tags) }}
+                        Tags:{{ ticketUpdateForm.tags(class_='submit-frm', value=tags_string(ticket.tags)) }}
                         Created&nbsp;By:{{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
                         <textarea id="body" class="fresh-frm" name="body" required="">{{ ticket.body }}</textarea>
                     </div>
@@ -40,11 +40,11 @@
                     {% else %}
                     <a href="{{ assigned }}">My Tickets</a>
                     {% endif %}
-                <a href="/{{ queries['filter'] }}">All</a>
-                <a href="/{{ queries['filter'] + '&status=Open' }}">Open</a>
-                <a href="/{{ queries['filter'] + '&status=Working' }}">Working</a>
-                <a href="/{{ queries['filter'] + '&status=Waiting' }}">Waiting</a>
-                <a href="/{{ queries['filter'] + '&status=Closed' }}">Closed</a>
+                <a href="/{{ queries['status'] }}">All</a>
+                <a href="/{{ queries['status'] + '&status=Open' }}">Open</a>
+                <a href="/{{ queries['status'] + '&status=Working' }}">Working</a>
+                <a href="/{{ queries['status'] + '&status=Waiting' }}">Waiting</a>
+                <a href="/{{ queries['status'] + '&status=Closed' }}">Closed</a>
                 </div>
             </li>
             <li class='dropdown'>

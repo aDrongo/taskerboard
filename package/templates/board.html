@@ -77,7 +77,7 @@
                     Subject:{{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
                     Priority:<select id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
                     Status:<select id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
-                    Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketUpdateForm.tags(class_='submit-frm', value=tags) }}
+                    Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketUpdateForm.tags(class_='submit-frm', value=tags_string(ticket.tags)) }}
                     Created&nbsp;By:{{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
                      <br>
                     <textarea id="body" class="fresh-frm" name="body" required="">{{ ticket.body }}</textarea>

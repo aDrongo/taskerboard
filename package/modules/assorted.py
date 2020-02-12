@@ -26,3 +26,17 @@ def Load_Config():
         print('Config file not loaded')
         raise e
     return config
+
+def query_args(query, *args):
+    import re
+    queries = {}
+    for arg in args:
+        queries[arg] = re.sub(f'&?{arg}=.*(?=&)*', '', query)
+    return queries
+
+def tags_string(list_items):
+    """Convert Tags List to String with comma's"""
+    string = ""
+    for item in list_items:
+        string = string + "," + item.body
+    return string[1:]

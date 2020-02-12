@@ -3,8 +3,12 @@ from wtforms.fields.html5 import EmailField
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from flask_login import UserMixin
-import modules.database as Db
+from flask import request
 import hashlib
+
+import modules.database as Db
+import modules.models as Models
+
 
 class LoginUser(UserMixin):
     """User for Flask Session"""
@@ -47,6 +51,11 @@ class CommentForm(Form):
     comment = TextAreaField('Comment:')
     submitComment = SubmitField('submit')
 
+    def insert_comment(self, db, id, user_id):
+        comment = self.comment.data
+        result = Db.insert_comment(db, ticket=id, created_by=user_id, body=comment)
+        return result
+
 class TicketInsertForm(Form):
     """WTForm for Inserting a Ticket"""
     subject = TextField('Subject:', [validators.required(), validators.length(max=140)])
@@ -58,6 +67,23 @@ class TicketInsertForm(Form):
     assigned = SelectField('Assigned:')
     submitInsertTicket = SubmitField('submit')
 
+    def ticket_insert(self, db, user=None):
+        """Insert a Ticket from Form results"""
+        subject = self.subject.data
+        body = self.body.data
+        priority = Models.Priority[f'{self.priority.data}'].value
+        tags = self.tags.data
+        status = Models.Status[f'{self.status.data}'].value
+        created_by = user
+        if self.assigned.data and self.assigned.data != 'None':
+            assigned = self.assigned.data
+        else:
+            assigned = None
+        due_by = None
+        Db.insert_ticket(db, subject=subject,body=body,priority=priority, created_by=created_by, status=status, tags=tags, assigned=assigned, due_by=due_by)
+        result = Db.query_tickets(db, subject=subject)[0]
+        return result
+
 class TicketUpdateForm(Form):
     """WTForm for Updating a Ticket"""
     subject = TextField('Subject:', [validators.required(), validators.length(max=140)])
@@ -68,6 +94,22 @@ class TicketUpdateForm(Form):
     created_by = TextField('Created By:')
     assigned = SelectField('Assigned:')
     submitUpdateTicket = SubmitField('submit')
+
+    def ticket_update(self, db, id):
+        """"Update a Ticket from Form results"""
+        subject = self.subject.data
+        body = self.body.data
+        priority = Models.Priority[f'{self.priority.data}'].value
+        tags = self.tags.data
+        status = Models.Status[f'{self.status.data}'].value
+        if self.assigned.data and self.assigned.data != 'None':
+            assigned = self.assigned.data
+        else:
+            assigned = None
+        due_by = None
+        created_by = self.created_by.data
+        result = Db.update_ticket(db, id=id, subject=subject, body=body, status=status, priority=priority, created_by=created_by, assigned=assigned, tags=tags, due_by=due_by)
+        return result
 
 class TicketSearchForm(Form):
     """WTForm for Searching Tickets"""
@@ -81,6 +123,13 @@ class UserInsertForm(Form):
     password = PasswordField('Password:', [validators.required(), validators.length(max=140)])
     submitInsertUser = SubmitField('submit')
 
+    def user_insert_form(self, db):
+        username = self.username.data
+        email = self.email.data
+        password = self.password.data
+        result = Db.insert_user(db, username=username, email=email, password=password)
+        return result
+
 class UserUpdateForm(Form):
     """WTForm for Updating a User"""
     username = SelectField('Username:')
@@ -88,53 +137,32 @@ class UserUpdateForm(Form):
     password = PasswordField('Password:')
     submitUpdateUser = SubmitField('submit')
 
+    def user_update_form(self, db):
+        username = self.username.data
+        email = self.email.data
+        password = self.password.data
+        result = Db.update_user(db, username=username, email=email, password=password)
+        return result
+
 class ImportDataForm(FlaskForm):
     """WTform for Importing data"""
     file = FileField()
 
-def ticket_insert_form(db, Form, user=None):
-    """Insert a Ticket from Form results"""
-    subject = Form.subject.data
-    body = Form.body.data
-    priority = Db.Priority[f'{Form.priority.data}'].value
-    tags = Form.tags.data
-    status = Db.Status[f'{Form.status.data}'].value
-    created_by = user
-    if Form.assigned.data and Form.assigned.data != 'None':
-        assigned = Form.assigned.data
-    else:
-        assigned = None
-    due_by = None
-    Db.insert_ticket(db, subject=subject,body=body,priority=priority, created_by=created_by, status=status, tags=tags, assigned=assigned, due_by=due_by)
-    result = Db.query_tickets(db, subject=subject)[0]
-    return result
+class Forms():
+    """Class to hold Forms"""
+    ticketUpdateForm = None
+    commentForm = None
 
-def ticket_update_form(db, Form, id):
-    """"Update a Ticket from Form results"""
-    subject = Form.subject.data
-    body = Form.body.data
-    priority = Db.Priority[f'{Form.priority.data}'].value
-    tags = Form.tags.data
-    status = Db.Status[f'{Form.status.data}'].value
-    if Form.assigned.data and Form.assigned.data != 'None':
-        assigned = Form.assigned.data
-    else:
-        assigned = None
-    due_by = None
-    created_by = Form.created_by.data
-    result = Db.update_ticket(db, id=id, subject=subject, body=body, status=status, priority=priority, created_by=created_by, assigned=assigned, tags=tags, due_by=due_by)
-    return result
+    def __init__(self, db, ticket=None, user_id=None):
+        users = [(user.username, user.username) for user in Db.query_users(db)]
+        self.searchForm = TicketSearchForm(request.form)
+        self.ticketInsertForm = TicketInsertForm(request.form)
+        self.ticketInsertForm.assigned.choices = users
+        self.ticketInsertForm.assigned.choices.append(('None', 'None'))
 
-def user_insert_form(db, Form):
-    username = Form.username.data
-    email = Form.email.data
-    password = Form.password.data
-    result = Db.insert_user(db, username=username, email=email, password=password)
-    return result
+        if ticket.id:
+            self.ticketUpdateForm = TicketUpdateForm(request.form)
+            self.ticketUpdateForm.assigned.choices = users
 
-def user_update_form(db, Form):
-    username = Form.username.data
-    email = Form.email.data
-    password = Form.password.data
-    result = Db.update_user(db, username=username, email=email, password=password)
-    return result
+            if user_id:
+                self.commentForm = CommentForm(request.form)

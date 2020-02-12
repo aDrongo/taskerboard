@@ -1,128 +1,12 @@
+import hashlib
 import sqlalchemy as Db
 from datetime import datetime
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
-import enum
-import hashlib
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
-# For class to create table
+import modules.models as Models
+
 Base = declarative_base()
-
-class Priority(enum.Enum):
-    """Priority Levels"""
-    High = 1
-    Medium = 2
-    Low = 3
-
-class Status(enum.Enum):
-    """Status Levels"""
-    Open = 1
-    Working = 2
-    Waiting = 3
-    Closed = 4
-
-#Many to many table for Users to Tickets
-assigned_table = Db.Table('assigned', Base.metadata,
-    Db.Column('users_username', Db.String(140), Db.ForeignKey('users.username')),
-    Db.Column('assigned_tickets_id', Db.String(140), Db.ForeignKey('tickets.id'))
-)
-
-#Many to many table for Tags to Tickets
-tag_groups_table = Db.Table('tag_groups', Base.metadata,
-    Db.Column('tag_tickets_id', Db.String(140), Db.ForeignKey('tickets.id')),
-    Db.Column('tags_id', Db.String(140), Db.ForeignKey('tags.id'))
-)
-
-class User(Base):
-    """Class for Users table"""
-    __tablename__ = 'users'
-    username = Db.Column(Db.String(64), primary_key=True)
-    email = Db.Column(Db.String(120), unique=True)
-    password_hash = Db.Column(Db.String(128))
-
-    def __repr__(self):
-        return f'{self.username}'
-    
-    def to_dict(self):
-        return dict(
-            username=self.username,
-            email = self.email,
-            password_hash = self.password_hash)
-    
-    def to_dict_user(self):
-        return dict(
-            username=self.username,
-            email = self.email)
-
-class Tags(Base):
-    """Class for Tags table"""
-    __tablename__ = 'tags'
-    id = Db.Column(Db.Integer, primary_key=True)
-    body = Db.Column(Db.String(140))
-
-    def __repr__(self):
-        return f'{self.body}'
-
-    def to_dict(self):
-        return dict(
-        id=self.id,
-        body = self.body)
-    
-    def to_string(self):
-        return f'{self.body}'
-
-
-class Tickets(Base):
-    """Class for Tickets table"""
-    __tablename__ = 'tickets'
-    id = Db.Column(Db.Integer, primary_key=True)
-    status = Db.Column(Db.Enum(Status))
-    priority = Db.Column(Db.Enum(Priority))
-    subject = Db.Column(Db.String(140))
-    body = Db.Column(Db.String(1280))
-    created_at = Db.Column(Db.String(19), default=str(datetime.utcnow())[:19])
-    updated_at = Db.Column(Db.String(19), default=str(datetime.utcnow())[:19])
-    due_by = Db.Column(Db.String(19))
-    created_by = Db.Column(Db.String(140))
-    assigned = relationship("User", secondary=assigned_table)
-    tags = relationship("Tags", secondary=tag_groups_table)
-
-    def __repr__(self):
-        return f'{self.subject}'
-
-    def to_dict(self):
-        return dict(
-        id=self.id,
-        status= self.status.name,
-        priority = self.priority.name,
-        subject = self.subject,
-        body = self.body,
-        created_at = self.created_at,
-        updated_at = self.updated_at,
-        due_by = self.due_by,
-        created_by = self.created_by,
-        assigned = [item.to_dict_user() for item in self.assigned],
-        tags = [item.to_dict() for item in self.tags])
-
-class Comments(Base):
-    """Class for Comments table"""
-    __tablename__ = 'comments'
-    id = Db.Column(Db.Integer, primary_key=True)
-    ticket = Db.Column(Db.Integer, Db.ForeignKey('tickets.id'))
-    created_at = Db.Column(Db.String(19), index=True, default=str(datetime.utcnow())[:19])
-    created_by = Db.Column(Db.Integer, Db.ForeignKey('users.username'))
-    body = Db.Column(Db.String(1280))
-
-    def __repr__(self):
-        return f'{self.body}'
-
-    def to_dict(self):
-        return dict(
-            id = self.id,
-            ticket = self.ticket,
-            created_at = self.created_at,
-            created_by = self.created_by,
-            body = self.body)
 
 class Database():
     """Class to connect to Database"""
@@ -140,7 +24,7 @@ def insert_user(db, username, email, password):
     password = password.encode()
     hash.update(password)
     hash = hash.hexdigest()
-    insert = User(username=f'{username}', email=f'{email}', password_hash=f'{hash}')
+    insert = Models.User(username=f'{username}', email=f'{email}', password_hash=f'{hash}')
     db.session.add(insert)
     try:
         db.session.commit()
@@ -151,7 +35,7 @@ def insert_user(db, username, email, password):
 
 def update_user(db, username, email, password):
     """Update User"""
-    query = db.session.query(User).filter(User.username == f'{username}')
+    query = db.session.query(Models.User).filter(Models.User.username == f'{username}')
     update_dict = {}
     if email:
         update_dict['email'] = email
@@ -161,7 +45,7 @@ def update_user(db, username, email, password):
         hash.update(password)
         hash = hash.hexdigest()
         update_dict['password_hash'] = hash
-    update = db.session.query(User).filter(User.username == f'{username}').update(update_dict)
+    update = db.session.query(Models.User).filter(Models.User.username == f'{username}').update(update_dict)
     try:
         db.session.commit()
         return True
@@ -171,7 +55,7 @@ def update_user(db, username, email, password):
 
 def delete_user(db, username):
     """Delete User"""
-    delete = db.session.query(User).filter(User.username == f'{username}').delete()
+    delete = db.session.query(Models.User).filter(Models.User.username == f'{username}').delete()
     try:
         db.session.commit()
         return True
@@ -184,14 +68,14 @@ def check_password(db, username, password):
     password = password.encode()
     hash.update(password)
     hash = hash.hexdigest()
-    password_hash = db.session.query(User).filter(User.username == f'{username}').first().password_hash
+    password_hash = db.session.query(Models.User).filter(Models.User.username == f'{username}').first().password_hash
     return (password_hash == hash)
 
 def insert_tags(db, tags):
     tags = tags.split(',')
     for tag in tags:
         tag = tag.strip()
-        tag_tmp = Tags(body=tag)
+        tag_tmp = Models.Tags(body=tag)
         db.session.add(tag_tmp)
     try:
         db.session.commit()
@@ -204,27 +88,27 @@ def insert_tags(db, tags):
 def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=None, tags=None, assigned=None, due_by=None):
     """Insert Ticket"""
     time = str(datetime.utcnow())[:19]
-    insert = Tickets(
+    insert = Models.Tickets(
         subject= f'{subject}',
         updated_at= time)
     if body:
         insert.body = f'{body}'
     if status:
         if (isinstance(status, int)):
-            status = Status(status)
+            status = Models.Status(status)
         else:
-            status = Status[status]
+            status = Models.Statu[status]
         insert.status = status
     else:
-        insert.status = Status(1)
+        insert.status = Models.Status(1)
     if priority:
         if (isinstance(priority, int)):
-            priority = Priority(priority)
+            priority = Models.Priority(priority)
         else:
-            priority = Priority[priority]
-        insert.priority = Priority(priority)
+            priority = Models.Priority[priority]
+        insert.priority = Models.Priority(priority)
     else:
-        insert.priority = Priority(2)
+        insert.priority = Models.Priority(2)
     if tags:
         tags = tags.split(',')
         for tag in tags:
@@ -248,6 +132,27 @@ def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=
         db.session.rollback()
         return False
 
+def bulk_insert_ticket(db, data):
+    for ticket in data:
+        tags = ''
+        for tag in ticket.get('tags'):
+            tag = tag.get("body")
+            tags = tags + f',{tag}'
+        tags = tags[1:]
+        assigned = ''
+        for user in ticket.get('assigned'):
+            user = user.get("username")
+            assigned = assigned + f'{user},'
+        insert_ticket(db,
+            subject=ticket['subject'],
+            body=ticket.get('body', None),
+            status=ticket.get('status', None),
+            priority=ticket.get('priority', None),
+            tags=tags,
+            created_by=ticket.get('created_by', None),
+            assigned=assigned,
+            due_by=ticket.get('due_by', None))
+
 def update_ticket(db, id, subject=None, body=None, status=None, priority=None, created_by=None, assigned=None, tags=None, due_by=None):
     """Update ticket"""
     time = str(datetime.utcnow())[:19]
@@ -261,25 +166,25 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
     if status:
         #allow converting either integer or string to enumerator
         if (isinstance(status, int)):
-            status = Status(status)
+            status = Models.Status(status)
         else:
-            status = Status[status]
+            status = Models.Status[status]
         update_dict['status'] = status
     if priority:
         #allow converting either integer or string to enumerator
         if (isinstance(priority, int)):
-            priority = Priority(priority)
+            priority = Models.Priority(priority)
         else:
-            priority = Priority[priority]
-        update_dict['priority'] = Priority(priority)
+            priority = Models.Priority[priority]
+        update_dict['priority'] = Models.Priority(priority)
     if created_by:
         update_dict['created_by'] = f'{created_by}'
     if due_by:
         update_dict['due_by'] = f'{due_by}'
     
-    update = db.session.query(Tickets).filter(Tickets.id == id).update(update_dict)
+    update = db.session.query(Models.Tickets).filter(Models.Tickets.id == id).update(update_dict)
 
-    ticket = db.session.query(Tickets).filter(Tickets.id == id).first()
+    ticket = db.session.query(Models.Tickets).filter(Models.Tickets.id == id).first()
     # Add Tags, needs a seperate call because of it's relationship
     if tags:
         # retrieve tags object to add, if not found then create them and retireve object.
@@ -292,7 +197,7 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
         ticket.tags = [tag for tag in tag_list]
     # Add assigned, needs a seperate call because of it's relationship
     if assigned:
-        users = db.session.query(User).filter(User.username.is_(assigned)).all()
+        users = db.session.query(Models.User).filter(Models.User.username.is_(assigned)).all()
         ticket.assigned = [user for user in users]
     try:
         db.session.commit()
@@ -304,8 +209,8 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
 def insert_comment(db, ticket, created_by, body):
     """Insert Comment"""
     time = str(datetime.utcnow())[:19]
-    insert = Comments(ticket=ticket, body=f'{body}',created_by=f'{created_by}')
-    #update = db.session.query(Tickets).filter(Tickets.id == ticket).update({'updated_at':time})
+    insert = Models.Comments(ticket=ticket, body=f'{body}',created_by=f'{created_by}')
+    #update = db.session.query(Models.Tickets).filter(Models.Tickets.id == ticket).update({'updated_at':time})
     db.session.add(insert)
     #db.session.add(update)
     try:
@@ -318,32 +223,32 @@ def insert_comment(db, ticket, created_by, body):
 def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None,order=None, search=None, sort=None):
     """Query all tickets with defined filters"""
     # Base Query
-    query = db.session.query(Tickets)
+    query = db.session.query(Models.Tickets)
     # If looking for specific ticket, return that one
     if id:
-        return query.filter(Tickets.id == id).first()
+        return query.filter(Models.Tickets.id == id).first()
     # get Order
     if order == 'updated_at':
-        order = Tickets.updated_at
+        order = Models.Tickets.updated_at
     elif order == 'created_at':
-        order = Tickets.created_at
+        order = Models.Tickets.created_at
     elif order == 'assigned':
-        order = Tickets.assigned
+        order = Models.Tickets.assigned
     elif order == 'priority':
         order = Db.case([
-                    (Tickets.priority == 'High', Db.literal_column("'3'")),
-                    (Tickets.priority == 'Medium', Db.literal_column("'2'")),
-                    (Tickets.priority == 'Low', Db.literal_column("'1'"))
+                    (Models.Tickets.priority == 'High', Db.literal_column("'3'")),
+                    (Models.Tickets.priority == 'Medium', Db.literal_column("'2'")),
+                    (Models.Tickets.priority == 'Low', Db.literal_column("'1'"))
                     ])
     elif order == 'status':
         order = Db.case([
-                    (Tickets.status == 'Open', Db.literal_column("'4'")),
-                    (Tickets.status == 'Working', Db.literal_column("'3'")),
-                    (Tickets.status == 'Waiting', Db.literal_column("'2'")),
-                    (Tickets.status == 'Closed', Db.literal_column("'1'"))
+                    (Models.Tickets.status == 'Open', Db.literal_column("'4'")),
+                    (Models.Tickets.status == 'Working', Db.literal_column("'3'")),
+                    (Models.Tickets.status == 'Waiting', Db.literal_column("'2'")),
+                    (Models.Tickets.status == 'Closed', Db.literal_column("'1'"))
                     ])
     else:
-        order = Tickets.id
+        order = Models.Tickets.id
     if sort == 'asc':
         order = order.asc()
     else:
@@ -351,53 +256,54 @@ def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None
     #If we want to return all matches for any attribute
     if search:
         not_null_filters = []
-        not_null_filters.append(Tickets.subject.ilike(f'%{search}%'))
+        not_null_filters.append(Models.Tickets.subject.ilike(f'%{search}%'))
         status = search.capitalize()
         try:
-            status = Status[status]
-            not_null_filters.append(Tickets.status == status)
+            status = Models.Status[status]
+            not_null_filters.append(Models.Tickets.status == status)
         except:
             pass
-        tag = db.session.query(Tags).filter(Tags.body.contains(search)).first()
+        tag = db.session.query(Models.Tags).filter(Models.Tags.body.contains(search)).first()
         if tag:
-            not_null_filters.append(Tickets.tags.contains(tag))
-        user = db.session.query(User).filter(User.username.contains(search)).first()
+            not_null_filters.append(Models.Tickets.tags.contains(tag))
+        user = db.session.query(Models.User).filter(Models.User.username.contains(search)).first()
         if user:
-            not_null_filters.append(Tickets.assigned.contains(user))
+            not_null_filters.append(Models.Tickets.assigned.contains(user))
         if len(not_null_filters) > 0:
             return query.filter(Db.or_(*not_null_filters)).order_by(order).all()
         else:
             return None
     # Add Subject filter
     if subject:
-        subject = Tickets.subject.ilike(f'%{subject}%')
+        subject = Models.Tickets.subject.ilike(f'%{subject}%')
         query = query.filter(subject)
     # Add Status filter
     if status:
         status = status.capitalize()
         try:
-            status = Status[status]
-            query = query.filter(Tickets.status == status)
+            status = Models.Statu[status]
+            query = query.filter(Models.Tickets.status == status)
         except:
             pass
     # Add Assigned filter
     if assigned:
-        user = db.session.query(User).filter(User.username.contains(assigned)).first()
+        user = db.session.query(Models.User).filter(Models.User.username.contains(assigned)).first()
         if user:
-            assigned = Tickets.assigned.contains(user)
+            assigned = Models.Tickets.assigned.contains(user)
             query = query.filter(assigned)
     # Add Tags filter
     if tags:
-        tag = db.session.query(Tags).filter(Tags.body.contains(tags)).first()
+        tag = db.session.query(Models.Tags).filter(Models.Tags.body.contains(tags)).first()
         if tag:
-            tags = Tickets.tags.contains(tag)
+            tags = Models.Tickets.tags.contains(tag)
             query = query.filter(tags)
     # Run Query
     result = query.order_by(order).all()
     return result
 
 def query_tags(db, tags=None):
-    query = db.session.query(Tags)
+    """Query tags, returns list"""
+    query = db.session.query(Models.Tags)
     if tags is None:
         return query
     not_null_filters = []
@@ -407,15 +313,16 @@ def query_tags(db, tags=None):
         pass
     for tag in tags:
         tag = tag.strip()
-        if db.session.query(Tags).filter(Tags.body.is_(tag)).first():
-            not_null_filters.append(Tags.body.is_(tag))
+        if db.session.query(Models.Tags).filter(Models.Tags.body.is_(tag)).first():
+            not_null_filters.append(Models.Tags.body.is_(tag))
     if len(not_null_filters) > 0:
         return query.filter(Db.or_(*not_null_filters)).all()
     else:
         return None
 
 def query_users(db, users=None):
-    query = db.session.query(User)
+    """Query users, returns list"""
+    query = db.session.query(Models.User)
     if users is None:
         return query
     not_null_filters = []
@@ -425,21 +332,27 @@ def query_users(db, users=None):
         pass
     for user in users:
         user = user.strip()
-        if db.session.query(User).filter(User.username.is_(user)).first():
-            not_null_filters.append(User.username.is_(user))
+        if db.session.query(Models.User).filter(Models.User.username.is_(user)).first():
+            not_null_filters.append(Models.User.username.is_(user))
     if len(not_null_filters) > 0:
         return query.filter(Db.or_(*not_null_filters)).all()
     else:
         return None
 
 def query_comments(db, ticket,order=None):
-    """Query all comments for a ticket"""
+    """Query all comments for a ticket, returns list"""
     if order == 'created_at':
-        order = Comments.created_at.desc()
+        order = Models.Comments.created_at.desc()
     else:
-        order = Comments.id.desc()
-    result = db.session.query(Comments).filter(Comments.ticket == ticket).order_by(order).all()
+        order = Models.Comments.id.desc()
+    result = db.session.query(Models.Comments).filter(Models.Comments.ticket == ticket).order_by(order).all()
     return result
+
+def get_statuses():
+    return [status.name for status in Models.Status]
+
+def get_priorities():
+    return [priority.name for priority in Models.Priority]
 
 def convert_to_dict(db, items):
     result = []

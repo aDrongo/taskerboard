@@ -18,16 +18,16 @@
             <li class='dropdown'>
                 <button class='dropbtn'>Filter</button>
                 <div class='dropdown-content'>
-                    {% if noassigned %}
-                    <a href="/{{ noassigned }}">All Tickets</a>
+                    {% if assigned %}
+                    <a href="/{{ queries['assigned'] }}">All Tickets</a>
                     {% else %}
-                    <a href="{{ assigned }}">My Tickets</a>
+                    <a href="{{ queries['assigned'] }}">My Tickets</a>
                     {% endif %}
-                  <a href="/{{ queries['filter'] }}">All</a>
-                  <a href="/{{ queries['filter'] + '&status=Open' }}">Open</a>
-                  <a href="/{{ queries['filter'] + '&status=Working' }}">Working</a>
-                  <a href="/{{ queries['filter'] + '&status=Waiting' }}">Waiting</a>
-                  <a href="/{{ queries['filter'] + '&status=Closed' }}">Closed</a>
+                  <a href="/{{ queries['status'] }}">All</a>
+                  <a href="/{{ queries['status'] + '&status=Open' }}">Open</a>
+                  <a href="/{{ queries['status'] + '&status=Working' }}">Working</a>
+                  <a href="/{{ queries['status'] + '&status=Waiting' }}">Waiting</a>
+                  <a href="/{{ queries['status'] + '&status=Closed' }}">Closed</a>
                 </div>
             </li>
             <li class='dropdown'>
