@@ -3,24 +3,26 @@ function allowDrop(ev) {
 }
 
 function drag(ev) {
-  ev.dataTransfer.setData("Text", ev.target.id);
+  ev.dataTransfer.setData("text/plain", ev.target.id);
 }
 
 function drop(ev) {
-  var data = ev.dataTransfer.getData("Text");
-  console.log(data);
-  ev.target.appendChild(document.getElementById(data));
   ev.preventDefault();
-  console.log(ev.target.id)
+  var data = ev.dataTransfer.getData("text/plain");
+  ev.target.appendChild(document.getElementById(data));
 }
 
 function drop_move(ev) {
+  ev.preventDefault();
   var data = ev.dataTransfer.getData("Text");
-  ev.target.appendChild(document.getElementById(data));
+  ev.target.appendChild(document.getElementById(data))
+  var orig_status = new String(ev.srcElement.id.replace("drop",""))
   var id = new String(data.replace("drag",""))
   var status = new String(ev.target.id.replace("drop",""))
+  console.log(orig_status)
+  console.log(status)
+  console.log('test')
   var theUrl = new String(`/api/action=update_ticket&ticket=${id}&status=${status}`)
-  console.log(theUrl)
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.onreadystatechange = function() { 
     if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
@@ -28,7 +30,6 @@ function drop_move(ev) {
   }
   xmlHttp.open("GET", theUrl, true);
   xmlHttp.send(null);
-  ev.preventDefault();
 }
 
 function showDiv(id) {

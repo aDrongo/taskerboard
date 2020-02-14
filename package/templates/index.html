@@ -109,9 +109,9 @@
                 <h3>Open</h3>
                 {% for ticket in boards %}
                 {% if ticket.status.value == 1 %}
-                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                    <div id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
                         <div class='card-header'>
-                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                         </div>
                         <div class='card-body'>
                             <p class='card-text'>{{ ticket.body[:40] }}</p>
@@ -134,9 +134,9 @@
                 <h3>Working</h3>
                 {% for ticket in boards %}
                 {% if ticket.status.value == 2 %}
-                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                    <div id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)"  class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
                         <div class='card-header'>
-                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                         </div>
                         <div class='card-body'>
                             <p class='card-text'>{{ ticket.body[:40] }}</p>
@@ -159,9 +159,9 @@
                 <h3>Waiting</h3>
                 {% for ticket in boards %}
                 {% if ticket.status.value == 3 %}
-                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                    <div id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
                         <div class='card-header'>
-                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                         </div>
                         <div class='card-body'>
                             <p class='card-text'>{{ ticket.body[:40] }}</p>
@@ -185,9 +185,9 @@
                 {% set ns = namespace(count=0) %}
                 {% for ticket in boards %}
                     {% if ticket.status.value == 4 %}{% set ns.count = ns.count + 1 %}{% if ns.count < 4 %}
-                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                    <div id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
                         <div class='card-header'>
-                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
                         </div>
                         <div class='card-body'>
                             <p class='card-text'>{{ ticket.body[:40] }}</p>
