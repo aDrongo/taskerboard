@@ -1,32 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-<div class='main-container'>
-    <div class='fixed-container'>
-        <div class='button-row'>
-        <button onclick="showDiv('create')" class='dropbtn'>Create User</button>
-        <button onclick="showDiv('update')" class='dropbtn'>Edit User</button>
+<div class='row'>
+    <div class='col-lg-6'>
+        <div class='btn-group'>
+        <button onclick="showDiv('create')" class='btn btn-outline-secondary'>Create User</button>
+        <button onclick="showDiv('update')" class='btn btn-outline-secondary'>Edit User</button>
         </div>
-        <div id='create' class='expand-content'>
+        <div id='create' class='collapse mt-2'>
             <form id='1' action="" method="post">
-                <div>
-                    Username:{{ userInsertForm.username }} 
-                    Email:{{ userInsertForm.email }} 
-                    Password:{{ userInsertForm.password }}
+                <div class="form-group mb-2 mr-sm-2">
+                    {{ userInsertForm.username(class="form-control", placeholder="Username") }} 
+                    {{ userInsertForm.email(class="form-control", placeholder="Email") }} 
+                    {{ userInsertForm.password(class="form-control", placeholder="Password") }}
                 </div>
                 <div style='margin: 10px'>
-                    {{ userInsertForm.submitInsertUser }}
+                    {{ userInsertForm.submitInsertUser(class="btn btn-outline-secondary") }}
                 </div>
             </form>
         </div>
-        <div id='update' class='expand-content'>
+        <div id='update' class='collapse mt-2'>
             <form id='2' action="" method="post">
-                <div>
-                    User:<select id="username" name="username">{% for username in userUpdateForm.username.choices %}<option value="{{ username[0] }}">{{ username[0] }}</option>{% endfor %}</select>
-                    Email:{{ userUpdateForm.email }}
-                    Password:{{ userUpdateForm.password }}
+                <div class="form-group mb-2 mr-sm-2">
+                    <select id="username" class='btn btn-outline-secondary' name="username">{% for username in userUpdateForm.username.choices %}<option value="{{ username[0] }}">{{ username[0] }}</option>{% endfor %}</select>
+                    {{ userUpdateForm.email(class="form-control", placeholder="Email") }}
+                    {{ userUpdateForm.password(class="form-control", placeholder="Password") }}
                 </div>
                 <div style='margin: 10px'>
-                    {{ userUpdateForm.submitUpdateUser }}
+                    {{ userUpdateForm.submitUpdateUser(class="btn btn-outline-secondary") }}
                 </div>
             </form>
         </div>
@@ -39,10 +39,10 @@
         </table>
         </div>
     </div>
-    <div class='var-container'>
-        <button onclick="showDiv('importTickets')" class='dropbtn'>Import Tickets</button>
-        <button onclick="window.open('/api/action=query_tickets');" class='dropbtn'>Export Tickets</button>
-        <div id='importTickets' class='expand-content' style='display: none'>
+    <div class='col-lg-6'>
+        <button onclick="showDiv('importTickets')" class='btn btn-outline-secondary'>Import Tickets</button>
+        <button onclick="window.open('/api/action=query_tickets');" class='btn btn-outline-secondary'>Export Tickets</button>
+        <div id='importTickets' class='collapse' style='display: none'>
             <p style='margin: 5px;'>Please upload in JSON list format, see export for example</p>
             <form id='3' action='' method='post' enctype="multipart/form-data">
                 {{ importDataForm.hidden_tag() }}

@@ -1,141 +1,211 @@
 {% extends "base.html" %}
 {% block content %}
-<div class='main-container'>
-    <div class='var-container'>
-        <div class='button-row'>
-            <button onclick="showDiv('expandCreate')" class='dropbtn'>Create Ticket</button>
-            <div id='expandCreate' class='expand-content'>
-                <form id='exp1' action="" method="post">
-                    <div>
-                        Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Assigned:{{ ticketInsertForm.assigned }}<br><br>
-                        Tags: {{ ticketInsertForm.tags(class_="submit-frm") }} Body:{{ ticketInsertForm.body(class_="fresh-frm") }}
+<div class='row'>
+    <div class='col-lg-6'>
+        <div class='container'>
+            <div class='row m-2'>
+                <div class="btn-group">
+                    <div class="dropdown">
+                    <button onclick="showDiv('expandCreate')" class='btn btn-outline-secondary'>Create Ticket</button>
                     </div>
-                    <div style='margin: 10px'>
-                        {{ ticketInsertForm.submitInsertTicket }}
+                    <div class="dropdown">
+                        <button type='button' class='btn btn-outline-secondary dropdown-toggle' onclick='showDiv("Filter")'>Filter</button>
+                        <div id="Filter" class='dropdown-menu'>
+                            {% if assigned %}
+                            <a class='dropdown-item' href="/{{ queries['assigned'] }}">All Tickets</a>
+                            {% else %}
+                            <a class='dropdown-item' href="{{ queries['assigned'] }}">My Tickets</a>
+                            {% endif %}
+                        <a class='dropdown-item' href="/{{ queries['all'] }}">All</a>
+                        <a class='dropdown-item' href="/{{ queries['status'] + '&status=Open' }}">Open</a>
+                        <a class='dropdown-item' href="/{{ queries['status'] + '&status=Working' }}">Working</a>
+                        <a class='dropdown-item' href="/{{ queries['status'] + '&status=Waiting' }}">Waiting</a>
+                        <a class='dropdown-item' href="/{{ queries['status'] + '&status=Closed' }}">Closed</a>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button type='button' class='btn btn-outline-secondary dropdown-toggle' onclick='showDiv("Sort")'>Sort</button>
+                        <div id="Sort" class='dropdown-menu'>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=id' }}">ID</a>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=updated_at' }}">Updated At</a>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=created_at' }}">Created At</a>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=priority' }}">Priority</a>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=status' }}">Status</a>
+                        {% if queries.get('sorted') == 'asc' %}
+                        <a class='dropdown-item' href="/{{ queries['sort'] + '&sort=desc' }}">Descending</a>
+                        {% else %}
+                        <a class='dropdown-item' href="/{{ queries['sort'] + '&sort=asc' }}">Ascending</a>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class='ml-auto'>
+                    <form id='search' action="" method="post">
+                    {{ searchForm.search(class="form-control", placeholder="Search") }}
+                    </form>
+                </div>
+            </div>
+            <div id='expandCreate' class='collapse mt-2'>
+                <form id='exp1' action="" method="post">
+                    <div class="form-group mb-2 mr-sm-2">
+                        Priority:{{ ticketInsertForm.priority(class='custom-select custom-width-7') }} Status:{{ ticketInsertForm.status(class='custom-select custom-width-7') }} Assigned:{{ ticketInsertForm.assigned(class='custom-select custom-width-10') }}
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="row">
+                            <div class="col">
+                            {{ ticketInsertForm.subject(class="form-control", placeholder="Subject") }}
+                            </div>
+                            <div class="col">
+                            {{ ticketInsertForm.tags(class="form-control", placeholder="Tags") }} 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        {{ ticketInsertForm.body(class="form-control", placeholder="Body") }}
+                    </div>
+                    <div class='mb-2 mr-sm-2'>
+                        {{ ticketInsertForm.submitInsertTicket(class="btn btn-outline-secondary") }}
                     </div>
                 </form>
             </div>
-            <li class='dropdown'>
-                <button class='dropbtn'>Filter</button>
-                <div class='dropdown-content'>
-                    {% if assigned %}
-                    <a href="/{{ queries['assigned'] }}">All Tickets</a>
-                    {% else %}
-                    <a href="{{ queries['assigned'] }}">My Tickets</a>
-                    {% endif %}
-                  <a href="/{{ queries['status'] }}">All</a>
-                  <a href="/{{ queries['status'] + '&status=Open' }}">Open</a>
-                  <a href="/{{ queries['status'] + '&status=Working' }}">Working</a>
-                  <a href="/{{ queries['status'] + '&status=Waiting' }}">Waiting</a>
-                  <a href="/{{ queries['status'] + '&status=Closed' }}">Closed</a>
-                </div>
-            </li>
-            <li class='dropdown'>
-                <button class='dropbtn'>Sort</button>
-                <div class='dropdown-content'>
-                  <a href="/{{ queries['order'] + '&order=id' }}">ID</a>
-                  <a href="/{{ queries['order'] + '&order=updated_at' }}">Updated At</a>
-                  <a href="/{{ queries['order'] + '&order=created_at' }}">Created At</a>
-                  <a href="/{{ queries['order'] + '&order=priority' }}">Priority</a>
-                  <a href="/{{ queries['order'] + '&order=status' }}">Status</a>
-                  {% if queries.get('sorted') == 'asc' %}
-                  <a href="/{{ queries['sort'] + '&sort=desc' }}">Descending</a>
-                  {% else %}
-                  <a href="/{{ queries['sort'] + '&sort=asc' }}">Ascending</a>
-                  {% endif %}
-                </div>
-            </li>
-            <div class='search-container'>
-            <form id='search' action="" method="post">
-            {{ searchForm.search(style="font-size: 8pt; margin: 0 5px") }}{{ searchForm.submitSearch(style="font-size: 8pt") }}
-            </form></div>
             </div>
-            <div class='table'>
-                <table>
-                    <tr><th style='width: 5%'>ID</th>
-                        <th style='width: 45%'>Subject</th>
-                        <th style='width: 5%'>Status</th>
-                        <th style='width: 5%'>Priority</th>
-                        <th style='width: 7%'>Assigned</th>
-                        <th style='width: 7%'>Tags</th>
-                        <th style='width: 5%'>Updated At</th>
-                        <th style='width: 7%'>Created By</th>
-                        <th style='width: 7%'>Due By</th></tr>
+            <div class='container table-wrapper-scroll-y'>
+                <table class='table table-striped table-hover table-responsive text-nowrap'>
+                    <tr><th>ID</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Assigned</th>
+                        <th>Tags</th>
+                        <th>Updated</th>
+                        <th>Created</th>
+                        <th>Due</th></tr>
                     {% for tick in tickets %}
-                    {% if tick.id == ticket.id %}
-                    <tr><td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td>
-                        <td class='selected'><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td>
-                        <!-- Status -->
-                        <td class='selected'><a><div class='click' onclick='showDiv("status{{ tick.id }}")'>{{ tick.status.name }}</div><div class='hidden-scroll' style='display: none;' id='status{{ tick.id }}'><!--
-                        --><ul>{% for status in statuses %}<li class='hidden-list'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li><br>{% endfor %}</ul></div></a></td>
-                        <!-- Priority -->
-                        <td class='selected'><a><div class='click' onclick='showDiv("priority{{ tick.id }}")'>{{ tick.priority.name }}</div><div class='hidden-scroll' style='display: none;' id='priority{{ tick.id }}'><!--
-                        --><ul>{% for pri in priorities %}<li class='hidden-list'><a onclick='priority("{{ pri }}",{{ tick.id }})'>{{ pri }}</a></li><br>{% endfor %}</ul></div></a></td>
-                        <!-- Assigned -->
-                        <td class='selected'><a><div class='click' onclick='showDiv("assigned{{ tick.id }}")'>{% if tick.assigned[0] %}{{ tick.assigned[0] }}{% else %}____{% endif %}</div><div class='hidden-scroll' style='display: none;' id='assigned{{ tick.id }}'><!--
-                        --><ul>{% for user in users %}<li class='hidden-list'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}</ul></div></a></td>
-                        <!-- Tags -->
-                        <td class='selected'><a><div class='click' onclick='showDiv("tags{{ tick.id }}")'>{% if tick.tags[0] %}{{ tags_string(tick.tags) }}{% else %}____{% endif %}</div><div class='hidden-scroll' style='display: none;' id='tags{{ tick.id }}'><!--
-                        --><ul>{% for tag in tags %}<li class='hidden-list'><a onclick='tag("{{ tag.body }}",{{ tick.id }})'>{{ tag.body }}</a></li><br>{% endfor %}</ul></div></a></td>
-                        <td class='selected'>{{ tick.updated_at[5:-3] }}</td>
-                        <td class='selected'>{{ tick.created_by }}</td>
-                        <td class='selected'>{{ tick.due_by }}</td></tr>
-                    {% else %}
-                    <tr><td><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td>
+                    {% if tick.id == ticket.id %}<tr class='selected'>{% else %}<tr>{% endif %}    
+                        <td><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td>
                         <td><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject }}</a></td>
                         <!-- Status -->
                         <td><a><div class='click' onclick='showDiv("status{{ tick.id }}")'>{{ tick.status.name }}</div><div class='hidden-scroll' style='display: none;' id='status{{ tick.id }}'><!--
-                        --><ul>{% for status in statuses %}<li class='hidden-list'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for status in statuses %}<li class='hidden-list'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li>{% endfor %}</ul></div></a></td>
                         <!-- Priority -->
                         <td><a><div class='click' onclick='showDiv("priority{{ tick.id }}")'>{{ tick.priority.name }}</div><div class='hidden-scroll' style='display: none;' id='priority{{ tick.id }}'><!--
-                        --><ul>{% for pri in priorities %}<li class='hidden-list'><a onclick='priority("{{ pri }}",{{ tick.id }})'>{{ pri }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for pri in priorities %}<li class='hidden-list'><a onclick='priority("{{ pri }}",{{ tick.id }})'>{{ pri }}</a></li>{% endfor %}</ul></div></a></td>
                         <!-- Assigned -->
                         <td><a><div class='click' onclick='showDiv("assigned{{ tick.id }}")'>{% if tick.assigned[0] %}{{ tick.assigned[0] }}{% else %}____{% endif %}</div><div class='hidden-scroll' style='display: none;' id='assigned{{ tick.id }}'><!--
-                        --><ul>{% for user in users %}<li class='hidden-list'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for user in users %}<li class='hidden-list'><a onclick='assign("{{ user[0] }}",{{ tick.id }})'>{{ user[0] }}</a></li>{% endfor %}</ul></div></a></td>
                         <!-- Tags -->
                         <td><a><div class='click' onclick='showDiv("tags{{ tick.id }}")'>{% if tick.tags[0] %}{{ tags_string(tick.tags) }}{% else %}____{% endif %}</div><div class='hidden-scroll' style='display: none;' id='tags{{ tick.id }}'><!--
-                        --><ul>{% for tag in tags %}<li class='hidden-list'><a onclick='tag("{{ tag.body }}",{{ tick.id }})'>{{ tag.body }}</a></li><br>{% endfor %}</ul></div></a></td>
+                        --><ul>{% for tag in tags %}<li class='hidden-list'><a onclick='tag("{{ tag.body }}",{{ tick.id }})'>{{ tag.body }}</a></li>{% endfor %}</ul></div></a></td>
                         <td>{{ tick.updated_at[5:-3] }}</td>
                         <td>{{ tick.created_by }}</td>
                         <td>{{ tick.due_by }}</td></tr>
-                    {% endif %}
                     {% endfor %}
                 </table>
             </div>
         </div>
-        <div class='fixed-container'>
-        <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
-            <h3>Open</h3>
-            {% for ticket in boards %}
-            {% if ticket.status.value == 1 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id='dropWorking' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
-            <h3>Working</h3>
-            {% for ticket in boards %}
-            {% if ticket.status.value == 2 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id='dropWaiting' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
-            <h3>Waiting</h3>
-            {% for ticket in boards %}
-            {% if ticket.status.value == 3 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
-                {% endif %}
-            {% endfor %} 
-        </div>
-        <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
-            <h3>Closed</h3>
-            {% set ns = namespace(count=0) %}
-            {% for ticket in boards %}
-                {% if ticket.status.value == 4 %}{% set ns.count = ns.count + 1 %}{% if ns.count < 4 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
-                {% endif %}{% endif %}
-            {% endfor %}
+        <div class='col-lg-6'>
+            <div class='row'>
+            <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-md-3'>
+                <h3>Open</h3>
+                {% for ticket in boards %}
+                {% if ticket.status.value == 1 %}
+                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                        <div class='card-header'>
+                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        </div>
+                        <div class='card-body'>
+                            <p class='card-text'>{{ ticket.body[:40] }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for tag in ticket.tags %}
+                            <li class='list-group-item'>#{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if ticket.due_by %}
+                        <div class='card-body'>
+                            <p class='card-test'>{{ ticket.due_by }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div id='dropWorking' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-md-3'>
+                <h3>Working</h3>
+                {% for ticket in boards %}
+                {% if ticket.status.value == 2 %}
+                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                        <div class='card-header'>
+                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        </div>
+                        <div class='card-body'>
+                            <p class='card-text'>{{ ticket.body[:40] }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for tag in ticket.tags %}
+                            <li class='list-group-item'>#{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if ticket.due_by %}
+                        <div class='card-body'>
+                            <p class='card-test'>{{ ticket.due_by }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div id='dropWaiting' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-md-3'>
+                <h3>Waiting</h3>
+                {% for ticket in boards %}
+                {% if ticket.status.value == 3 %}
+                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                        <div class='card-header'>
+                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        </div>
+                        <div class='card-body'>
+                            <p class='card-text'>{{ ticket.body[:40] }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for tag in ticket.tags %}
+                            <li class='list-group-item'>#{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if ticket.due_by %}
+                        <div class='card-body'>
+                            <p class='card-test'>{{ ticket.due_by }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %} 
+            </div>
+            <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-md-3'>
+                <h3>Closed</h3>
+                {% set ns = namespace(count=0) %}
+                {% for ticket in boards %}
+                    {% if ticket.status.value == 4 %}{% set ns.count = ns.count + 1 %}{% if ns.count < 4 %}
+                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                        <div class='card-header'>
+                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        </div>
+                        <div class='card-body'>
+                            <p class='card-text'>{{ ticket.body[:40] }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for tag in ticket.tags %}
+                            <li class='list-group-item'>#{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if ticket.due_by %}
+                        <div class='card-body'>
+                            <p class='card-test'>{{ ticket.due_by }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}{% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>

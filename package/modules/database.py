@@ -6,8 +6,6 @@ from sqlalchemy.ext.declarative import declarative_base
 
 import modules.models as Models
 
-Base = declarative_base()
-
 class Database():
     """Class to connect to Database"""
     def __init__(self, database):
@@ -16,7 +14,7 @@ class Database():
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
         self.metadata = Db.MetaData()
-        Base.metadata.create_all(self.engine)
+        Models.Base.metadata.create_all(self.engine)
 
 def insert_user(db, username, email, password):
     """Insert user"""
@@ -281,7 +279,7 @@ def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None
     if status:
         status = status.capitalize()
         try:
-            status = Models.Statu[status]
+            status = Models.Status[status]
             query = query.filter(Models.Tickets.status == status)
         except:
             pass

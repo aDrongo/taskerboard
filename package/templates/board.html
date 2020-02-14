@@ -1,117 +1,263 @@
 {% extends "base.html" %}
 {% block content %}
-<div class='main-container'>
-    <div class='fixed-container'>
-        <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
-            <h3>Open</h3>
-            {% for ticket in tickets %}
-            {% if ticket.status.value == 1 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id='dropWorking' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
-            <h3>Working</h3>
-            {% for ticket in tickets %}
-            {% if ticket.status.value == 2 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id='dropWaiting' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
-            <h3>Waiting</h3>
-            {% for ticket in tickets %}
-            {% if ticket.status.value == 3 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
-                {% endif %}
-            {% endfor %} 
-        </div>
-        <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-4'>
-            <h3>Closed</h3>
-            {% set ns = namespace(count=0) %}
-            {% for ticket in tickets %}
-                {% if ticket.status.value == 4 %}{% set ns.count = ns.count + 1 %}{% if ns.count < 4 %}
-                <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='rcorners {{ ticket.priority.name }}'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
-                {% endif %}{% endif %}
-            {% endfor %}
-        </div>
-    </div>
-    <div class='var-container'>
-        {% if noassigned %}
-            <button class='dropbtn' onclick='location.href="{{ noassigned }}";' style='font-size: 8pt;'>All Tickets</button>
-        {% else %}
-            <button class='dropbtn' onclick='location.href="{{ assigned }}";' style='font-size: 8pt;'>My Tickets</button>
-        {% endif %}
-        <li class='dropdown'>
-            <button class='dropbtn'>Sort</button>
-            <div class='dropdown-content'>
-              <a href="/{{ queries['order'] + '&order=id' }}">ID</a>
-              <a href="/{{ queries['order'] + '&order=updated_at' }}">Updated At</a>
-              <a href="/{{ queries['order'] + '&order=created_at' }}">Created At</a>
-              <a href="/{{ queries['order'] + '&order=priority' }}">Priority</a>
-              <a href="/{{ queries['order'] + '&order=status' }}">Status</a>
-              {% if queries.get('sorted') == 'asc' %}
-              <a href="/{{ queries['sort'] + '&sort=desc' }}">Descending</a>
-              {% else %}
-              <a href="/{{ queries['sort'] + '&sort=asc' }}">Ascending</a>
-              {% endif %}
+<div class='row'>
+    <div class='col-lg-6'>
+        <div class='row'>
+            <div id='dropOpen' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-md-3'>
+                <h3>Open</h3>
+                {% for ticket in tickets %}
+                {% if ticket.status.value == 1 %}
+                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                        <div class='card-header'>
+                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
+                        </div>
+                        <div class='card-body'>
+                            <p class='card-text'>{{ ticket.body[:40] }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for tag in ticket.tags %}
+                            <li class='list-group-item'>#{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if ticket.due_by %}
+                        <div class='card-body'>
+                            <p class='card-test'>{{ ticket.due_by }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
             </div>
-        </li>
-        <button onclick="showDiv('expandCreate')" class='dropbtn'>Create Ticket</button>
-        {% if id %}
-        <button onclick="showDiv('expandUpdate')" class='dropbtn'>Edit Ticket</button>
-        {% endif %}
-        <div id='expandCreate' class='expand-content'>
-            <form id='exp1' action="" method="post">
-                <div>
-                    Subject: {{ ticketInsertForm.subject(class_='submit-frm') }} Priority:{{ ticketInsertForm.priority }} Status:{{ ticketInsertForm.status }} Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketInsertForm.tags(class_="submit-frm") }} Body:{{ ticketInsertForm.body(class_="fresh-frm") }}                </div>
-                <div style='margin: 10px'>
-                    {{ ticketInsertForm.submitInsertTicket }}
-                </div>
-            </form>
-        </div>
-        {% if ticket %}
-        <div id='expandUpdate' class='expand-content'>
-            <form id='exp2' action="" method="post">
-                <div>
-                    Subject:{{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
-                    Priority:<select id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
-                    Status:<select id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
-                    Assigned:{{ ticketInsertForm.assigned }} Tags:{{ ticketUpdateForm.tags(class_='submit-frm', value=tags_string(ticket.tags)) }}
-                    Created&nbsp;By:{{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
-                     <br>
-                    <textarea id="body" class="fresh-frm" name="body" required="">{{ ticket.body }}</textarea>
-                </div>
-                <div style='margin: 10px'>
-                    {{ ticketUpdateForm.submitUpdateTicket }}
-                </div>
-            </form>
-        </div>
-        <table>
-            <tr><th style='width: 5%'>ID</th><th style='width: 54%'>Subject</th><th style='width: 5%'>Status</th><th style='width: 5%'>Priority</th><th style='width: 5%'>Updated At</th><th style='width: 7%'>Created By</th><th style='width: 7%'>Assigned</th><th style='width: 10%'>Due By</th></tr>
-            <tr><td>{{ ticket.id }}</td><td>{{ ticket.subject }}</td><td>{{ ticket.status.name }}</td><td>{{ ticket.priority.name }}</td><td>{{ ticket.updated_at }}</td><td>{{ ticket.created_by }}</td><td>{{ ticket.assigned }}</td><td>{{ ticket.due_by }}</td></tr>
-        </table>
-        <h3>Content</h3>
-        <div style='padding: 1%;'>
-        <p style='background-color: lightgray; padding: 1%'>{{ ticket.body }}</p>
-        </div>
-        <br>
-        <h3>Comments</h3>
-        <table>
-            {% for comment in comments %}
-            <tr><td style='width: 100%; padding: 12px 0;'><p>{{ comment.body }}</p><br><p><small>{{ comment.created_by }} at {{ comment.created_at }}</small></p></td></tr>
-            {% endfor %}
-        </table>
-        <div style='width: 100%'>
-            <form action="" method="post">
-                <div>
-                    {{ commentForm.comment(class_="fresh-frm") }}</div>
-                <div>
-                    {{ commentForm.submitComment(class_="fresh-btn") }}</div>
-            </form>
+            <div id='dropWorking' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-md-3'>
+                <h3>Working</h3>
+                {% for ticket in tickets %}
+                {% if ticket.status.value == 2 %}
+                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                        <div class='card-header'>
+                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
+                        </div>
+                        <div class='card-body'>
+                            <p class='card-text'>{{ ticket.body[:40] }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for tag in ticket.tags %}
+                            <li class='list-group-item'>#{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if ticket.due_by %}
+                        <div class='card-body'>
+                            <p class='card-test'>{{ ticket.due_by }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div id='dropWaiting' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-md-3'>
+                <h3>Waiting</h3>
+                {% for ticket in tickets %}
+                {% if ticket.status.value == 3 %}
+                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                        <div class='card-header'>
+                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
+                        </div>
+                        <div class='card-body'>
+                            <p class='card-text'>{{ ticket.body[:40] }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for tag in ticket.tags %}
+                            <li class='list-group-item'>#{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if ticket.due_by %}
+                        <div class='card-body'>
+                            <p class='card-test'>{{ ticket.due_by }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %} 
+            </div>
+            <div id='dropClosed' ondrop="drop_move(event)" ondragover="allowDrop(event)" class='col-md-3'>
+                <h3>Closed</h3>
+                {% set ns = namespace(count=0) %}
+                {% for ticket in tickets %}
+                    {% if ticket.status.value == 4 %}{% set ns.count = ns.count + 1 %}{% if ns.count < 4 %}
+                    <div class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
+                        <div class='card-header'>
+                        <p id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card-title mb-0'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
+                        </div>
+                        <div class='card-body'>
+                            <p class='card-text'>{{ ticket.body[:40] }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for tag in ticket.tags %}
+                            <li class='list-group-item'>#{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if ticket.due_by %}
+                        <div class='card-body'>
+                            <p class='card-test'>{{ ticket.due_by }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}{% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
-    {% endif %}
+
+    <div class='col-lg-6'>
+        <div class='container mt-0'>
+            <div class=container>
+                <div class="btn-group">
+                    <div class='dropdown'>
+                        <button onclick="showDiv('expandCreate')" class='btn btn-outline-secondary'>Create Ticket</button>
+                    </div>
+                    {% if ticket %}
+                    <div class='dropdown'>
+                        <button onclick="showDiv('expandUpdate')" class='btn btn-outline-secondary'>Edit Ticket</button>
+                    </div>
+                    {% endif %}
+                    <div class="dropdown">
+                        <button type='button' class='btn btn-outline-secondary dropdown-toggle' onclick='showDiv("Filter")'>Filter</button>
+                        <div id="Filter" class='dropdown-menu'>
+                            {% if assigned %}
+                            <a class='dropdown-item' href="/{{ queries['assigned'] }}">All Tickets</a>
+                            {% else %}
+                            <a class='dropdown-item' href="{{ queries['assigned'] }}">My Tickets</a>
+                            {% endif %}
+                        <a class='dropdown-item' href="/{{ queries['all'] }}">All</a>
+                        <a class='dropdown-item' href="/{{ queries['status'] + '&status=Open' }}">Open</a>
+                        <a class='dropdown-item' href="/{{ queries['status'] + '&status=Working' }}">Working</a>
+                        <a class='dropdown-item' href="/{{ queries['status'] + '&status=Waiting' }}">Waiting</a>
+                        <a class='dropdown-item' href="/{{ queries['status'] + '&status=Closed' }}">Closed</a>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button type='button' class='btn btn-outline-secondary dropdown-toggle' onclick='showDiv("Sort")'>Sort</button>
+                        <div id="Sort" class='dropdown-menu'>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=id' }}">ID</a>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=updated_at' }}">Updated At</a>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=created_at' }}">Created At</a>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=priority' }}">Priority</a>
+                        <a class='dropdown-item' href="/{{ queries['order'] + '&order=status' }}">Status</a>
+                        {% if queries.get('sorted') == 'asc' %}
+                        <a class='dropdown-item' href="/{{ queries['sort'] + '&sort=desc' }}">Descending</a>
+                        {% else %}
+                        <a class='dropdown-item' href="/{{ queries['sort'] + '&sort=asc' }}">Ascending</a>
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class='ml-auto flex-right'>
+                        <form id='search' action="" method="post">
+                        {{ searchForm.search(class="form-control", placeholder="Search") }}
+                        </form>
+                    </div>
+                </div>
+                </div>
+                <div id='expandCreate' class='collapse mt-2'>
+                    <form id='exp1' action="" method="post">
+                        <div class="form-group mb-2 mr-sm-2">
+                            Priority:{{ ticketInsertForm.priority(class='custom-select custom-width-7') }} Status:{{ ticketInsertForm.status(class='custom-select custom-width-7') }} Assigned:{{ ticketInsertForm.assigned(class='custom-select custom-width-10') }}
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="row">
+                                <div class="col">
+                                {{ ticketInsertForm.subject(class="form-control", placeholder="Subject") }}
+                                </div>
+                                <div class="col">
+                                {{ ticketInsertForm.tags(class="form-control", placeholder="Tags") }} 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            {{ ticketInsertForm.body(class="form-control", placeholder="Body") }}
+                        </div>
+                        <div class='mb-2 mr-sm-2'>
+                            {{ ticketInsertForm.submitInsertTicket(class="btn btn-outline-secondary") }}
+                        </div>
+                    </form>
+                </div>
+                {% if ticket %}
+                <div id='expandUpdate' class='collapse mt-2'>
+                    <form id='exp2' action="" method="post">
+                        <div class="form-group mb-2 mr-sm-2">
+                            Priority:<select id="priority" class='custom-select custom-width-7' name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
+                            Status:<select id="status" class='custom-select custom-width-7' name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
+                            Assigned:<select id="assigned" (class='custom-select custom-width-10' name="assigned">{% for assigned in ticketUpdateForm.assigned.choices %}<option value="{{ assigned[0] }}"{% if assigned[0] == ticket.assigned[0] %} selected="selected"{% endif %}>{{ assigned[0] }}</option>{% endfor %}</select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="form-row">
+                                <div class="col">
+                                    {{ ticketUpdateForm.subject(class_='form-control', value=ticket.subject) }}
+                                </div>
+                                <div class="col">
+                                    {{ ticketUpdateForm.tags(class_='form-control', value=tags_string(ticket.tags)) }}
+                                </div>
+                                <div class="col">
+                                    {{ ticketUpdateForm.created_by(class_='form-control', value=ticket.created_by) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <textarea id="body" class="form-control" name="body" required="">{{ ticket.body }}</textarea>
+                        </div>
+                        <div class='mb-2 mr-sm-2'>
+                            {{ ticketUpdateForm.submitUpdateTicket(class="btn btn-outline-secondary") }}
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+        {% if ticket %}
+        <div class='card mt-2 shadow p-0'>
+            <div class='card-header'>
+                <h5>#{{ ticket.id }} {{ ticket.subject }}</h5>
+            </div>
+            <div class='card-body'>
+                <p class='card-text'>{{ ticket.body }}</p>
+            </div>
+            <div class='card-body'>
+                <small><table class='table table-sm'><tr>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Assigned</th>
+                    <th>Tags</th>
+                    <th>Updated</th>
+                    <th>Created</th>
+                    <th>Due</th></tr>
+                <td>{{ ticket.status.name }}</td>
+                <td>{{ ticket.priority.name }}</td>
+                <td>{{ ticket.assigned[0] }}</td>
+                <td>{{ tags_string(ticket.tags) }}</td>
+                <td>{{ ticket.updated_at }}</td>
+                <td>{{ ticket.created_by }}</td>
+                <td>{{ ticket.due_by }}</td>
+            </table></small>
+            </div>
+        </div>
+        </div>
+        <div class='container mt-4'>
+            {% for comment in comments %}
+            <div class='card mt-2 bg-light p-0'>
+                <div class='card-body'>
+                    <p>{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
+                </div>
+            </div>
+            {% endfor %}
+            <div style='width: 100%'>
+                <form action="" method="post">
+                    <div class="input-group mb-3 mt-2">
+                        {{ commentForm.comment(class="form-control", placeholder="Comment") }}
+                    </div>
+                    <div class='mb-2 mr-sm-2'>
+                        {{ commentForm.submitComment }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
 
 {% endblock %}

@@ -160,7 +160,7 @@ class Forms():
         self.ticketInsertForm.assigned.choices = users
         self.ticketInsertForm.assigned.choices.append(('None', 'None'))
 
-        if ticket.id:
+        if ticket:
             self.ticketUpdateForm = TicketUpdateForm(request.form)
             self.ticketUpdateForm.assigned.choices = users
 

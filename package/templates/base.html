@@ -1,32 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" content="width=device-width, initial-scale=1.0">
     <title>Taskerboard</title>
-    <link rel="stylesheet" href="{{ url_for('static',    filename='css/template.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',    filename='css/template.css') }}" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="{{ url_for('static',    filename='css/custom.css') }}" rel="stylesheet" media="screen">
   </head>
   <body>
-    <nav>
-      <ul>
-        <li><img height="30px" src="https://cdn.nwmsrocks.com/img/3dc41c7.png"/></li>
-        <li><a href="/">Home</a></li>
-        <li><a href="/display=list">Tasks</a></li>
-        <li><a href="/display=board">Board</a></li>
-        <li><a href="/settings">Settings</a></li>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">TaskerBoard</a>
+      </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" onclick='showDiv("Nav")'>
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="Nav">
+      <ul class="navbar-nav mr-auto navbar-brand navbar-expand-md">
+        <li class="nav-item"><a class="nav-link" href="/display=list">Tasks</a></li>
+        <li class="nav-item"><a class="nav-link" href="/display=board&assigned={{ current_user.id }}">Board</a></li>
+        <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
       </ul>
-      <ul class='navicon'>
+      <ul class="navbar-nav navbar-brand">
         {% if current_user.is_authenticated %}
-        <li>{{ current_user.id }}</li>
-        <li><a href="/logout">Logout</a></li>
+        <li class="nav-item nav-link">{{ current_user.id }}</li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
         {% else %}
-        <li><a href="/login">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
         {% endif %}
       </ul>
+      </div>
     </nav>
     <div style = 'display: grid'>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-      <div style='display: block; margin: 5px;'>
+      <div class="alert alert-danger" style='display: block; margin: 5px;'>
       <ul class=flashes>
       {% for message in messages %}
         <li class=flashes>{{ message }}</li>

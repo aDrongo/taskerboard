@@ -105,7 +105,7 @@ def settings():
         with open(filepath) as file:
             data = json.load(file)
         os.remove(filepath)
-    Db.bulk_insert_ticket(db, data)
+        Db.bulk_insert_ticket(db, data)
 
     # Insert Ticket form
     if userInsertForm.submitInsertUser.data and userInsertForm.validate():
@@ -153,6 +153,7 @@ def home_query(query):
 
     # Format query for replacement text insertion
     queries = query_args(query, 'query','ticket','status','order','sort','sorted','assigned','search')
+    queries['all'] = query_args(query_args(query, 'search')['search'], 'status')['status']
     if 'assigned' in requestList:
         assigned = True
     else:
