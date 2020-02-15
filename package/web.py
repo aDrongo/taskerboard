@@ -143,7 +143,6 @@ def home_query(query):
 
     # Format query for replacement text insertion
     queries = query_args(query, 'query','ticket','status','order','sort','sorted','assigned','search','size')
-    print(queries)
     queries['all'] = query_args(query_args(query, 'search')['search'], 'status')['status']
     if 'assigned' in requestList:
         assigned = True
@@ -318,10 +317,15 @@ def mail_send(query):
     #/mail/send/ticket=1&recipients=ben.gardner@nwmotorsport.com
 
 @app.route("/ticket/<id>")
+@login_required
 def ticket_html(id):
     result = Db.query_tickets(db, id=id)
     return f'{result.body}'
 
+@app.route('/logs/<query>')
+@login_required
+def logs(query):
+    pass
 
 @app.errorhandler(404)
 def not_found_error(error):

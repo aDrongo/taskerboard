@@ -86,8 +86,11 @@ class Tickets(Base):
     assigned = relationship("User", secondary=assigned_table)
     tags = relationship("Tags", secondary=tag_groups_table)
 
-    def __repr__(self):
-        return f'{self.subject}'
+    def repr(self):
+        return str(dict(
+            id=self.id,
+            subject = self.subject
+        ))
 
     def to_dict(self):
         return dict(
@@ -113,7 +116,12 @@ class Comments(Base):
     body = Db.Column(Db.String(1280))
 
     def __repr__(self):
-        return f'{self.body}'
+        return str(dict(
+            id = self.id,
+            ticket = self.ticket,
+            body = self.body,
+            created_by = self.created_by
+        ))
 
     def to_dict(self):
         return dict(
@@ -122,3 +130,35 @@ class Comments(Base):
             created_at = self.created_at,
             created_by = self.created_by,
             body = self.body)
+
+class Events(Base):
+    """Acivitiy Log"""
+    __tablename__ = 'events'
+    id = Db.Column(Db.Integer, primary_key=True)
+    timestamp = Db.Column(Db.String(19), default=str(datetime.utcnow())[:19])
+    event = Db.Column(Db.String(140))
+    table = Db.Column(Db.String(140))
+    item_id = Db.Column(Db.String(140))
+    details = Db.Column(Db.String(1280))
+    source = Db.Column(Db.String(140))
+    trigger = Db.Column(Db.Boolean, default=False)
+
+    def __repr__(self):
+        return str(dict(
+            id = self.id,
+            timestamp = self.timestamp,
+            event = self.event,
+            table = self.table,
+            item_id = self.item_id
+        ))
+
+    def to_dict(self):
+        return dict(
+            id = self.id,
+            timestamp = self.timestamp,
+            event = self.event,
+            table = self.table,
+            item_id = self.item_id,
+            details = sefl.details,
+            source = self.source,
+            trigger = self.trigger)
