@@ -95,7 +95,7 @@ def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=
         if (isinstance(status, int)):
             status = Models.Status(status)
         else:
-            status = Models.Statu[status]
+            status = Models.Status[status]
         insert.status = status
     else:
         insert.status = Models.Status(1)
@@ -218,7 +218,7 @@ def insert_comment(db, ticket, created_by, body):
         db.session.rollback()
         return False
 
-def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None,order=None, search=None, sort=None):
+def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None,order=None, search=None, sort=None, size=None):
     """Query all tickets with defined filters"""
     # Base Query
     query = db.session.query(Models.Tickets)
@@ -295,8 +295,12 @@ def query_tickets(db, id=None, subject=None, status=None,tags=None,assigned=None
         if tag:
             tags = Models.Tickets.tags.contains(tag)
             query = query.filter(tags)
+    # Add Size
+    if size:
+        result = query.order_by(order).limit(int(size))
     # Run Query
-    result = query.order_by(order).all()
+    else:
+        result = query.order_by(order).all()
     return result
 
 def query_tags(db, tags=None):

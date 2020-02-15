@@ -33,12 +33,14 @@
     <div style = 'display: grid'>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-      <div class="alert alert-danger" style='display: block; margin: 5px;'>
-      <ul class=flashes>
+      <div style='display: block; margin: 5px;'>
       {% for message in messages %}
-        <li class=flashes>{{ message }}</li>
+        {% if "uccess" in message %}
+        <div class="alert alert-success"><p>{{ message }}</p>
+        {% else %}
+        <div class="alert alert-danger"><p>{{ message }}</p>
+        {% endif %}
       {% endfor %}
-      </ul>
     </div>
     {% endif %}
     {% endwith %}

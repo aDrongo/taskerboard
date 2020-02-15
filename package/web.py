@@ -9,34 +9,48 @@ import logging
 import logging.handlers
 from datetime import datetime
 
-
-#import flaskext.mail as Mail
+import pyzmail
+import flask_mail as FlaskMail
+from imapclient import IMAPClient
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 from flask import Flask, render_template, Response, redirect, url_for, request, flash, abort, session
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField, PasswordField
 from wtforms.fields.html5 import EmailField
-from imapclient import IMAPClient
-import pyzmail
 
 import modules.database as Db
 import modules.forms as Forms
-from modules.assorted import convertRequest, Load_Config, query_args, tags_string
+import modules.mail as Mail
+from modules.assorted import convertRequest, Load_Config, query_args, tags_string, html_email
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[logging.handlers.RotatingFileHandler("errors.log", maxBytes=1000000, backupCount=3)])
 logging.info('Running web.py')
 
-#config = Load_Config()
+config = Load_Config('config')
 
 # Start application
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a' #TODO Make secret for Production
 
 # Connect to DB
 db = Db.Database('app.db')
-#if config.get('mail', None):
-#    mail = Mail.Mail(app)
 
-#TODO Make secret for Production
-app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
+# Load Mail client if configured
+if config.get('mail_server', None):
+    app.config['MAIL_SERVER']=config.get('mail_server')
+    app.config['MAIL_PORT'] =config.get('mail_port')
+    app.config['MAIL_USERNAME'] = config.get('mail_username')
+    app.config['MAIL_PASSWORD'] = config.get('mail_password')
+    app.config['MAIL_DEBUG'] = False
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
+    flask_mail = FlaskMail.Mail(app)
+
+def flash_result(result):
+    if result == True:
+        return flash('Success!')
+    else:
+        return flash('Failed!')
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "/login"
@@ -74,15 +88,6 @@ def logout():
     flash('Logged Out')
     return redirect(url_for('login'))
 
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    db.session.rollback()
-    return render_template('500.html'), 500
-
 @app.route("/settings", methods=['GET','POST'])
 @login_required
 def settings():
@@ -90,42 +95,27 @@ def settings():
     users=None
     users = [user for user in Db.query_users(db)]
 
-    # User Forms
-    userInsertForm = Forms.UserInsertForm(request.form)
-    userUpdateForm = Forms.UserUpdateForm(request.form)
-    userUpdateForm.username.choices = [(user.username, user.username) for user in users]
-
-    # Import Form
-    importDataForm = Forms.ImportDataForm()
+    #Load Forms
+    userForms = Forms.UserForms(db)
+    settingsForms = Forms.SettingsForms()
 
     # Import feature
-    if importDataForm.validate_on_submit():
-        filepath = os.getcwd() + "/upload.tmp"
-        importDataForm.file.data.save(filepath)
-        with open(filepath) as file:
-            data = json.load(file)
-        os.remove(filepath)
-        Db.bulk_insert_ticket(db, data)
+    if settingsForms.importDataForm.validate_on_submit():
+        result = settingsForms.importDataForm.submit(db)
 
-    # Insert Ticket form
-    if userInsertForm.submitInsertUser.data and userInsertForm.validate():
-        result = Forms.user_insert_form(db, userInsertForm)
-        if result == True:
-            flash('Success!')
-        else:
-            flash('Failed!')
+    # Insert User form
+    if userForms.userInsertForm.submitInsertUser.data and userForms.userInsertForm.validate():
+        result = userForms.userInsertForm.user_insert(db)
+        flash_result(result)
         return redirect(url_for('settings'))
 
-    # Update Ticket form
-    if userUpdateForm.submitUpdateUser.data and userUpdateForm.validate():
-        result = Forms.user_update_form(db, userUpdateForm)
-        if result == True:
-            flash('Success!')
-        else:
-            flash('Failed!')
+    # Update User form
+    if userForms.userUpdateForm.submitUpdateUser.data and userForms.userUpdateForm.validate():
+        result = userForms.userUpdateForm.user_update(db)
+        flash_result(result)
         return redirect(url_for('settings'))
 
-    return render_template('settings.html', users=users, userInsertForm=userInsertForm, userUpdateForm=userUpdateForm, importDataForm=importDataForm)
+    return render_template('settings.html', users=users, userForms=userForms, settingsForms=settingsForms)
 
 @app.route("/", methods=['GET','POST'])
 @login_required
@@ -152,7 +142,8 @@ def home_query(query):
     assigned = None
 
     # Format query for replacement text insertion
-    queries = query_args(query, 'query','ticket','status','order','sort','sorted','assigned','search')
+    queries = query_args(query, 'query','ticket','status','order','sort','sorted','assigned','search','size')
+    print(queries)
     queries['all'] = query_args(query_args(query, 'search')['search'], 'status')['status']
     if 'assigned' in requestList:
         assigned = True
@@ -171,6 +162,7 @@ def home_query(query):
         boards = Db.query_tickets(db, assigned=current_user.id, order=requestData.get('order', None))
 
     # Get Tickets based on Query
+    size = requestData.get('size','15')
     tickets = Db.query_tickets(db,
             status=requestData.get('status', None),
             tags=requestData.get('tags', None),
@@ -178,7 +170,8 @@ def home_query(query):
             order=requestData.get('order', None),
             subject=requestData.get('subject', None),
             search=requestData.get('search', None),
-            sort=requestData.get('sort',None))
+            sort=requestData.get('sort',None),
+            size=size)
 
     if 'ticket' in requestList:
         id = requestData['ticket']
@@ -192,7 +185,7 @@ def home_query(query):
     priorities = Db.get_priorities()
 
     # Create Forms
-    forms = Forms.Forms(db, ticket, current_user.id)
+    forms = Forms.TicketForms(db, ticket, current_user.id)
 
     # Submit Insert Ticket Form
     if forms.ticketInsertForm.submitInsertTicket.data and forms.ticketInsertForm.validate():
@@ -215,9 +208,8 @@ def home_query(query):
             forms.commentForm.insert_comment(db, id, current_user.id)
             return redirect(url_for('home_query', query=query))
 
-    return render_template(display, tags_string=tags_string, statuses=statuses, priorities=priorities, users=users, tags=tags, queries=queries, 
-                            id=id, searchForm=forms.searchForm, assigned=assigned, boards=boards, tickets=tickets, ticket=ticket,
-                            ticketInsertForm=forms.ticketInsertForm, ticketUpdateForm=forms.ticketUpdateForm, commentForm=forms.commentForm, comments=comments)
+    return render_template(display, tags_string=tags_string, statuses=statuses, priorities=priorities, users=users, tags=tags, queries=queries, forms=forms,
+                            id=id, assigned=assigned, boards=boards, tickets=tickets, ticket=ticket, comments=comments)
 
 @app.route("/api/<query>")
 def api(query):
@@ -280,62 +272,65 @@ def api(query):
 
 @app.route("/mail/receive")
 def mail_receieve():
-    mail_username = os.environ['mail_user']
-    mail_password = os.environ['mail_pass']
-    mail_server = os.environ['mail_server']
-    mail_connection = IMAPClient(mail_server, use_uid=True)
+    """Recieve mail with IMAPClient and process mail for new tickets/comments"""
+    if config.get('mail_server', None) is None:
+        return "Mail not configured"
+    mail = Mail.Mail(config)
+    mail.get_mail()
+    results = mail.process_mail(db)
+    return f'{results}'
 
-    with mail_connection as c:
-        c.login(mail_username,mail_password)
-        c.select_folder('INBOX', readonly=True)
-        #messages = server.sort('ARRIVAL')
-        UIDs = c.search(['ALL'])
-        print(UIDs)
-        messages = c.fetch([UIDs[-1]], ['Body[]', 'FLAGS'])
-        message = messages[list(messages)[0]][b'BODY[]']
-        pyzmessage = pyzmail.PyzMessage.factory(message)
-        from_address = pyzmessage.get_address('from')[1]
-        from_user = pyzmessage.get_address('from')[0]
-        cc = pyzmessage.get_adresses('cc')
-        subject = pyzmessage.get_subject()
-        body = pyzmessage.html_part.get_payload().decode('UTF-8')
-        #body = pyzmessage.text_part.get_payload().decode('UTF-8')
-
-    result = f'{from_address} <br>{from_user} <br>{subject} <br>{body}'
-    return result
-
-@app.route("/mail/send/<details>")
-def mail_send(details):
-    """Send Mail
-    MAIL_SERVER : default ‘localhost’
-    MAIL_PORT : default 25
-    MAIL_USE_TLS : default False
-    MAIL_USE_SSL : default False
-    MAIL_DEBUG : default app.debug
-    MAIL_USERNAME : default None
-    MAIL_PASSWORD : default None
-    DEFAULT_MAIL_SENDER : default None """
+@app.route("/mail/send/<query>")
+def mail_send(query):
+    """Send Mail using flask-mail with ticket id and recipients"""
+    if config.get('mail_server', None) is None:
+        return "Mail not configured"
     #Split data
     requestData = convertRequest(query)
     #Get List of Keys
     requestList = list(requestData)
+    ticket_id = requestData.get('ticket')
+    ticket = Db.query_tickets(db, id=ticket_id)
 
-    #msg = Message("String")
+    #Meta
+    event = requestData('event', 'updated')
+    subject = f'[#Ticket {ticket.id}] {ticket.subject} - {event}'
+    sender = config.get('mail_username')
+    recipients = requestData.get('recipients').split(',')
+    msg = FlaskMail.Message(subject, sender=sender,recipients=recipients)
 
-    #Recipients
-    #msg.recipients = ['example@test.com']
-    #msg.add_recipient('example2@test.com)
+    msg.ticket = ticket
+    msg.comments = Db.query_comments(db, ticket=ticket_id)
 
     #Body
-    #msg.body = "testing"
-    #msg.html = "<b>testing</b>"
+    msg.html = html_email(msg)
 
     #Attachments
     #with app.open_resource("image.png") as fp:
     #msg.attach("image.png", "image/png", fp.read())
 
     #Send
-    #mail.send(msg)
+    result = flask_mail.send(msg)
+
+    return f'{msg.html}'
+
+    #Test
+    #/mail/send/ticket=1&recipients=ben.gardner@nwmotorsport.com
+
+@app.route("/ticket/<id>")
+def ticket_html(id):
+    result = Db.query_tickets(db, id=id)
+    return f'{result.body}'
+
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
 
 # export environment='dev' for no ssl or debugging
 if __name__ == "__main__":

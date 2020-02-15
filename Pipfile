@@ -16,6 +16,7 @@ flask-wtf = "*"
 flask-mail = "*"
 imapclient = "*"
 pyzmail = "*"
+html2text = "*"
 
 [requires]
 python_version = "3.7"

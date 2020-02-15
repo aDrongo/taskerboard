@@ -11,12 +11,9 @@
                         <div class='card-header'>
                         <p class='card-title mb-0'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
                         </div>
-                        <div class='card-body'>
-                            <p class='card-text'>{{ ticket.body[:40] }}</p>
-                        </div>
                         <ul class="list-group list-group-flush">
                             {% for tag in ticket.tags %}
-                            <li class='list-group-item'>#{{ tag }}</li>
+                            <li class='list-group-item m-0 pl-3 p-1'>#{{ tag }}</li>
                             {% endfor %}
                         </ul>
                         {% if ticket.due_by %}
@@ -36,12 +33,9 @@
                         <div class='card-header'>
                         <p class='card-title mb-0'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
                         </div>
-                        <div class='card-body'>
-                            <p class='card-text'>{{ ticket.body[:40] }}</p>
-                        </div>
                         <ul class="list-group list-group-flush">
                             {% for tag in ticket.tags %}
-                            <li class='list-group-item'>#{{ tag }}</li>
+                            <li class='list-group-item m-0 pl-3 p-1'>#{{ tag }}</li>
                             {% endfor %}
                         </ul>
                         {% if ticket.due_by %}
@@ -61,12 +55,9 @@
                         <div class='card-header'>
                         <p class='card-title mb-0'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
                         </div>
-                        <div class='card-body'>
-                            <p class='card-text'>{{ ticket.body[:40] }}</p>
-                        </div>
                         <ul class="list-group list-group-flush">
                             {% for tag in ticket.tags %}
-                            <li class='list-group-item'>#{{ tag }}</li>
+                            <li class='list-group-item m-0 pl-3 p-1'>#{{ tag }}</li>
                             {% endfor %}
                         </ul>
                         {% if ticket.due_by %}
@@ -87,12 +78,9 @@
                         <div class='card-header'>
                         <p class='card-title mb-0'><a href="/{{ queries['ticket'] + '&ticket=' + ticket.id|string }}">{{ ticket.subject }}</a></p>
                         </div>
-                        <div class='card-body'>
-                            <p class='card-text'>{{ ticket.body[:40] }}</p>
-                        </div>
                         <ul class="list-group list-group-flush">
                             {% for tag in ticket.tags %}
-                            <li class='list-group-item'>#{{ tag }}</li>
+                            <li class='list-group-item m-0 pl-3 p-1'>#{{ tag }}</li>
                             {% endfor %}
                         </ul>
                         {% if ticket.due_by %}
@@ -149,9 +137,18 @@
                         {% endif %}
                         </div>
                     </div>
+                    <div class="dropdown">
+                        <button type='button' class='btn btn-outline-secondary dropdown-toggle' onclick='showDiv("Size")'>Size</button>
+                        <div id="Size" class='dropdown-menu'>
+                        <a class='dropdown-item' href="/{{ queries['size'] + '&size=5' }}">5</a>
+                        <a class='dropdown-item' href="/{{ queries['size'] + '&size=15' }}">15</a>
+                        <a class='dropdown-item' href="/{{ queries['size'] + '&size=100' }}">100</a>
+                        <a class='dropdown-item' href="/{{ queries['size'] + '&size=1000' }}">1000</a>
+                        </div>
+                    </div>
                     <div class='ml-auto flex-right'>
                         <form id='search' action="" method="post">
-                        {{ searchForm.search(class="form-control", placeholder="Search") }}
+                        {{ forms.searchForm.search(class="form-control", placeholder="Search") }}
                         </form>
                     </div>
                 </div>
@@ -159,23 +156,23 @@
                 <div id='expandCreate' class='collapse mt-2'>
                     <form id='exp1' action="" method="post">
                         <div class="form-group mb-2 mr-sm-2">
-                            Priority:{{ ticketInsertForm.priority(class='custom-select custom-width-7') }} Status:{{ ticketInsertForm.status(class='custom-select custom-width-7') }} Assigned:{{ ticketInsertForm.assigned(class='custom-select custom-width-10') }}
+                            Priority:{{ forms.ticketInsertForm.priority(class='custom-select custom-width-7') }} Status:{{ forms.ticketInsertForm.status(class='custom-select custom-width-7') }} Assigned:{{ forms.ticketInsertForm.assigned(class='custom-select custom-width-10') }}
                         </div>
                         <div class="input-group mb-3">
                             <div class="row">
                                 <div class="col">
-                                {{ ticketInsertForm.subject(class="form-control", placeholder="Subject") }}
+                                {{ forms.ticketInsertForm.subject(class="form-control", placeholder="Subject") }}
                                 </div>
                                 <div class="col">
-                                {{ ticketInsertForm.tags(class="form-control", placeholder="Tags") }} 
+                                {{ forms.ticketInsertForm.tags(class="form-control", placeholder="Tags") }} 
                                 </div>
                             </div>
                         </div>
                         <div class="input-group mb-3">
-                            {{ ticketInsertForm.body(class="form-control", placeholder="Body") }}
+                            {{ forms.ticketInsertForm.body(class="form-control", placeholder="Body") }}
                         </div>
                         <div class='mb-2 mr-sm-2'>
-                            {{ ticketInsertForm.submitInsertTicket(class="btn btn-outline-secondary") }}
+                            {{ forms.ticketInsertForm.submitInsertTicket(class="btn btn-outline-secondary") }}
                         </div>
                     </form>
                 </div>
@@ -183,20 +180,20 @@
                 <div id='expandUpdate' class='collapse mt-2'>
                     <form id='exp2' action="" method="post">
                         <div class="form-group mb-2 mr-sm-2">
-                            Priority:<select id="priority" class='custom-select custom-width-7' name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
-                            Status:<select id="status" class='custom-select custom-width-7' name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
-                            Assigned:<select id="assigned" (class='custom-select custom-width-10' name="assigned">{% for assigned in ticketUpdateForm.assigned.choices %}<option value="{{ assigned[0] }}"{% if assigned[0] == ticket.assigned[0] %} selected="selected"{% endif %}>{{ assigned[0] }}</option>{% endfor %}</select>
+                            Priority:<select id="priority" class='custom-select custom-width-7' name="priority">{% for priority in forms.ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
+                            Status:<select id="status" class='custom-select custom-width-7' name="status">{% for status in forms.ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
+                            Assigned:<select id="assigned" (class='custom-select custom-width-10' name="assigned">{% for assigned in forms.ticketUpdateForm.assigned.choices %}<option value="{{ assigned[0] }}"{% if assigned[0] == ticket.assigned[0] %} selected="selected"{% endif %}>{{ assigned[0] }}</option>{% endfor %}</select>
                         </div>
                         <div class="input-group mb-3">
                             <div class="form-row">
                                 <div class="col">
-                                    {{ ticketUpdateForm.subject(class_='form-control', value=ticket.subject) }}
+                                    {{ forms.ticketUpdateForm.subject(class_='form-control', value=ticket.subject) }}
                                 </div>
                                 <div class="col">
-                                    {{ ticketUpdateForm.tags(class_='form-control', value=tags_string(ticket.tags)) }}
+                                    {{ forms.ticketUpdateForm.tags(class_='form-control', value=tags_string(ticket.tags)) }}
                                 </div>
                                 <div class="col">
-                                    {{ ticketUpdateForm.created_by(class_='form-control', value=ticket.created_by) }}
+                                    {{ forms.ticketUpdateForm.created_by(class_='form-control', value=ticket.created_by) }}
                                 </div>
                             </div>
                         </div>
@@ -204,7 +201,7 @@
                             <textarea id="body" class="form-control" name="body" required="">{{ ticket.body }}</textarea>
                         </div>
                         <div class='mb-2 mr-sm-2'>
-                            {{ ticketUpdateForm.submitUpdateTicket(class="btn btn-outline-secondary") }}
+                            {{ forms.ticketUpdateForm.submitUpdateTicket(class="btn btn-outline-secondary") }}
                         </div>
                     </form>
                 </div>
@@ -215,7 +212,9 @@
                 <h5>#{{ ticket.id }} {{ ticket.subject }}</h5>
             </div>
             <div class='card-body'>
-                <p class='card-text'>{{ ticket.body }}</p>
+                <div class='row'>
+                    <iframe class='col-lg-12 col-md-12 col-sm-12' frameborder="0" src="{{ '/ticket/' + ticket.id|string }}" sandbox></iframe>
+                </div>
             </div>
             <div class='card-body'>
                 <small><table class='table table-sm'><tr>
@@ -248,10 +247,10 @@
             <div style='width: 100%'>
                 <form action="" method="post">
                     <div class="input-group mb-3 mt-2">
-                        {{ commentForm.comment(class="form-control", placeholder="Comment") }}
+                        {{ forms.commentForm.comment(class="form-control", placeholder="Comment") }}
                     </div>
                     <div class='mb-2 mr-sm-2'>
-                        {{ commentForm.submitComment }}
+                        {{ forms.commentForm.submitComment }}
                     </div>
                 </form>
             </div>

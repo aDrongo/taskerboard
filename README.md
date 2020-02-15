@@ -11,27 +11,33 @@
 9. Manage Users
 10. Search feature
 11. Quick editing from list menu
+12. CSS Update
+13. PyTests
+14. Size limit
+15. Import/Export database via JSON
 
 
 ### TODO
 
-* Due in X time
 * Take in emails and send out emails. Can use flask-mail
-* PyTests for features
-* Pretty CSS/Reorganize CSS and HTML styling.
 * Wiki? Could use Flask-FlatPages
-* Parent/Child Tickets?
-* User groups/multiple users per ticket?
+* Due in X time
 * LDAP integration?
-* View Permissions?
-* Notes vs Comments?
+* Secure API
+* Security Review
 * Ticket submission portal?
-* Import/Export database via CSV
-* Backup database
-* TimeZones?
-* Activity Log(+ reversable?)
 * Chat templating? (Chat assistant?)
 * Purchase tracking? (implment this via Category next to Project vs Tickets?)
-* Password management?
 * Asset tracking?
+* Backup database
+
+#### DB Schema Changes required
+
 * User time tracking diary?
+* Parent/Child Tickets?
+* View Permissions?
+* User groups/multiple users per ticket?
+* TimeZones?
+* Activity Log(+ reversable?)
+* Notes vs Comments?
+* Attach file to comment/ticket

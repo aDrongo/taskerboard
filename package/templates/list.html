@@ -3,14 +3,16 @@
 <div class='row'>
     <div class='col-lg-6'>
         <div class='container'>
-            <div class='row m-2'>
+            <div class='row m-1'>
                 <div class="btn-group">
                     <div class='dropdown'>
                         <button onclick="showDiv('expandCreate')" class='btn btn-outline-secondary'>Create Ticket</button>
-                        {% if ticket %}
-                        <button onclick="showDiv('expandUpdate')" class='btn btn-outline-secondary'>Edit Ticket</button>
-                        {% endif %}
                     </div>
+                        {% if ticket %}
+                        <div class='dropdown'>
+                            <button onclick="showDiv('expandUpdate')" class='btn btn-outline-secondary'>Edit Ticket</button>
+                        </div>
+                        {% endif %}
                         <div class="dropdown">
                             <button type='button' class='btn btn-outline-secondary dropdown-toggle' onclick='showDiv("Filter")'>Filter</button>
                             <div id="Filter" class='dropdown-menu'>
@@ -41,33 +43,42 @@
                             {% endif %}
                             </div>
                         </div>
+                        <div class="dropdown">
+                            <button type='button' class='btn btn-outline-secondary dropdown-toggle' onclick='showDiv("Size")'>Size</button>
+                            <div id="Size" class='dropdown-menu'>
+                            <a class='dropdown-item' href="/{{ queries['size'] + '&size=5' }}">5</a>
+                            <a class='dropdown-item' href="/{{ queries['size'] + '&size=15' }}">15</a>
+                            <a class='dropdown-item' href="/{{ queries['size'] + '&size=100' }}">100</a>
+                            <a class='dropdown-item' href="/{{ queries['size'] + '&size=1000' }}">1000</a>
+                            </div>
+                        </div>
                     </div>
                     <div class='ml-auto'>
                         <form id='search' action="" method="post">
-                        {{ searchForm.search(class="form-control", placeholder="Search") }}
+                        {{ forms.searchForm.search(class="form-control", placeholder="Search") }}
                         </form>
                     </div>
                 </div>
                 <div id='expandCreate' class='collapse mt-2'>
                     <form id='exp1' action="" method="post">
                         <div class="form-group mb-2 mr-sm-2">
-                            Priority:{{ ticketInsertForm.priority(class='custom-select custom-width-7') }} Status:{{ ticketInsertForm.status(class='custom-select custom-width-7') }} Assigned:{{ ticketInsertForm.assigned(class='custom-select custom-width-7') }}
+                            Priority:{{ forms.ticketInsertForm.priority(class='custom-select custom-width-7') }} Status:{{ forms.ticketInsertForm.status(class='custom-select custom-width-7') }} Assigned:{{ forms.ticketInsertForm.assigned(class='custom-select custom-width-7') }}
                         </div>
                         <div class="input-group mb-3">
                             <div class="row">
                                 <div class="col">
-                                {{ ticketInsertForm.subject(class="form-control", placeholder="Subject") }}
+                                {{ forms.ticketInsertForm.subject(class="form-control", placeholder="Subject") }}
                                 </div>
                                 <div class="col">
-                                {{ ticketInsertForm.tags(class="form-control", placeholder="Tags") }} 
+                                {{ forms.ticketInsertForm.tags(class="form-control", placeholder="Tags") }} 
                                 </div>
                             </div>
                         </div>
                         <div class="input-group mb-3">
-                            {{ ticketInsertForm.body(class="form-control", placeholder="Body") }}
+                            {{ forms.ticketInsertForm.body(class="form-control", placeholder="Body") }}
                         </div>
                         <div class='mb-2 mr-sm-2'>
-                            {{ ticketInsertForm.submitInsertTicket(class="btn btn-outline-secondary") }}
+                            {{ forms.ticketInsertForm.submitInsertTicket(class="btn btn-outline-secondary") }}
                         </div>
                     </form>
                 </div>
@@ -75,20 +86,20 @@
                 <div id='expandUpdate' class='collapse mt-2'>
                     <form id='exp2' action="" method="post">
                         <div class="form-group mb-2 mr-sm-2">
-                            Priority:<select class='custom-select custom-width-7' id="priority" name="priority">{% for priority in ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
-                            Status:<select class='custom-select custom-width-7'id="status" name="status">{% for status in ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
-                            Assigned:<select class='custom-select custom-width-10' id="assigned" name="assigned">{% for assigned in ticketUpdateForm.assigned.choices %}<option value="{{ assigned[0] }}"{% if assigned[0] == ticket.assigned[0] %} selected="selected"{% endif %}>{{ assigned[0] }}</option>{% endfor %}</select>
+                            Priority:<select class='custom-select custom-width-7' id="priority" name="priority">{% for priority in forms.ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
+                            Status:<select class='custom-select custom-width-7'id="status" name="status">{% for status in forms.ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
+                            Assigned:<select class='custom-select custom-width-10' id="assigned" name="assigned">{% for assigned in forms.ticketUpdateForm.assigned.choices %}<option value="{{ assigned[0] }}"{% if assigned[0] == ticket.assigned[0] %} selected="selected"{% endif %}>{{ assigned[0] }}</option>{% endfor %}</select>
                         </div>
                         <div class="input-group mb-3">
                             <div class="form-row">
                                 <div class="col">
-                                    {{ ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
+                                    {{ forms.ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
                                 </div>
                                 <div class="col">
-                                    {{ ticketUpdateForm.tags(class_='submit-frm', value=tags_string(ticket.tags)) }}
+                                    {{ forms.ticketUpdateForm.tags(class_='submit-frm', value=tags_string(ticket.tags)) }}
                                 </div>
                                 <div class="col">
-                                    {{ ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
+                                    {{ forms.ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
                                 </div>
                             </div>
                         </div>
@@ -96,13 +107,13 @@
                             <textarea id="body" class="form-control" name="body" required="">{{ ticket.body }}</textarea>
                         </div>
                         <div class='mb-2 mr-sm-2'>
-                            {{ ticketUpdateForm.submitUpdateTicket(class="btn btn-outline-secondary") }}
+                            {{ forms.ticketUpdateForm.submitUpdateTicket(class="btn btn-outline-secondary") }}
                         </div>
                     </form>
                 </div>
                 {% endif %}
             </div>
-            <div class='container table-wrapper-scroll-y'>
+            <div class='container table-responsive-lg'>
                 <table class='table table-striped table-hover table-responsive text-nowrap'>
                     <tr><th>ID</th>
                         <th>Subject</th>
@@ -143,10 +154,12 @@
                 <div class='card-header'>
                     <h5>#{{ ticket.id }} {{ ticket.subject }}</h5>
                 </div>
-                <div class='card-body'>
-                    <p class='card-text'>{{ ticket.body }}</p>
+                <div class='card-body pt-1 pb-1 mh-25'>
+                    <div class='row'>
+                    <iframe class='col-lg-12 col-md-12 col-sm-12' frameborder="0" src="{{ '/ticket/' + ticket.id|string }}" sandbox></iframe>
+                    </div>
                 </div>
-                <div class='card-body'>
+                <div class='card-body pt-1 pb-1'>
                     <small><table class='table table-sm'><tr>
                         <th>Status</th>
                         <th>Priority</th>
@@ -177,10 +190,10 @@
                 <div style='width: 100%'>
                     <form action="" method="post">
                         <div class="input-group mb-3 mt-2">
-                            {{ commentForm.comment(class="form-control", placeholder="Comment") }}
+                            {{ forms.commentForm.comment(class="form-control", placeholder="Comment") }}
                         </div>
                         <div class='mb-2 mr-sm-2'>
-                            {{ commentForm.submitComment }}
+                            {{ forms.commentForm.submitComment }}
                         </div>
                     </form>
                 </div>

@@ -5,3 +5,4 @@ __pychache__/*
 app.db
 errors.log
 errors.log.*
+config.json

@@ -123,7 +123,7 @@ class UserInsertForm(Form):
     password = PasswordField('Password:', [validators.required(), validators.length(max=140)])
     submitInsertUser = SubmitField('submit')
 
-    def user_insert_form(self, db):
+    def user_insert(self, db):
         username = self.username.data
         email = self.email.data
         password = self.password.data
@@ -137,7 +137,7 @@ class UserUpdateForm(Form):
     password = PasswordField('Password:')
     submitUpdateUser = SubmitField('submit')
 
-    def user_update_form(self, db):
+    def user_update(self, db):
         username = self.username.data
         email = self.email.data
         password = self.password.data
@@ -148,8 +148,17 @@ class ImportDataForm(FlaskForm):
     """WTform for Importing data"""
     file = FileField()
 
-class Forms():
-    """Class to hold Forms"""
+    def submit(self, db):
+        filepath = os.getcwd() + "/upload.tmp"
+        self.file.data.save(filepath)
+        with open(filepath) as file:
+            data = json.load(file)
+        os.remove(filepath)
+        result = Db.bulk_insert_ticket(db, data)
+        return result
+
+class TicketForms():
+    """Class to hold Ticket Forms"""
     ticketUpdateForm = None
     commentForm = None
 
@@ -166,3 +175,18 @@ class Forms():
 
             if user_id:
                 self.commentForm = CommentForm(request.form)
+
+class UserForms():
+    """Class to hold User Forms"""
+
+    def __init__(self, db, user=None):
+        users = [(user.username, user.username) for user in Db.query_users(db)]
+        self.userInsertForm = UserInsertForm(request.form)
+        self.userUpdateForm = UserUpdateForm(request.form)
+        self.userUpdateForm.username.choices = users
+
+class SettingsForms():
+    """Class to hold Settings Forms"""
+
+    def __init__(self):
+        self.importDataForm = ImportDataForm()
