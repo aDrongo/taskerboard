@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class='row'>
-    <div class='col-lg-6'>
+    <div class='col-lg-6 mb-2'>
         <div class='container'>
             <div class='row m-1'>
                 <div class="btn-group">
@@ -62,7 +62,9 @@
                 <div id='expandCreate' class='collapse mt-2'>
                     <form id='exp1' action="" method="post">
                         <div class="form-group mb-2 mr-sm-2">
-                            Priority:{{ forms.ticketInsertForm.priority(class='custom-select custom-width-7') }} Status:{{ forms.ticketInsertForm.status(class='custom-select custom-width-7') }} Assigned:{{ forms.ticketInsertForm.assigned(class='custom-select custom-width-7') }}
+                            Priority:{{ forms.ticketInsertForm.priority(class='custom-select custom-width-7') }} 
+                            Status:{{ forms.ticketInsertForm.status(class='custom-select custom-width-7') }} 
+                            Assigned:{{ forms.ticketInsertForm.assigned(class='custom-select custom-width-7') }}
                         </div>
                         <div class="input-group mb-3">
                             <div class="row">
@@ -71,6 +73,9 @@
                                 </div>
                                 <div class="col">
                                 {{ forms.ticketInsertForm.tags(class="form-control", placeholder="Tags") }} 
+                                </div>
+                                <div class="col">
+                                {{ forms.ticketInsertForm.cc(class="form-control", placeholder="CC") }}     
                                 </div>
                             </div>
                         </div>
@@ -93,13 +98,16 @@
                         <div class="input-group mb-3">
                             <div class="form-row">
                                 <div class="col">
-                                    {{ forms.ticketUpdateForm.subject(class_='submit-frm', value=ticket.subject) }}
+                                    Subject:{{ forms.ticketUpdateForm.subject(class_='form-control', value=ticket.subject) }}
                                 </div>
                                 <div class="col">
-                                    {{ forms.ticketUpdateForm.tags(class_='submit-frm', value=tags_string(ticket.tags)) }}
+                                    Tags:{{ forms.ticketUpdateForm.tags(class_='form-control', value=tags_string(ticket.tags)) }}
                                 </div>
                                 <div class="col">
-                                    {{ forms.ticketUpdateForm.created_by(class_='submit-frm', value=ticket.created_by) }}
+                                    Created By:{{ forms.ticketUpdateForm.created_by(class_='form-control', value=ticket.created_by) }}
+                                </div>
+                                <div class="col">
+                                    CC'd:{{ forms.ticketUpdateForm.cc(class="form-control", value=ticket.cc) }} 
                                 </div>
                             </div>
                         </div>

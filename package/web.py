@@ -188,7 +188,7 @@ def home_query(query):
 
     # Submit Insert Ticket Form
     if forms.ticketInsertForm.submitInsertTicket.data and forms.ticketInsertForm.validate():
-        result = forms.ticketInsertForm.ticket_insert(db, current_user.id)
+        result = forms.ticketInsertForm.ticket_insert(db)
         return redirect(url_for('home_query', query=queries['ticket'] + f'&ticket={result.id}'))
 
     # Submit Search Form submission
@@ -204,11 +204,41 @@ def home_query(query):
     
         # Submit Comment form
         if forms.commentForm.submitComment.data and forms.commentForm.validate():
-            forms.commentForm.insert_comment(db, id, current_user.id)
+            forms.commentForm.insert_comment(db, id)
             return redirect(url_for('home_query', query=query))
 
     return render_template(display, tags_string=tags_string, statuses=statuses, priorities=priorities, users=users, tags=tags, queries=queries, forms=forms,
                             id=id, assigned=assigned, boards=boards, tickets=tickets, ticket=ticket, comments=comments)
+
+@app.route('/logs/')
+@login_required
+def logs_redirect():
+    return redirect ("/logs/all")
+
+@app.route('/logs/<query>', methods=['GET','POST'])
+@login_required
+def logs(query):
+    #Split data
+    requestData = convertRequest(query)
+    #Get List of Keys
+    requestList = list(requestData)
+
+    logs = Db.query_logs(db,
+        timestamp = requestData.get('timestamp',None),
+        event = requestData.get('event',None),
+        table = requestData.get('table',None),
+        item_id = requestData.get('item_id',None),
+        details = requestData.get('details',None),
+        source = requestData.get('source',None),
+        trigger = requestData.get('trigger',None))
+    
+    forms = Forms.LogSearchForm()
+
+    if forms.submitSearch.data:
+        search_query = forms.log_search_query()
+        return redirect(f"/logs/{search_query}")
+
+    return render_template('logs.html', forms=forms, logs=logs)
 
 @app.route("/api/<query>")
 def api(query):
@@ -279,27 +309,27 @@ def mail_receieve():
     results = mail.process_mail(db)
     return f'{results}'
 
-@app.route("/mail/send/<query>")
-def mail_send(query):
+@app.route("/mail/send", methods=['POST'])
+def mail_send():
     """Send Mail using flask-mail with ticket id and recipients"""
-    if config.get('mail_server', None) is None:
-        return "Mail not configured"
-    #Split data
-    requestData = convertRequest(query)
-    #Get List of Keys
-    requestList = list(requestData)
-    ticket_id = requestData.get('ticket')
+    #if config.get('mail_server', None) is None:
+    #    abort(400)
+    #if not request.json or not 'ticket' in request.json:
+    #    abort(400)
+    data = json.loads(request.json)
+    ticket_id = data['ticket_id']
+    subject = data['subject']
+    recipients = data['recipients']
     ticket = Db.query_tickets(db, id=ticket_id)
+    comments = Db.query_comments(db, ticket_id)
+
+    print(recipients)
 
     #Meta
-    event = requestData('event', 'updated')
-    subject = f'[#Ticket {ticket.id}] {ticket.subject} - {event}'
     sender = config.get('mail_username')
-    recipients = requestData.get('recipients').split(',')
     msg = FlaskMail.Message(subject, sender=sender,recipients=recipients)
-
     msg.ticket = ticket
-    msg.comments = Db.query_comments(db, ticket=ticket_id)
+    msg.comments = comments
 
     #Body
     msg.html = html_email(msg)
@@ -309,7 +339,7 @@ def mail_send(query):
     #msg.attach("image.png", "image/png", fp.read())
 
     #Send
-    result = flask_mail.send(msg)
+    #result = flask_mail.send(msg)
 
     return f'{msg.html}'
 
@@ -322,10 +352,33 @@ def ticket_html(id):
     result = Db.query_tickets(db, id=id)
     return f'{result.body}'
 
-@app.route('/logs/<query>')
-@login_required
-def logs(query):
-    pass
+@app.route('/mail/test')
+def review():
+    #query logs for unflagged
+    logs = Db.query_logs(db, trigger=False)
+    #check event against config for notification
+    notification = config.get("notification", [None])
+    for log in logs:
+        print('1')
+        if log.event in notification:
+            print('2')
+            if log.table in notification:
+                print('3')
+                time.sleep(2)
+                table = log.table.capitalize()
+                subject = f"#Ticket {log.item_id} {log.event}ed {table}"
+                if log.source:
+                    subject = subject + f" by {log.source}"
+                recipients = 'bgardner160@gmail.com'
+                submit = json.dumps(dict(
+                    ticket_id = log.item_id,
+                    subject = subject,
+                    recipients =  recipients))
+                send = str(request.base_url).replace('test','send')
+                print(send)
+                result = requests.post(send, json=submit)
+                print(result)
+                return f'{result}'
 
 @app.errorhandler(404)
 def not_found_error(error):

@@ -34,7 +34,7 @@ def log_activity(db, event=None, table=None, item_id=None, details=None, source=
     db.session.add(insert)
     pass
 
-def insert_user(db, username, email, password):
+def insert_user(db, username, email, password, user=None):
     """Insert user"""
     hash = hashlib.md5()
     password = password.encode()
@@ -45,14 +45,14 @@ def insert_user(db, username, email, password):
     db.session.flush()
     details = str(insert.to_dict_user())
     try:
-        log_activity(db, event="Insert", table="users", item_id=insert.username, details=details)
+        log_activity(db, event="Insert", table="users", item_id=insert.username, details=details, source=user)
         db.session.commit()
         return True
     except:
         db.session.rollback()
         return False
 
-def update_user(db, username, email, password):
+def update_user(db, username, email, password, user=None):
     """Update User"""
     query = db.session.query(Models.User).filter(Models.User.username == f'{username}')
     update_dict = {}
@@ -68,20 +68,20 @@ def update_user(db, username, email, password):
     db.session.flush()
     details = str(update.to_dict())
     try:
-        log_activity(db, event="Update", table="users", item_id=update.username, details=details)
+        log_activity(db, event="Update", table="users", item_id=update.username, details=details, source=user)
         db.session.commit()
         return True
     except:
         db.session.rollback()
         return False
 
-def delete_user(db, username):
+def delete_user(db, username, user=None):
     """Delete User"""
     delete = db.session.query(Models.User).filter(Models.User.username == f'{username}').delete()
     db.session.flush()
     details = str(delete.to_dict())
     try:
-        log_activity(db, event="Delete", table="users", item_id=delete.username, details=details)
+        log_activity(db, event="Delete", table="users", item_id=delete.username, details=details, source=user)
         db.session.commit()
         return True
     except:
@@ -109,8 +109,7 @@ def insert_tags(db, tags):
         db.session.rollback()
         return False
 
-
-def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=None, tags=None, assigned=None, due_by=None):
+def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=None, tags=None, assigned=None, due_by=None, cc=None, user_id=None):
     """Insert Ticket"""
     time = str(datetime.utcnow())[:19]
     insert = Models.Tickets(
@@ -149,18 +148,20 @@ def insert_ticket(db, subject,body=None, status=None, priority=None, created_by=
         insert.assigned = [user for user in users]
     if due_by:
         insert.due_by = f'{due_by}'
+    if cc:
+        insert.cc = f'{cc}'
     db.session.add(insert)
     db.session.flush()
     details = str(insert.to_dict())
     try:
-        log_activity(db, event="Insert", table="tickets", item_id=insert.id, details=details)
+        log_activity(db, event="Insert", table="tickets", item_id=insert.id, details=details, source=user_id)
         db.session.commit()
         return True
     except:
         db.session.rollback()
         return False
 
-def bulk_insert_ticket(db, data):
+def bulk_insert_ticket(db, data, user_id=None):
     for ticket in data:
         tags = ''
         for tag in ticket.get('tags'):
@@ -179,9 +180,10 @@ def bulk_insert_ticket(db, data):
             tags=tags,
             created_by=ticket.get('created_by', None),
             assigned=assigned,
-            due_by=ticket.get('due_by', None))
+            due_by=ticket.get('due_by', None),
+            user_id=user_id)
 
-def update_ticket(db, id, subject=None, body=None, status=None, priority=None, created_by=None, assigned=None, tags=None, due_by=None):
+def update_ticket(db, id, subject=None, body=None, status=None, priority=None, created_by=None, assigned=None, tags=None, due_by=None, cc=None, user_id=None):
     """Update ticket"""
     time = str(datetime.utcnow())[:19]
     update_dict = {
@@ -209,6 +211,8 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
         update_dict['created_by'] = f'{created_by}'
     if due_by:
         update_dict['due_by'] = f'{due_by}'
+    if cc:
+        update_dict['cc'] = f'{cc}'
     # Update ticket
     update = db.session.query(Models.Tickets).filter(Models.Tickets.id == id).update(update_dict)
     # Joined Tables need seperate call to update
@@ -230,7 +234,7 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
         ticket.assigned = [user for user in users]
         update_dict['assigned'] = ticket.assigned
     try:
-        log_activity(db, event="Update", table="tickets", item_id=id, details=str(update_dict))
+        log_activity(db, event="Update", table="tickets", item_id=id, details=str(update_dict), source=user_id)
         db.session.commit()
         return True
     except:
@@ -247,7 +251,7 @@ def insert_comment(db, ticket, created_by, body):
     db.session.flush()
     details = str(insert.to_dict())
     try:
-        log_activity(db, event="Insert", table="comments", item_id=insert.id, details=details)
+        log_activity(db, event="Insert", table="comments", item_id=insert.id, details=details, source=created_by)
         db.session.commit()
         return True
     except:
@@ -386,21 +390,27 @@ def query_comments(db, ticket,order=None):
     result = db.session.query(Models.Comments).filter(Models.Comments.ticket == ticket).order_by(order).all()
     return result
 
-def query_logs(db, event=None, table=None, item_id=None, details=None, source=None, trigger=None):
+def query_logs(db, timestamp=None, event=None, table=None, item_id=None, details=None, source=None, trigger=None):
     """Query Logs, returns list"""
     query = db.session.query(Models.Events)
+    if timestamp:
+        query = query.filter(Models.Events.timestamp.ilike(f'%{timestamp}%'))
     if event:
-        query.filter(Models.Events.event.contains(event))
+        query = query.filter(Models.Events.event == event)
     if table:
-        query.filter(Models.Events.table.contains(table))
+        query = query.filter(Models.Events.table == table)
     if item_id:
-        query.filter(Models.Events.item_id.contains(item_id))
+        query = query.filter(Models.Events.item_id == item_id)
     if details:
-        query.filter(Models.Events.details.ilike(f'%{details}%'))
+        query = query.filter(Models.Events.details.ilike(f'%{details}%'))
     if source:
-        query.filter(Models.Events.source.ilike(f'%{source}%'))
+        query = query.filter(Models.Events.source.ilike(f'%{source}%'))
     if trigger:
-        query.filter(Models.Events.trigger == trigger)
+        if trigger == "False":
+            trigger = 0
+        else:
+            trigger = 1
+        query = query.filter(Models.Events.trigger == trigger)
     return query.all()
 
 def get_statuses():

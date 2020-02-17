@@ -83,6 +83,7 @@ class Tickets(Base):
     updated_at = Db.Column(Db.String(19), default=str(datetime.utcnow())[:19])
     due_by = Db.Column(Db.String(19))
     created_by = Db.Column(Db.String(140))
+    cc = Db.Column(Db.String(1280))
     assigned = relationship("User", secondary=assigned_table)
     tags = relationship("Tags", secondary=tag_groups_table)
 
@@ -103,6 +104,7 @@ class Tickets(Base):
         updated_at = self.updated_at,
         due_by = self.due_by,
         created_by = self.created_by,
+        cc = self.cc,
         assigned = [item.to_dict_user() for item in self.assigned],
         tags = [item.to_dict() for item in self.tags])
 

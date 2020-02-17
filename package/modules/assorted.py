@@ -13,7 +13,7 @@ def Load_Config(name):
     """Loads the Config file"""
     import json
     config = {}
-    parameters = ['mail_server','mail_port','mail_use_tls','mail_use_ssl','mail_debug','mail_username','mail_password','default_mail_sender']
+    parameters = ['mail_server','mail_port','mail_use_tls','mail_use_ssl','mail_debug','mail_username','mail_password','default_mail_sender','notification']
     try:
         with open(f'{name}.json') as f:
             configFile = json.loads(f.read())
