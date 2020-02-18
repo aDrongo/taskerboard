@@ -186,13 +186,16 @@ def bulk_insert_ticket(db, data, user_id=None):
 def update_ticket(db, id, subject=None, body=None, status=None, priority=None, created_by=None, assigned=None, tags=None, due_by=None, cc=None, user_id=None):
     """Update ticket"""
     time = str(datetime.utcnow())[:19]
+    activity = []
     update_dict = {
         'id': id,
         'updated_at': time}
     if subject:
         update_dict['subject'] = f'{subject}'
+        activity.append("Subject")
     if body:
         update_dict['body'] = f'{body}'
+        activity.append("Body")
     if status:
         #allow converting either integer or string to enumerator
         if (isinstance(status, int)):
@@ -200,6 +203,7 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
         else:
             status = Models.Status[status]
         update_dict['status'] = status
+        activity.append(f"Status to {status.name}")
     if priority:
         #allow converting either integer or string to enumerator
         if (isinstance(priority, int)):
@@ -207,12 +211,16 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
         else:
             priority = Models.Priority[priority]
         update_dict['priority'] = Models.Priority(priority)
+        activity.append(f"Priority to {priority.name}")
     if created_by:
         update_dict['created_by'] = f'{created_by}'
+        activity.append(f"Created By to {created_by}")
     if due_by:
         update_dict['due_by'] = f'{due_by}'
+        activity.append(f"Due By to {due_by}")
     if cc:
         update_dict['cc'] = f'{cc}'
+        activity.append(f"CC to {cc}")
     # Update ticket
     update = db.session.query(Models.Tickets).filter(Models.Tickets.id == id).update(update_dict)
     # Joined Tables need seperate call to update
@@ -220,19 +228,24 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
     # Add Tags, needs a seperate call because of it's relationship
     if tags:
         # retrieve tags object to add, if not found then create them and retireve object.
-        tags = tags.split(',')
-        for tag in tags:
+        tags_split = tags.split(',')
+        for tag in tags_split:
             tag_obj = query_tags(db, tag)
             if tag_obj is None:
                 insert_tags(db, tag)
-        tag_list = query_tags(db, tags)
+        tag_list = query_tags(db, tags_split)
         ticket.tags = [tag for tag in tag_list]
         update_dict['tags'] = ticket.tags
+        activity.append(f"Tags to {tags}")
     # Add assigned, needs a seperate call because of it's relationship
     if assigned:
         users = db.session.query(Models.User).filter(Models.User.username.is_(assigned)).all()
         ticket.assigned = [user for user in users]
         update_dict['assigned'] = ticket.assigned
+        activity.append(f"Assigned to {assigned}")
+    activity = ",".join(activity)
+    #Write activity to comment
+    insert_comment_activity(db, ticket=id, created_by=user_id, activity=activity)
     try:
         log_activity(db, event="Update", table="tickets", item_id=id, details=str(update_dict), source=user_id)
         db.session.commit()
@@ -245,6 +258,23 @@ def insert_comment(db, ticket, created_by, body):
     """Insert Comment"""
     time = str(datetime.utcnow())[:19]
     insert = Models.Comments(ticket=ticket, body=f'{body}',created_by=f'{created_by}')
+    #update = db.session.query(Models.Tickets).filter(Models.Tickets.id == ticket).update({'updated_at':time})
+    db.session.add(insert)
+    #db.session.add(update)
+    db.session.flush()
+    details = str(insert.to_dict())
+    try:
+        log_activity(db, event="Insert", table="comments", item_id=insert.id, details=details, source=created_by)
+        db.session.commit()
+        return True
+    except:
+        db.session.rollback()
+        return False
+    
+def insert_comment_activity(db, ticket, created_by, activity):
+    """Insert Activity to comment table"""
+    time = str(datetime.utcnow())[:19]
+    insert = Models.Comments(ticket=ticket, activity=f'{activity}',created_by=f'{created_by}')
     #update = db.session.query(Models.Tickets).filter(Models.Tickets.id == ticket).update({'updated_at':time})
     db.session.add(insert)
     #db.session.add(update)

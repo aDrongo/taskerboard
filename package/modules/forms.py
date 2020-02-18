@@ -102,19 +102,46 @@ class TicketUpdateForm(Form):
     id = None
 
     def ticket_update(self, db, id):
-        """"Update a Ticket from Form results"""
-        subject = self.subject.data
-        body = self.body.data
-        priority = Models.Priority[f'{self.priority.data}'].value
-        tags = self.tags.data
-        status = Models.Status[f'{self.status.data}'].value
-        cc = self.cc.data
-        if self.assigned.data and self.assigned.data != 'None':
+        """"Update a Ticket from Form results, 
+        for activity tracking to not get flooded we must only submit values that are different, 
+        to do this we compare against the original ticket values"""
+        original = Db.query_tickets(db, id=id)
+        print(original.tags[0].body)
+        original.tag = [str(tag) for tag in original.tags]
+        if self.subject.data != original.subject:
+            subject = self.subject.data
+        else:
+            subject = None
+        if self.body.data != original.body:
+            body = self.body.data
+        else:
+            body = None
+        if self.priority.data != original.priority.name: 
+            priority = Models.Priority[f'{self.priority.data}'].value
+        else:
+            priority = None
+        if self.tags.data != (",".join(original.tag)):
+            tags = self.tags.data
+        else:
+            tags = None
+        if self.status.data != original.status.name:
+            status = Models.Status[f'{self.status.data}'].value
+        else:
+            status = None
+        if self.cc.data != str(original.cc):
+            cc = self.cc.data
+        else:
+            cc = None
+        if self.assigned.data and self.assigned.data != 'None' and self.assigned.data != f'{original.assigned[0]}':
             assigned = self.assigned.data
         else:
             assigned = None
         due_by = None
-        created_by = self.created_by.data
+        print(original.created_by)
+        if self.created_by.data != original.created_by:
+            created_by = self.created_by.data
+        else:
+            created_by = None
         result = Db.update_ticket(db, id=id, subject=subject, body=body, status=status, priority=priority, created_by=created_by, assigned=assigned, tags=tags, due_by=due_by, cc=cc, user_id=self.id)
         return result
 

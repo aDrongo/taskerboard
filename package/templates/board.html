@@ -232,6 +232,7 @@
                     <th>Tags</th>
                     <th>Updated</th>
                     <th>Created</th>
+                    <th>CC'd</th>
                     <th>Due</th></tr>
                 <td>{{ ticket.status.name }}</td>
                 <td>{{ ticket.priority.name }}</td>
@@ -239,6 +240,7 @@
                 <td>{{ tags_string(ticket.tags) }}</td>
                 <td>{{ ticket.updated_at }}</td>
                 <td>{{ ticket.created_by }}</td>
+                <td>{{ ticket.cc }}</td>
                 <td>{{ ticket.due_by }}</td>
             </table></small>
             </div>
@@ -248,7 +250,11 @@
             {% for comment in comments %}
             <div class='card mt-2 bg-light p-0'>
                 <div class='card-body'>
+                    {% if comment.body %}
                     <p>{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
+                    {% else %}
+                    <small>{{ comment.created_by }} updated {{ comment.activity }} at {{ comment.created_at }}</small>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

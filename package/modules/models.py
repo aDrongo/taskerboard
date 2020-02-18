@@ -116,6 +116,7 @@ class Comments(Base):
     created_at = Db.Column(Db.String(19), index=True, default=str(datetime.utcnow())[:19])
     created_by = Db.Column(Db.Integer, Db.ForeignKey('users.username'))
     body = Db.Column(Db.String(1280))
+    activity = Db.Column(Db.String(1280))
 
     def __repr__(self):
         return str(dict(
@@ -131,6 +132,7 @@ class Comments(Base):
             ticket = self.ticket,
             created_at = self.created_at,
             created_by = self.created_by,
+            activity = self.activity,
             body = self.body)
 
 class Events(Base):
