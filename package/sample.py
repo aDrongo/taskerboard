@@ -42,5 +42,7 @@ Db.insert_comment(db,1,'tester','this is the 1first test comment')
 Db.insert_comment(db,1,'tester','this is a 1second test comment')
 Db.insert_comment(db,2,'tester','this is 1another test comment')
 
+Db.update_ticket(db, id=1, status=2, user_id='tester')
+
 #action=query_tickets&tags=tick
 #action=update_ticket&ticket=1&subject='API test'&body='This is a test of the API'&status=Working

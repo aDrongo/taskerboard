@@ -28,7 +28,7 @@ def query_args(query, *args):
     import re
     queries = {}
     for arg in args:
-        queries[arg] = re.sub(f'&?{arg}=.*(?=&)*', '', query)
+        queries[arg] = re.sub(f'&?{arg}=.*?(?=&)', '', query)
     return queries
 
 def tags_string(list_items):
@@ -71,7 +71,10 @@ def html_email(message):
                 <td style="padding: 5px;">{message.ticket.due_by}</td>\
             </table></small></div><hr>'
     for comment in message.comments:
-        email = email + f'<div style="box-shadow: 0 3px 6px 0 rgba(0,0,0,0.2); padding: 16px; margin: 12px;"><p>{comment.body}<p>\
-        <small>{comment.created_by} at {comment.created_at}</small></div>'
+        if comment.variety.name == 'External':
+            email = email + f'<div style="box-shadow: 0 3px 6px 0 rgba(0,0,0,0.2); padding: 16px; margin: 12px;"><p>{comment.body}<p>\
+            <small>{comment.created_by} at {comment.created_at}</small></div><hr>'
+        elif comment.variety.name == 'Activity':
+            email = email + f'<div style="box-shadow: 0 3px 6px 0 rgba(0,0,0,0.2); padding: 16px; margin: 12px;"><small>{comment.body} by {comment.created_by} at {comment.created_at}</small></div><hr>'
     email = email + "</html>"
     return email

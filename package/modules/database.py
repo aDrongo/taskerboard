@@ -34,6 +34,18 @@ def log_activity(db, event=None, table=None, item_id=None, details=None, source=
     db.session.add(insert)
     pass
 
+def activity_trigger(db, id, trigger):
+    if (trigger is not True) and (trigger is not False):
+        return False
+    else:
+        db.session.query(Models.Events).filter(Models.Events.id == id).update({"trigger": trigger})
+        try:
+            db.session.commit()
+            return True
+        except:
+            db.session.rollback()
+            return False
+
 def insert_user(db, username, email, password, user=None):
     """Insert user"""
     hash = hashlib.md5()
@@ -245,7 +257,7 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
         activity.append(f"Assigned to {assigned}")
     activity = ",".join(activity)
     #Write activity to comment
-    insert_comment_activity(db, ticket=id, created_by=user_id, activity=activity)
+    insert_comment(db, ticket=id, created_by=user_id, body=activity, variety=Models.CommentVariety(3))
     try:
         log_activity(db, event="Update", table="tickets", item_id=id, details=str(update_dict), source=user_id)
         db.session.commit()
@@ -254,10 +266,26 @@ def update_ticket(db, id, subject=None, body=None, status=None, priority=None, c
         db.session.rollback()
         return False
 
-def insert_comment(db, ticket, created_by, body):
+def insert_comment(db, ticket, created_by, body, variety=None):
     """Insert Comment"""
+    print('1')
     time = str(datetime.utcnow())[:19]
-    insert = Models.Comments(ticket=ticket, body=f'{body}',created_by=f'{created_by}')
+    #Check if variety is enum, if it's not the enum then convert it.
+    if (variety == None):
+        variety = Models.CommentVariety(1)
+    else:
+        if isinstance(variety, Models.CommentVariety) == False:
+            variety = str(variety).lower()
+            print(variety)
+            if (variety == "external") or (variety == '1'):
+                variety = Models.CommentVariety(1)
+            elif (variety == "internal") or (variety == '2'):
+                variety = Models.CommentVariety(2)
+            elif (variety == "activity") or (variety == '3'):
+                variety = Models.CommentVariety(3)
+            else:
+                raise ValueError("Variety not in CommentVariety Enum")
+    insert = Models.Comments(ticket=ticket, body=body, created_at=time, created_by=created_by, variety=variety)
     #update = db.session.query(Models.Tickets).filter(Models.Tickets.id == ticket).update({'updated_at':time})
     db.session.add(insert)
     #db.session.add(update)
@@ -265,24 +293,7 @@ def insert_comment(db, ticket, created_by, body):
     details = str(insert.to_dict())
     try:
         log_activity(db, event="Insert", table="comments", item_id=insert.id, details=details, source=created_by)
-        db.session.commit()
-        return True
-    except:
-        db.session.rollback()
-        return False
-    
-def insert_comment_activity(db, ticket, created_by, activity):
-    """Insert Activity to comment table"""
-    time = str(datetime.utcnow())[:19]
-    insert = Models.Comments(ticket=ticket, activity=f'{activity}',created_by=f'{created_by}')
-    #update = db.session.query(Models.Tickets).filter(Models.Tickets.id == ticket).update({'updated_at':time})
-    db.session.add(insert)
-    #db.session.add(update)
-    db.session.flush()
-    details = str(insert.to_dict())
-    try:
-        log_activity(db, event="Insert", table="comments", item_id=insert.id, details=details, source=created_by)
-        db.session.commit()
+        act = db.session.commit()
         return True
     except:
         db.session.rollback()
@@ -411,13 +422,16 @@ def query_users(db, users=None):
     else:
         return None
 
-def query_comments(db, ticket,order=None):
-    """Query all comments for a ticket, returns list"""
-    if order == 'created_at':
-        order = Models.Comments.created_at.desc()
+def query_comments(db, ticket=None,order=None, comment_id=None):
+    """Query comments, returns list"""
+    if comment_id:
+        result = db.session.query(Models.Comments).filter(Models.Comments.id == comment_id).first()
     else:
-        order = Models.Comments.id.desc()
-    result = db.session.query(Models.Comments).filter(Models.Comments.ticket == ticket).order_by(order).all()
+        if order == 'created_at':
+            order = Models.Comments.created_at.desc()
+        else:
+            order = Models.Comments.id.desc()
+        result = db.session.query(Models.Comments).filter(Models.Comments.ticket == ticket).order_by(order).all()
     return result
 
 def query_logs(db, timestamp=None, event=None, table=None, item_id=None, details=None, source=None, trigger=None):

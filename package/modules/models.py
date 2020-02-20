@@ -20,6 +20,12 @@ class Status(enum.Enum):
     Waiting = 3
     Closed = 4
 
+class CommentVariety(enum.Enum):
+    """Comment types"""
+    External = 1
+    Internal = 2
+    Activity = 3
+
 #Many to many table for Users to Tickets
 assigned_table = Db.Table('assigned', Base.metadata,
     Db.Column('users_username', Db.String(140), Db.ForeignKey('users.username')),
@@ -116,7 +122,7 @@ class Comments(Base):
     created_at = Db.Column(Db.String(19), index=True, default=str(datetime.utcnow())[:19])
     created_by = Db.Column(Db.Integer, Db.ForeignKey('users.username'))
     body = Db.Column(Db.String(1280))
-    activity = Db.Column(Db.String(1280))
+    variety = Db.Column(Db.Enum(CommentVariety))
 
     def __repr__(self):
         return str(dict(
@@ -132,7 +138,7 @@ class Comments(Base):
             ticket = self.ticket,
             created_at = self.created_at,
             created_by = self.created_by,
-            activity = self.activity,
+            variety = self.variety.name,
             body = self.body)
 
 class Events(Base):

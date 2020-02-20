@@ -1,3 +1,33 @@
+## Taskerboard
+### Work in Progress
+
+A simple ticketing system that uses a combination of traditional listing and kanban board styling.
+
+### Install
+
+* Install at least python 3.7  
+* Run pipenv install  
+* Run init.py or sample.py to initialize the database  
+* Run web.py to start the web service  
+
+
+### Design
+
+web.py                  #Provides website
+    static/
+        css/            #CSS
+        js/             #Javascript
+    templates/          #Provides static html pages with Jinja templating
+    Modules/
+        database.py     #Holds functions to interface with database
+            models.py   #Holds models for tables in database
+        forms.py        #Holds forms for website, talks to database.py as well
+        mail.py         #Holds mail functions
+        assorted.py     #functions for trivial usage throughout application
+app.db                  #SQLite database
+config.json             #Config file
+
+
 ### Completed
 
 1. Database for Tickets, Users and Comments
@@ -20,6 +50,7 @@
 ### TODO
 
 * Take in emails and send out emails. Can use flask-mail
+* Pytests for new features added
 * Wiki? Could use Flask-FlatPages
 * Due in X time
 * LDAP integration?
@@ -38,6 +69,10 @@
 * View Permissions?
 * User groups/multiple users per ticket?
 * TimeZones?
-* Activity Log(+ reversable?)
 * Notes vs Comments?
 * Attach file to comment/ticket
+
+
+#### Bugs
+
+Div to quick assign through table doesn't move with scroll. Need JS implementation instead?

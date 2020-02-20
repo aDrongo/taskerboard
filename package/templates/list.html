@@ -135,7 +135,7 @@
                 {% for tick in tickets %}
                 {% if tick.id == ticket.id %}<tr class='selected'>{% else %}<tr>{% endif %}    
                     <td><a href="/{{ queries['ticket'] + '&ticket=' + tick.id|string }}">{{ tick.id }}</a></td>
-                    <td><a href="/{{ queries['ticket'] + '&ticket=' + tick.id|string }}">{{ tick.subject }}</a></td>
+                    <td><a href="/{{ queries['ticket'] + '&ticket=' + tick.id|string }}">{{ tick.subject[:60] }}{% if ticket.subject|length > 60 %}..{% endif %}</a></td>
                     <!-- Status -->
                     <td><a><div class='click' onclick='showDiv("status{{ tick.id }}")'>{{ tick.status.name }}</div><div class='hidden-scroll' style='display: none;' id='status{{ tick.id }}'><!--
                     --><ul>{% for status in statuses %}<li style='color: black;'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li>{% endfor %}</ul></div></a></td>
@@ -193,10 +193,12 @@
                 {% for comment in comments %}
                 <div class='card mt-2 bg-light p-0'>
                     <div class='card-body'>
-                        {% if comment.body %}
-                        <p>{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
+                        {% if comment.variety.name == 'External' %}
+                        <p class="card-text">{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
+                        {% elif comment.variety.name == 'Internal' %}
+                        <p class="card-text font-italic">{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
                         {% else %}
-                        <small>{{ comment.created_by }} updated {{ comment.activity }} at {{ comment.created_at }}</small>
+                        <small>{{ comment.created_by }} updated {{ comment.body }} at {{ comment.created_at }}</small>
                         {% endif %}
                     </div>
                 </div>
@@ -207,7 +209,8 @@
                             {{ forms.commentForm.comment(class="form-control", placeholder="Comment") }}
                         </div>
                         <div class='mb-2 mr-sm-2'>
-                            {{ forms.commentForm.submitComment }}
+                            {{ forms.commentForm.variety(class="btn btn-outline-secondary") }}
+                            {{ forms.commentForm.submitComment(class="btn btn-outline-secondary") }}
                         </div>
                     </form>
                 </div>

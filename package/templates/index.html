@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class='row'>
-    <div class='col-lg-6 mb-2'>
+    <div class='col-lg-6 mb-2 main-container'>
         <div class='container'>
             <div class='row m-1'>
                 <div class="btn-group">
@@ -97,7 +97,7 @@
                     {% for tick in tickets %}
                     {% if tick.id == ticket.id %}<tr class='selected'>{% else %}<tr>{% endif %}    
                         <td><a href="/display=list&ticket={{ tick.id }}">{{ tick.id }}</a></td>
-                        <td><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject[:32] }}{% if tick.subject|length > 32 %}...{% endif %}</a></td>
+                        <td><a href="/display=list&ticket={{ tick.id }}">{{ tick.subject[:40] }}{% if ticket.subject|length > 38 %}..{% endif %}</a></td>
                         <!-- Status -->
                         <td><a><div class='click' onclick='showDiv("status{{ tick.id }}")'>{{ tick.status.name }}</div><div class='hidden-scroll' style='display: none;' id='status{{ tick.id }}'><!--
                         --><ul>{% for status in statuses %}<li class='hidden-list'><a onclick='status("{{ status }}",{{ tick.id }})'>{{ status }}</a></li>{% endfor %}</ul></div></a></td>
@@ -125,7 +125,7 @@
                 {% if ticket.status.value == 1 %}
                     <div id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
                         <div class='card-header'>
-                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}&assigned={{ current_user.id }}">{{ ticket.subject }}</a></p>
                         </div>
                         <ul class="list-group list-group-flush">
                             {% for tag in ticket.tags %}
@@ -147,7 +147,7 @@
                 {% if ticket.status.value == 2 %}
                     <div id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)"  class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
                         <div class='card-header'>
-                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}&assigned={{ current_user.id }}">{{ ticket.subject }}</a></p>
                         </div>
                         <ul class="list-group list-group-flush">
                             {% for tag in ticket.tags %}
@@ -169,7 +169,7 @@
                 {% if ticket.status.value == 3 %}
                     <div id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
                         <div class='card-header'>
-                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}&assigned={{ current_user.id }}">{{ ticket.subject }}</a></p>
                         </div>
                         <ul class="list-group list-group-flush">
                             {% for tag in ticket.tags %}
@@ -192,7 +192,7 @@
                     {% if ticket.status.value == 4 %}{% set ns.count = ns.count + 1 %}{% if ns.count < 4 %}
                     <div id="drag{{ ticket.id }}" draggable="true" ondragstart="drag(event)" class='card mt-2 bg-light shadow {{ ticket.priority.name }}'>
                         <div class='card-header'>
-                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}">{{ ticket.subject }}</a></p>
+                        <p class='card-title mb-0'><a href="/display=board&ticket={{ ticket.id }}&assigned={{ current_user.id }}">{{ ticket.subject }}</a></p>
                         </div>
                         <ul class="list-group list-group-flush">
                             {% for tag in ticket.tags %}

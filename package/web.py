@@ -277,6 +277,13 @@ def api(query):
                 assigned=requestData.get('assigned', None),
                 due_by=requestData.get('due_by', None)
                 )
+        elif requestData.get('action') == 'insert_comment':
+            result = Db.insert_comment(db,
+                ticket=requestData['ticket'],
+                body=requestData['body'],
+                created_by=requestData['created_by'],
+                variety=requestData.get('variety')
+                )
         elif requestData.get('action') == 'insert_tags':
             result = Db.insert_tags(db,
                 tags=requestData.get('tags', None)
@@ -312,18 +319,16 @@ def mail_receieve():
 @app.route("/mail/send", methods=['POST'])
 def mail_send():
     """Send Mail using flask-mail with ticket id and recipients"""
-    #if config.get('mail_server', None) is None:
-    #    abort(400)
-    #if not request.json or not 'ticket' in request.json:
-    #    abort(400)
+    if config.get('mail_server', None) is None:
+        abort(400)
+    if not request.json or not ('ticket_id' in request.json) or not ('recipients' in request.json):
+        abort(400)
     data = json.loads(request.json)
     ticket_id = data['ticket_id']
-    subject = data['subject']
-    recipients = data['recipients']
+    subject = data.get('subject', f'#Ticket {ticket_id}')
+    recipients = data['recipients'].split(",")
     ticket = Db.query_tickets(db, id=ticket_id)
     comments = Db.query_comments(db, ticket_id)
-
-    print(recipients)
 
     #Meta
     sender = config.get('mail_username')
@@ -339,12 +344,8 @@ def mail_send():
     #msg.attach("image.png", "image/png", fp.read())
 
     #Send
-    #result = flask_mail.send(msg)
-
-    return f'{msg.html}'
-
-    #Test
-    #/mail/send/ticket=1&recipients=ben.gardner@nwmotorsport.com
+    result = flask_mail.send(msg)
+    return f'{result}'
 
 @app.route("/ticket/<id>")
 @login_required
@@ -356,29 +357,32 @@ def ticket_html(id):
 def review():
     #query logs for unflagged
     logs = Db.query_logs(db, trigger=False)
+    result = logs
     #check event against config for notification
     notification = config.get("notification", [None])
     for log in logs:
-        print('1')
         if log.event in notification:
-            print('2')
             if log.table in notification:
-                print('3')
-                time.sleep(2)
+                if log.table == 'comments':
+                    ticket_id = Db.query_comments(db, comment_id=log.item_id).ticket
+                else:
+                    ticket_id = log.item_id
+                ticket = Db.query_tickets(db, id=ticket_id)
                 table = log.table.capitalize()
-                subject = f"#Ticket {log.item_id} {log.event}ed {table}"
+                subject = f"#Ticket {ticket_id} {log.event}ed {table}"
                 if log.source:
                     subject = subject + f" by {log.source}"
-                recipients = 'bgardner160@gmail.com'
+                recipients = ticket.assigned[0].email
+                if ticket.cc is not None:
+                    recipients = recipients + "," + ticket.cc
                 submit = json.dumps(dict(
                     ticket_id = log.item_id,
                     subject = subject,
                     recipients =  recipients))
                 send = str(request.base_url).replace('test','send')
-                print(send)
+                Db.activity_trigger(db, id=log.item_id, trigger=True)
                 result = requests.post(send, json=submit)
-                print(result)
-                return f'{result}'
+    return f'{result}'
 
 @app.errorhandler(404)
 def not_found_error(error):

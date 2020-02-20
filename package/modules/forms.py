@@ -49,12 +49,12 @@ class LoginForm(Form):
 class CommentForm(Form):
     """WTForm for Comments"""
     comment = TextAreaField('Comment:')
+    variety = SelectField('Variety', choices=[('External','External'),('Internal','Internal')])
     submitComment = SubmitField('submit')
     id = None
 
     def insert_comment(self, db, id):
-        comment = self.comment.data
-        result = Db.insert_comment(db, ticket=id, created_by=self.id, body=comment)
+        result = Db.insert_comment(db, ticket=id, created_by=self.id, body=self.comment.data, variety=self.variety.data)
         return result
 
 class TicketInsertForm(Form):

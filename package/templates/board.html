@@ -180,10 +180,7 @@
                             {{ forms.ticketInsertForm.submitInsertTicket(class="btn btn-outline-secondary") }}
                         </div>
                     </form>
-                </div>
-                {% if ticket %}
-                <div id='expandUpdate' class='collapse mt-2'>
-                    <form id='exp2' action="" method="post">
+                </div>&assigned={{ current_user.id }}
                         <div class="form-group mb-2 mr-sm-2">
                             Priority:<select id="priority" class='custom-select custom-width-7' name="priority">{% for priority in forms.ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
                             Status:<select id="status" class='custom-select custom-width-7' name="status">{% for status in forms.ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
@@ -250,10 +247,12 @@
             {% for comment in comments %}
             <div class='card mt-2 bg-light p-0'>
                 <div class='card-body'>
-                    {% if comment.body %}
-                    <p>{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
+                    {% if comment.variety.name == 'External' %}
+                    <p class="card-text">{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
+                    {% elif comment.variety.name == 'Internal' %}
+                    <p class="card-text font-italic">{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
                     {% else %}
-                    <small>{{ comment.created_by }} updated {{ comment.activity }} at {{ comment.created_at }}</small>
+                    <small>{{ comment.created_by }} updated {{ comment.body }} at {{ comment.created_at }}</small>
                     {% endif %}
                 </div>
             </div>
