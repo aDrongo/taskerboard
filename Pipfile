@@ -16,6 +16,7 @@ flask-wtf = "*"
 flask-mail = "*"
 imapclient = "*"
 pyzmail = "*"
+apscheduler = "*"
 
 [requires]
 python_version = "3.7"

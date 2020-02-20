@@ -11,21 +11,31 @@ A simple ticketing system that uses a combination of traditional listing and kan
 * Run web.py to start the web service  
 
 
+#### Config file example
+
+{
+    "mail_server": "smtp.office365.com",
+    "mail_port": "587",
+    "mail_username": "testing@contoso.com",
+    "mail_password": "passw0rd",
+    "notification": ["Insert","comments","tickets"]
+}
+
 ### Design
 
-web.py                  #Provides website
-    static/
-        css/            #CSS
-        js/             #Javascript
-    templates/          #Provides static html pages with Jinja templating
-    Modules/
-        database.py     #Holds functions to interface with database
-            models.py   #Holds models for tables in database
-        forms.py        #Holds forms for website, talks to database.py as well
-        mail.py         #Holds mail functions
-        assorted.py     #functions for trivial usage throughout application
-app.db                  #SQLite database
-config.json             #Config file
+    web.py                  #Provides website
+        static/
+            css/            #CSS
+            js/             #Javascript
+        templates/          #Provides static html pages with Jinja templating
+        Modules/
+            database.py     #Holds functions to interface with database
+                models.py   #Holds models for tables in database
+            forms.py        #Holds forms for website, talks to database.py as well
+            mail.py         #Holds mail functions
+            assorted.py     #functions for trivial usage throughout application
+    app.db                  #SQLite database
+    config.json             #Config file
 
 
 ### Completed
@@ -45,11 +55,13 @@ config.json             #Config file
 13. PyTests
 14. Size limit
 15. Import/Export database via JSON
-
+16. External vs Internal Comments
+17. Show ticket changes in comments.
+18. Take in emails and send out emails.
 
 ### TODO
 
-* Take in emails and send out emails. Can use flask-mail
+
 * Pytests for new features added
 * Wiki? Could use Flask-FlatPages
 * Due in X time
@@ -69,7 +81,6 @@ config.json             #Config file
 * View Permissions?
 * User groups/multiple users per ticket?
 * TimeZones?
-* Notes vs Comments?
 * Attach file to comment/ticket
 
 

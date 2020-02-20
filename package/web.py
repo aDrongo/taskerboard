@@ -16,6 +16,7 @@ from flask_login import LoginManager, login_required, login_user, current_user, 
 from flask import Flask, render_template, Response, redirect, url_for, request, flash, abort, session
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField, PasswordField
 from wtforms.fields.html5 import EmailField
+from apscheduler.schedulers.background import BackgroundScheduler
 
 import modules.database as Db
 import modules.forms as Forms
@@ -306,16 +307,6 @@ def api(query):
             result = json.dumps(result)
         return result
 
-@app.route("/mail/receive")
-def mail_receieve():
-    """Recieve mail with IMAPClient and process mail for new tickets/comments"""
-    if config.get('mail_server', None) is None:
-        return "Mail not configured"
-    mail = Mail.Mail(config)
-    mail.get_mail()
-    results = mail.process_mail(db)
-    return f'{results}'
-
 @app.route("/mail/send", methods=['POST'])
 def mail_send():
     """Send Mail using flask-mail with ticket id and recipients"""
@@ -353,9 +344,19 @@ def ticket_html(id):
     result = Db.query_tickets(db, id=id)
     return f'{result.body}'
 
-@app.route('/mail/test')
-def review():
+def cron_receieve():
+    """Recieve mail with IMAPClient and process mail for new tickets/comments"""
+    if config.get('mail_server', None) is None:
+        abort(400)
+    mail = Mail.Mail(config)
+    mail.get_mail()
+    results = mail.process_mail(db)
+    return f'{results}'
+
+def cron_review():
     #query logs for unflagged
+    if config.get('mail_server', None) is None:
+        abort(400)
     logs = Db.query_logs(db, trigger=False)
     result = logs
     #check event against config for notification
@@ -392,6 +393,11 @@ def not_found_error(error):
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
+
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(cron_discovery,'cron_review',minutes=5)
+#sched.add_job(cron_discovery,'cron_receive',minutes=5)
+sched.start()
 
 # export environment='dev' for no ssl or debugging
 if __name__ == "__main__":
