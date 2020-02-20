@@ -395,8 +395,8 @@ def internal_error(error):
     return render_template('500.html'), 500
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(cron_discovery,'cron_review',minutes=5)
-#sched.add_job(cron_discovery,'cron_receive',minutes=5)
+sched.add_job(cron_review,'interval',minutes=5)
+#sched.add_job(cron_receieve,'interval',minutes=5)
 sched.start()
 
 # export environment='dev' for no ssl or debugging
