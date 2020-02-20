@@ -28,7 +28,7 @@ def query_args(query, *args):
     import re
     queries = {}
     for arg in args:
-        queries[arg] = re.sub(f'&?{arg}=.*?(?=&)', '', query)
+        queries[arg] = re.sub(f'&?{arg}=.*?(?=&|$)', '', query)
     return queries
 
 def tags_string(list_items):

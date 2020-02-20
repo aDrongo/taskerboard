@@ -97,7 +97,6 @@
 
     <div class='col-lg-6'>
         <div class='container mt-0'>
-            <div class=container>
                 <div class="btn-group">
                     <div class='dropdown'>
                         <button onclick="showDiv('expandCreate')" class='btn btn-outline-secondary'>Create Ticket</button>
@@ -152,7 +151,6 @@
                         </form>
                     </div>
                 </div>
-                </div>
                 <div id='expandCreate' class='collapse mt-2'>
                     <form id='exp1' action="" method="post">
                         <div class="form-group mb-2 mr-sm-2">
@@ -180,7 +178,9 @@
                             {{ forms.ticketInsertForm.submitInsertTicket(class="btn btn-outline-secondary") }}
                         </div>
                     </form>
-                </div>&assigned={{ current_user.id }}
+                </div>
+                <div id='expandUpdate' class='collapse mt-2'>
+                    <form id='exp1' action="" method="post">
                         <div class="form-group mb-2 mr-sm-2">
                             Priority:<select id="priority" class='custom-select custom-width-7' name="priority">{% for priority in forms.ticketUpdateForm.priority %}<option value="{{ priority.data }}"{% if priority.data == ticket.priority.name %} selected="selected"{% endif %}>{{ priority.data }}</option>{% endfor %}</select>
                             Status:<select id="status" class='custom-select custom-width-7' name="status">{% for status in forms.ticketUpdateForm.status %}<option value="{{ status.data }}"{% if status.data == ticket.status.name %} selected="selected"{% endif %}>{{ status.data }}</option>{% endfor %}</select>
@@ -210,65 +210,69 @@
                         </div>
                     </form>
                 </div>
-                {% endif %}
-        {% if ticket %}
-        <div class='card mt-2 shadow p-0'>
-            <div class='card-header'>
-                <h5>#{{ ticket.id }} {{ ticket.subject }}</h5>
             </div>
-            <div class='card-body'>
-                <div class='row'>
-                    <iframe class='col-lg-12 col-md-12 col-sm-12' frameborder="0" src="{{ '/ticket/' + ticket.id|string }}" sandbox></iframe>
-                </div>
-            </div>
-            <div class='card-body'>
-                <small><table class='table table-sm'><tr>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Assigned</th>
-                    <th>Tags</th>
-                    <th>Updated</th>
-                    <th>Created</th>
-                    <th>CC'd</th>
-                    <th>Due</th></tr>
-                <td>{{ ticket.status.name }}</td>
-                <td>{{ ticket.priority.name }}</td>
-                <td>{{ ticket.assigned[0] }}</td>
-                <td>{{ tags_string(ticket.tags) }}</td>
-                <td>{{ ticket.updated_at }}</td>
-                <td>{{ ticket.created_by }}</td>
-                <td>{{ ticket.cc }}</td>
-                <td>{{ ticket.due_by }}</td>
-            </table></small>
-            </div>
-        </div>
-        </div>
-        <div class='container mt-4'>
-            {% for comment in comments %}
-            <div class='card mt-2 bg-light p-0'>
-                <div class='card-body'>
-                    {% if comment.variety.name == 'External' %}
-                    <p class="card-text">{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
-                    {% elif comment.variety.name == 'Internal' %}
-                    <p class="card-text font-italic">{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
-                    {% else %}
-                    <small>{{ comment.created_by }} updated {{ comment.body }} at {{ comment.created_at }}</small>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-            <div style='width: 100%'>
-                <form action="" method="post">
-                    <div class="input-group mb-3 mt-2">
-                        {{ forms.commentForm.comment(class="form-control", placeholder="Comment") }}
+            {% if ticket %}
+                <div class='container mt-2'>
+                    <div class='card mt-2 shadow p-0'>
+                        <div class='card-header'>
+                            <h5>#{{ ticket.id }} {{ ticket.subject }}</h5>
+                        </div>
+                        <div class='card-body pt-1 pb-1 mh-25'>
+                            <div class='row'>
+                            <iframe class='col-lg-12 col-md-12 col-sm-12' frameborder="0" src="{{ '/ticket/' + ticket.id|string }}" sandbox></iframe>
+                            </div>
+                        </div>
+                        <div class='card-body pt-1 pb-1'>
+                            <small><table class='table table-sm'><tr>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Assigned</th>
+                                <th>Tags</th>
+                                <th>Updated</th>
+                                <th>Created</th>
+                                <th>CC'd</th>
+                                <th>Due</th></tr>
+                            <td>{{ ticket.status.name }}</td>
+                            <td>{{ ticket.priority.name }}</td>
+                            <td>{{ ticket.assigned[0] }}</td>
+                            <td>{{ tags_string(ticket.tags) }}</td>
+                            <td>{{ ticket.updated_at }}</td>
+                            <td>{{ ticket.created_by }}</td>
+                            <td>{{ ticket.cc }}</td>
+                            <td>{{ ticket.due_by }}</td>
+                        </table></small>
+                        </div>
                     </div>
-                    <div class='mb-2 mr-sm-2'>
-                        {{ forms.commentForm.submitComment }}
                     </div>
-                </form>
-            </div>
+                    <div class='container mt-4'>
+                        {% for comment in comments %}
+                        <div class='card mt-2 bg-light p-0'>
+                            <div class='card-body'>
+                                {% if comment.variety.name == 'External' %}
+                                <p class="card-text">{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
+                                {% elif comment.variety.name == 'Internal' %}
+                                <p class="card-text font-italic">{{ comment.body }}</p><small>{{ comment.created_by }} at {{ comment.created_at }}</small>
+                                {% else %}
+                                <small>{{ comment.created_by }} updated {{ comment.body }} at {{ comment.created_at }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div style='width: 100%'>
+                            <form action="" method="post">
+                                <div class="input-group mb-3 mt-2">
+                                    {{ forms.commentForm.comment(class="form-control", placeholder="Comment") }}
+                                </div>
+                                <div class='mb-2 mr-sm-2'>
+                                    {{ forms.commentForm.variety(class="btn btn-outline-secondary") }}
+                                    {{ forms.commentForm.submitComment(class="btn btn-outline-secondary") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 </div>
 

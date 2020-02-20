@@ -144,11 +144,13 @@ def home_query(query):
 
     # Format query for replacement text insertion
     queries = query_args(query, 'query','ticket','status','order','sort','sorted','assigned','search','size')
+    print(query_args(query, 'status')['status'])
     queries['all'] = query_args(query_args(query, 'search')['search'], 'status')['status']
     if 'assigned' in requestList:
         assigned = True
     else:
         queries['assigned'] = queries['assigned'] + f'&assigned={current_user.id}'
+    print(queries)
 
     # Get Display based on Query
     display = requestData.get('display', 'list') 
@@ -395,7 +397,7 @@ def internal_error(error):
     return render_template('500.html'), 500
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(cron_review,'interval',minutes=5)
+#sched.add_job(cron_review,'interval',minutes=5)
 #sched.add_job(cron_receieve,'interval',minutes=5)
 sched.start()
 
