@@ -1,9 +1,9 @@
 import sys 
-sys.path.append('..')
+sys.path.append('../package/')
 import os
 import pytest
 
-import package.modules.database as Db
+import modules.database as Db
 
 @pytest.fixture(scope="module")
 def database():
@@ -14,7 +14,7 @@ def database():
 
 def test_insert_user(database):
     Db.insert_user(database, 'test', 'test@contoso.com', '1234')
-    Db.insert_user(database, 'tester', 'tester@contoso.com', '1234')
+    Db.insert_user(database, username='tester', email='tester@contoso.com', password='1234')
     Db.insert_user(database, 'testing', 'someone@contoso.com', '1234')
     user = Db.query_users(database, 'test')
     assert user[0].username == 'test'
@@ -24,7 +24,8 @@ def test_check_password(database):
     assert Db.check_password(database, 'test', '1234')
 
 def test_update_user(database):
-    Db.update_user(database, 'test', 'different@contoso.com', '5678')
+    result = Db.update_user(database, 'test', 'different@contoso.com', '5678')
+    assert result == True
     user = Db.query_users(database, 'test')
     assert user[0].email == 'different@contoso.com'
     assert Db.check_password(database, 'test', '5678')
@@ -81,10 +82,31 @@ def test_update_ticket(database):
 def test_insert_comment(database):
     result = Db.insert_comment(database, 1, 'test', 'comment')
     assert result == True
-    Db.insert_comment(database, 1, 'test', 'second comment')
+    result = Db.insert_comment(database, 1, 'test', 'second comment', 'external')
+    assert result == True
     result = Db.query_comments(database, 1)
     assert result[1].body == 'comment'
     assert result[0].body == 'second comment'
+    result = Db.insert_comment(database, 1, 'test', 'comment internal', 'internal')
+    assert result == True
+    result = Db.insert_comment(database, 1, 'test', 'comment activity', 'activity')
+    assert result == True
+    result = Db.insert_comment(database, 1, 'test', 'comment 1', '1')
+    assert result == True
+
+#Test Query Logs
+def test_query_logs(database):
+    Db.log_activity(database, event='Insert', table='tickets', item_id='5', details='testing', source='tester')
+    query = Db.query_logs(database)[-1]
+    assert query.event == 'Insert'
+    assert query.table == 'tickets'
+    assert query.item_id == '5'
+    assert query.details == 'testing'
+    assert query.source == 'tester'
+    assert query.trigger == False
+    Db.activity_trigger(database, id=query.id, trigger=True)
+    query = Db.query_logs(database, id=query.id)
+    assert query.trigger == True
 
 def test_convert_to_dict(database):
     ticket = Db.query_tickets(database, id=1)

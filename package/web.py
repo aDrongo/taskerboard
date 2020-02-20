@@ -143,7 +143,7 @@ def home_query(query):
     assigned = None
 
     # Format query for replacement text insertion
-    queries = query_args(query, 'query','ticket','status','order','sort','sorted','assigned','search','size')
+    queries = query_args(query, 'query','ticket','status','order','sort','sorted','assigned','search','size','display')
     print(query_args(query, 'status')['status'])
     queries['all'] = query_args(query_args(query, 'search')['search'], 'status')['status']
     if 'assigned' in requestList:

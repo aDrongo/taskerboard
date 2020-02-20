@@ -141,8 +141,8 @@ class Comments(Base):
             variety = self.variety.name,
             body = self.body)
 
-class Events(Base):
-    """Acivitiy Log"""
+class Logs(Base):
+    """Class for Logs"""
     __tablename__ = 'events'
     id = Db.Column(Db.Integer, primary_key=True)
     timestamp = Db.Column(Db.String(19), default=str(datetime.utcnow())[:19])

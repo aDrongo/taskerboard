@@ -18,7 +18,7 @@ class Database():
 
 def log_activity(db, event=None, table=None, item_id=None, details=None, source=None, trigger=None):
     time = str(datetime.utcnow())[:19]
-    insert = Models.Events(timestamp=time)
+    insert = Models.Logs(timestamp=time)
     if event:
         insert.event = event
     if table:
@@ -38,7 +38,7 @@ def activity_trigger(db, id, trigger):
     if (trigger is not True) and (trigger is not False):
         return False
     else:
-        db.session.query(Models.Events).filter(Models.Events.id == id).update({"trigger": trigger})
+        db.session.query(Models.Logs).filter(Models.Logs.id == id).update({"trigger": trigger})
         try:
             db.session.commit()
             return True
@@ -78,9 +78,8 @@ def update_user(db, username, email, password, user=None):
         update_dict['password_hash'] = hash
     update = db.session.query(Models.User).filter(Models.User.username == f'{username}').update(update_dict)
     db.session.flush()
-    details = str(update.to_dict())
     try:
-        log_activity(db, event="Update", table="users", item_id=update.username, details=details, source=user)
+        log_activity(db, event="Update", table="users", item_id=username, details=str(update_dict), source=user)
         db.session.commit()
         return True
     except:
@@ -91,9 +90,8 @@ def delete_user(db, username, user=None):
     """Delete User"""
     delete = db.session.query(Models.User).filter(Models.User.username == f'{username}').delete()
     db.session.flush()
-    details = str(delete.to_dict())
     try:
-        log_activity(db, event="Delete", table="users", item_id=delete.username, details=details, source=user)
+        log_activity(db, event="Delete", table="users", item_id=username, source=user)
         db.session.commit()
         return True
     except:
@@ -434,27 +432,29 @@ def query_comments(db, ticket=None,order=None, comment_id=None):
         result = db.session.query(Models.Comments).filter(Models.Comments.ticket == ticket).order_by(order).all()
     return result
 
-def query_logs(db, timestamp=None, event=None, table=None, item_id=None, details=None, source=None, trigger=None):
+def query_logs(db, id=None, timestamp=None, event=None, table=None, item_id=None, details=None, source=None, trigger=None):
     """Query Logs, returns list"""
-    query = db.session.query(Models.Events)
+    query = db.session.query(Models.Logs)
+    if id:
+        return query.filter(Models.Logs.id == id).first()
     if timestamp:
-        query = query.filter(Models.Events.timestamp.ilike(f'%{timestamp}%'))
+        query = query.filter(Models.Logs.timestamp.ilike(f'%{timestamp}%'))
     if event:
-        query = query.filter(Models.Events.event == event)
+        query = query.filter(Models.Logs.event == event)
     if table:
-        query = query.filter(Models.Events.table == table)
+        query = query.filter(Models.Logs.table == table)
     if item_id:
-        query = query.filter(Models.Events.item_id == item_id)
+        query = query.filter(Models.Logs.item_id == item_id)
     if details:
-        query = query.filter(Models.Events.details.ilike(f'%{details}%'))
+        query = query.filter(Models.Logs.details.ilike(f'%{details}%'))
     if source:
-        query = query.filter(Models.Events.source.ilike(f'%{source}%'))
+        query = query.filter(Models.Logs.source.ilike(f'%{source}%'))
     if trigger:
         if trigger == "False":
             trigger = 0
         else:
             trigger = 1
-        query = query.filter(Models.Events.trigger == trigger)
+        query = query.filter(Models.Logs.trigger == trigger)
     return query.all()
 
 def get_statuses():
