@@ -90,8 +90,6 @@ Div to quick assign through table doesn't move with scroll. Need JS implementati
 
 #### Examples
 
-https://ibb.co/F8XNYS6
-https://ibb.co/g9ryW1R
 https://ibb.co/jWBxjt8
 https://ibb.co/prJvpJR
 https://ibb.co/SttVpjM
